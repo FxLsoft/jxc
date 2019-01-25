@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.ProductMapper">
+    
+	<sql id="productColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.brevity_code AS "brevityCode",
+		a.price AS "price",
+		a.supplier_name AS "supplierName",
+		a.supplier_phone AS "supplierPhone",
+		a.supplier_card_no AS "supplierCardNo",
+		a.supplier_address AS "supplierAddress",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="productJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="Product" >
+		SELECT 
+			<include refid="productColumns"/>
+		FROM j_product a
+		<include refid="productJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Product" >
+		SELECT 
+			<include refid="productColumns"/>
+		FROM j_product a
+		<include refid="productJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="name != null and name != ''">
+				AND (a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				OR a.brevity_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+					)
+			</if>
+			<if test="supplierName != null and supplierName != ''">
+				AND a.supplier_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{supplierName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{supplierName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{supplierName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Product" >
+		SELECT 
+			<include refid="productColumns"/>
+		FROM j_product a
+		<include refid="productJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO j_product(
+			id,
+			name,
+			brevity_code,
+			price,
+			supplier_name,
+			supplier_phone,
+			supplier_card_no,
+			supplier_address,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{brevityCode},
+			#{price},
+			#{supplierName},
+			#{supplierPhone},
+			#{supplierCardNo},
+			#{supplierAddress},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE j_product SET 	
+			name = #{name},
+			brevity_code = #{brevityCode},
+			price = #{price},
+			supplier_name = #{supplierName},
+			supplier_phone = #{supplierPhone},
+			supplier_card_no = #{supplierCardNo},
+			supplier_address = #{supplierAddress},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM j_product
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE j_product SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
+		select * FROM j_product  where ${propertyName} = '${value}'
+	</select>
+	
+	<select id="queryProductByKey" resultType="Product" statementType="STATEMENT">
+		select p.*, sum(w.quantity) as count, max(w.unit) as unit from j_warehouse w left join j_product p on w.product_id = p.id 
+			where 1= 1 
+			<if test="retail != null">
+			  and w.is_retail = ${retail}
+			</if>
+			<if test="company != null">
+			  and w.company = '${company}'
+			</if>
+			  and w.del_flag = 0 and (p.name LIKE '%${value}%' or p.brevity_code LIKE '%${value}%') GROUP BY p.id
+			limit ${start}, ${end};
+	</select>
+	
+	<select id="countProductByKey" resultType="java.lang.Integer" statementType="STATEMENT">
+		select count(a.id) from (select DISTINCT p.id from j_warehouse w left join j_product p on w.product_id = p.id 
+			where 1= 1 
+			<if test="retail != null">
+			  and w.is_retail = ${retail}
+			</if>
+			<if test="company != null">
+			  and w.company = '${company}'
+			</if>
+			and w.del_flag = 0 and (p.name LIKE '%${value}%' or p.brevity_code LIKE '%${value}%') GROUP BY p.id) a
+	</select>
+</mapper>

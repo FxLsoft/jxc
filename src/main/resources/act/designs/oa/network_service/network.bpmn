@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+<process id="network_service" name="网络报修" isExecutable="true">
+<startEvent id="start" name="启动流程" activiti:initiator="applyUserId" activiti:formKey="/oa/networkService/form"/>
+<serviceTask id="audit1" name="系统按按规则向维修人员派单并下发短信" activiti:class="com.thinkgem.jeesite.modules.oa.web.DistributeWorkDelegate">
+<extensionElements>
+	<activiti:field name="content">
+		<activiti:expression>${objectinfo}</activiti:expression>
+	</activiti:field>
+</extensionElements>
+</serviceTask>
+<sequenceFlow id="sid-F6C3EBFF-2CFC-42EC-9B79-53D16DE8758F" sourceRef="start" targetRef="audit1"/>
+<userTask id="audit2" name="维修人员确认表单" activiti:assignee="${workerUser1}" activiti:formKey="/oa/networkService/form">
+<extensionElements>
+<activiti:taskListener event="complete" class="com.thinkgem.jeesite.modules.oa.web.SetListener1">
+	<activiti:field name="content">
+		<activiti:expression>${objectinfo}</activiti:expression>
+	</activiti:field>
+	<activiti:field name="task">
+		<activiti:expression>${task}</activiti:expression>
+	</activiti:field>
+</activiti:taskListener>
+</extensionElements>
+</userTask>
+<sequenceFlow id="sid-71F340FF-019A-43E4-95EA-472A4318FD7F" sourceRef="audit1" targetRef="audit2"/>
+<userTask id="audit5" name="维修人员维修结果确认" activiti:assignee="${workerUser2}" activiti:formKey="/oa/networkService/form">
+<extensionElements>
+<activiti:taskListener event="complete" class="com.thinkgem.jeesite.modules.oa.web.SetListener4">
+	<activiti:field name="content">
+		<activiti:expression>${objectinfo}</activiti:expression>
+	</activiti:field>
+	<activiti:field name="task">
+		<activiti:expression>${task}</activiti:expression>
+	</activiti:field>
+</activiti:taskListener>	
+</extensionElements>
+</userTask>
+<sequenceFlow id="sid-25A07D5C-F077-4792-BAE7-E2B1B4FFF465" sourceRef="audit2" targetRef="audit5"/>
+<userTask id="audit6" name="用户评价" activiti:assignee="${applyUserId}" activiti:formKey="/oa/networkService/form"/>
+<sequenceFlow id="sid-D4A349F2-48B5-4E33-A821-EBD0108A1443" sourceRef="audit5" targetRef="audit6"/>
+<endEvent id="end" name="结束流程"/>
+<userTask id="audit3" name="调度人员处理" activiti:assignee="${dispatcher}" activiti:formKey="/oa/networkService/form">
+<extensionElements>
+<activiti:taskListener event="create" class="com.thinkgem.jeesite.modules.oa.web.SetListener2">
+	<activiti:field name="content">
+		<activiti:expression>${objectinfo}</activiti:expression>
+	</activiti:field>
+	<activiti:field name="task">
+		<activiti:expression>${task}</activiti:expression>
+	</activiti:field>
+</activiti:taskListener>
+<activiti:taskListener event="complete" class="com.thinkgem.jeesite.modules.oa.web.SetListener3">
+	<activiti:field name="content">
+		<activiti:expression>${objectinfo}</activiti:expression>
+	</activiti:field>
+	<activiti:field name="task">
+		<activiti:expression>${task}</activiti:expression>
+	</activiti:field>
+</activiti:taskListener>
+</extensionElements>
+</userTask>
+<sequenceFlow id="sid-E1B06B54-E890-4965-800F-5C750452CAA3" sourceRef="boundarytimer1" targetRef="audit3"/>
+<serviceTask id="audit4" name="部分负责人电话通知处理" activiti:class="com.thinkgem.jeesite.modules.oa.web.MobileDelegateExecution">
+<extensionElements>
+	<activiti:field name="content">
+		<activiti:expression>${objectinfo}</activiti:expression>
+	</activiti:field>
+	<activiti:field name="phone">
+		<activiti:expression>${mobile}</activiti:expression>
+	</activiti:field>
+</extensionElements>
+</serviceTask>
+<sequenceFlow id="sid-8C583853-13E3-4377-8DE9-EEFA6531CD14" sourceRef="boundarytimer2" targetRef="audit4"/>
+<sequenceFlow id="sid-E9B978F8-7920-4D35-AF86-85C2325E7AF7" sourceRef="audit4" targetRef="end"/>
+<sequenceFlow id="sid-EA6CBA2F-2B6D-40BD-AF60-D002B29424C4" sourceRef="audit6" targetRef="end"/>
+<boundaryEvent id="boundarytimer3" name="大于48小时" attachedToRef="audit6" cancelActivity="true">
+<timerEventDefinition>
+<timeDuration>PT48H</timeDuration>
+</timerEventDefinition>
+</boundaryEvent>
+<sequenceFlow id="sid-AB3DB0EA-E86C-4F15-BD7C-BB59EDB84271" sourceRef="audit3" targetRef="audit5"/>
+<boundaryEvent id="boundarytimer2" name="大于15分钟" attachedToRef="audit3" cancelActivity="true">
+<timerEventDefinition>
+<timeDuration>PT2M</timeDuration>
+</timerEventDefinition>
+</boundaryEvent>
+<sequenceFlow id="sid-F253E8A3-00A4-4C4F-952C-EE14F9F4C716" sourceRef="boundarytimer3" targetRef="end"/>
+<boundaryEvent id="boundarytimer1" name="大于15分钟" attachedToRef="audit2" cancelActivity="true">
+<timerEventDefinition>
+<timeDuration>PT2M</timeDuration>
+</timerEventDefinition>
+</boundaryEvent>
+</process>
+<bpmndi:BPMNDiagram id="BPMNDiagram_network_service">
+<bpmndi:BPMNPlane bpmnElement="network_service" id="BPMNPlane_network_service">
+<bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+<omgdc:Bounds height="30.0" width="30.0" x="60.0" y="52.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="audit1" id="BPMNShape_audit1">
+<omgdc:Bounds height="80.0" width="100.0" x="161.5" y="27.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="audit2" id="BPMNShape_audit2">
+<omgdc:Bounds height="80.0" width="100.0" x="375.0" y="27.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="audit5" id="BPMNShape_audit5">
+<omgdc:Bounds height="80.0" width="100.0" x="570.0" y="27.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="audit6" id="BPMNShape_audit6">
+<omgdc:Bounds height="80.0" width="100.0" x="765.0" y="27.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+<omgdc:Bounds height="28.0" width="28.0" x="1005.0" y="53.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="audit3" id="BPMNShape_audit3">
+<omgdc:Bounds height="80.0" width="100.0" x="375.0" y="180.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="audit4" id="BPMNShape_audit4">
+<omgdc:Bounds height="80.0" width="100.0" x="375.0" y="345.0"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="boundarytimer3" id="BPMNShape_boundarytimer3">
+<omgdc:Bounds height="31.0" width="31.0" x="790.625460980669" y="92.3228794889228"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="boundarytimer2" id="BPMNShape_boundarytimer2">
+<omgdc:Bounds height="31.0" width="31.0" x="407.8210403537253" y="244.79503151059237"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+<omgdc:Bounds height="31.0" width="31.0" x="408.9090017622456" y="91.68788016729758"/>
+</bpmndi:BPMNShape>
+<bpmndi:BPMNEdge bpmnElement="sid-25A07D5C-F077-4792-BAE7-E2B1B4FFF465" id="BPMNEdge_sid-25A07D5C-F077-4792-BAE7-E2B1B4FFF465">
+<omgdi:waypoint x="475.0" y="67.0"/>
+<omgdi:waypoint x="570.0" y="67.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-EA6CBA2F-2B6D-40BD-AF60-D002B29424C4" id="BPMNEdge_sid-EA6CBA2F-2B6D-40BD-AF60-D002B29424C4">
+<omgdi:waypoint x="865.0" y="67.0"/>
+<omgdi:waypoint x="1005.0" y="67.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-E9B978F8-7920-4D35-AF86-85C2325E7AF7" id="BPMNEdge_sid-E9B978F8-7920-4D35-AF86-85C2325E7AF7">
+<omgdi:waypoint x="475.0" y="385.0"/>
+<omgdi:waypoint x="1019.0" y="385.0"/>
+<omgdi:waypoint x="1019.0" y="81.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-8C583853-13E3-4377-8DE9-EEFA6531CD14" id="BPMNEdge_sid-8C583853-13E3-4377-8DE9-EEFA6531CD14">
+<omgdi:waypoint x="423.5297049847295" y="275.7936269008775"/>
+<omgdi:waypoint x="424.46146182734736" y="345.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-71F340FF-019A-43E4-95EA-472A4318FD7F" id="BPMNEdge_sid-71F340FF-019A-43E4-95EA-472A4318FD7F">
+<omgdi:waypoint x="261.5" y="67.0"/>
+<omgdi:waypoint x="375.0" y="67.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-E1B06B54-E890-4965-800F-5C750452CAA3" id="BPMNEdge_sid-E1B06B54-E890-4965-800F-5C750452CAA3">
+<omgdi:waypoint x="424.4902017875396" y="122.68766747409286"/>
+<omgdi:waypoint x="424.7904486721353" y="180.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-AB3DB0EA-E86C-4F15-BD7C-BB59EDB84271" id="BPMNEdge_sid-AB3DB0EA-E86C-4F15-BD7C-BB59EDB84271">
+<omgdi:waypoint x="475.0" y="220.0"/>
+<omgdi:waypoint x="620.0" y="220.0"/>
+<omgdi:waypoint x="620.0" y="107.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-D4A349F2-48B5-4E33-A821-EBD0108A1443" id="BPMNEdge_sid-D4A349F2-48B5-4E33-A821-EBD0108A1443">
+<omgdi:waypoint x="670.0" y="67.0"/>
+<omgdi:waypoint x="765.0" y="67.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-F6C3EBFF-2CFC-42EC-9B79-53D16DE8758F" id="BPMNEdge_sid-F6C3EBFF-2CFC-42EC-9B79-53D16DE8758F">
+<omgdi:waypoint x="90.0" y="67.0"/>
+<omgdi:waypoint x="161.5" y="67.0"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge bpmnElement="sid-F253E8A3-00A4-4C4F-952C-EE14F9F4C716" id="BPMNEdge_sid-F253E8A3-00A4-4C4F-952C-EE14F9F4C716">
+<omgdi:waypoint x="806.125460980669" y="123.3228794889228"/>
+<omgdi:waypoint x="806.125460980669" y="180.0"/>
+<omgdi:waypoint x="1001.5" y="180.0"/>
+<omgdi:waypoint x="1016.8574000833604" y="80.83507374744407"/>
+</bpmndi:BPMNEdge>
+</bpmndi:BPMNPlane>
+</bpmndi:BPMNDiagram>
+</definitions>

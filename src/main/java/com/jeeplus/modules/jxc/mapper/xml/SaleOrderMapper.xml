@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.SaleOrderMapper">
+    
+	<sql id="saleOrderColumns">
+		a.id AS "id",
+		a.no AS "no",
+		a.sum AS "sum",
+		a.type AS "type",
+		a.status AS "status",
+		a.approve_date AS "approveDate",
+		a.cancel_date AS "cancelDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+				
+				
+				
+				
+				
+				
+				
+		createBy.name AS "createBy.name",
+				
+				
+		updateBy.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="saleOrderJoins">
+		
+		LEFT JOIN sys_user createBy ON createBy.id = a.create_by
+		LEFT JOIN sys_user updateBy ON updateBy.id = a.update_by
+	</sql>
+	
+    
+	<select id="get" resultType="SaleOrder" >
+		SELECT 
+			<include refid="saleOrderColumns"/>
+		FROM j_sale_order a
+		<include refid="saleOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SaleOrder" >
+		SELECT 
+			<include refid="saleOrderColumns"/>
+		FROM j_sale_order a
+		<include refid="saleOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="no != null and no != ''">
+				AND a.no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{no}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{no}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
+			</if>
+			<if test="beginSum != null and endSum != null ">
+				AND a.sum BETWEEN #{beginSum} AND #{endSum}
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SaleOrder" >
+		SELECT 
+			<include refid="saleOrderColumns"/>
+		FROM j_sale_order a
+		<include refid="saleOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO j_sale_order(
+			id,
+			no,
+			sum,
+			type,
+			status,
+			approve_date,
+			cancel_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{no},
+			#{sum},
+			#{type},
+			#{status},
+			#{approveDate},
+			#{cancelDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE j_sale_order SET 	
+			no = #{no},
+			sum = #{sum},
+			type = #{type},
+			status = #{status},
+			approve_date = #{approveDate},
+			cancel_date = #{cancelDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM j_sale_order
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE j_sale_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="SaleOrder" statementType="STATEMENT">
+		select * FROM j_sale_order  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.test.activiti.mapper.TestAuditMapper">
+    
+	<sql id="testAuditColumns">
+		a.id AS "id",
+		a.proc_ins_id AS "procInsId",
+		a.user_id AS "user.id",
+		a.office_id AS "office.id",
+		a.post AS "post",
+		a.sex AS "sex",
+		a.edu AS "edu",
+		a.content AS "content",
+		a.olda AS "olda",
+		a.oldb AS "oldb",
+		a.oldc AS "oldc",
+		a.newa AS "newa",
+		a.newb AS "newb",
+		a.newc AS "newc",
+		a.add_num AS "addNum",
+		a.exe_date AS "exeDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+				
+				
+		user.name AS "user.name",
+				
+		office.name AS "office.name"
+	</sql>
+	
+	<sql id="testAuditJoins">
+		
+		LEFT JOIN sys_user user ON user.id = a.user_id
+		LEFT JOIN sys_office office ON office.id = a.office_id
+	</sql>
+	
+    
+	<select id="get" resultType="TestAudit" >
+		SELECT 
+			<include refid="testAuditColumns"/>
+		FROM test_activiti_audit a
+		<include refid="testAuditJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TestAudit" >
+		SELECT 
+			<include refid="testAuditColumns"/>
+		FROM test_activiti_audit a
+		<include refid="testAuditJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TestAudit" >
+		SELECT 
+			<include refid="testAuditColumns"/>
+		FROM test_activiti_audit a
+		<include refid="testAuditJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO test_activiti_audit(
+			id,
+			proc_ins_id,
+			user_id,
+			office_id,
+			post,
+			sex,
+			edu,
+			content,
+			olda,
+			oldb,
+			oldc,
+			newa,
+			newb,
+			newc,
+			add_num,
+			exe_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{procInsId},
+			#{user.id},
+			#{office.id},
+			#{post},
+			#{sex},
+			#{edu},
+			#{content},
+			#{olda},
+			#{oldb},
+			#{oldc},
+			#{newa},
+			#{newb},
+			#{newc},
+			#{addNum},
+			#{exeDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE test_activiti_audit SET 	
+			proc_ins_id = #{procInsId},
+			user_id = #{user.id},
+			office_id = #{office.id},
+			post = #{post},
+			sex = #{sex},
+			edu = #{edu},
+			content = #{content},
+			olda = #{olda},
+			oldb = #{oldb},
+			oldc = #{oldc},
+			newa = #{newa},
+			newb = #{newb},
+			newc = #{newc},
+			add_num = #{addNum},
+			exe_date = #{exeDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM test_activiti_audit
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE test_activiti_audit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TestAudit" statementType="STATEMENT">
+		select * FROM test_activiti_audit  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

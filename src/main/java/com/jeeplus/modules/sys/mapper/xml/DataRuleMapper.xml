@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.sys.mapper.DataRuleMapper">
+    
+	<sql id="dataRuleColumns">
+		a.id AS "id",
+		a.menu_id AS "menuId",
+		a.name AS "name",
+		a.className AS "className",
+		a.t_field AS "field",
+		a.t_express AS "express",
+		a.t_value AS "value",
+		a.sql_segment AS "sqlSegment",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dataRuleJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="DataRule" >
+		SELECT 
+			<include refid="dataRuleColumns"/>
+		FROM sys_datarule a
+		<include refid="dataRuleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DataRule" >
+		SELECT 
+			<include refid="dataRuleColumns"/>
+		FROM sys_datarule a
+		<include refid="dataRuleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="menuId != null and menuId != ''">
+				AND a.menu_id =#{menuId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findByUserId"  resultType="DataRule">
+		SELECT DISTINCT
+			<include refid="dataRuleColumns"/>
+		FROM sys_datarule a
+		JOIN sys_role_datarule rd ON rd.datarule_id = a.id
+		JOIN sys_role r ON r.id = rd.role_id AND r.useable='1'
+		JOIN sys_user_role ur ON ur.role_id = r.id
+		JOIN sys_user u ON u.id = ur.user_id AND u.id = #{id}
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND r.del_flag = #{DEL_FLAG_NORMAL} AND u.del_flag = #{DEL_FLAG_NORMAL} 
+	</select>
+	
+	
+	<select id="findAllList" resultType="DataRule" >
+		SELECT 
+			<include refid="dataRuleColumns"/>
+		FROM sys_datarule a
+		<include refid="dataRuleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_datarule(
+			id,
+			menu_id,
+			name,
+			className,
+			t_field,
+			t_express,
+			t_value,
+			sql_segment,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{menuId},
+			#{name},
+			#{className},
+			#{field},
+			#{express},
+			#{value},
+			#{sqlSegment},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_datarule SET 	
+			menu_id = #{menuId},
+			name = #{name},
+			className = #{className},
+			t_field = #{field},
+			t_express = #{express},
+			t_value = #{value},
+			sql_segment = #{sqlSegment},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM sys_datarule
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteRoleDataRule">
+		DELETE FROM sys_role_datarule
+		WHERE datarule_id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_datarule SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="DataRule" statementType="STATEMENT">
+		select * FROM sys_datarule  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

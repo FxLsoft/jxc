@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.BillOrderMapper">
+    
+	<sql id="billOrderColumns">
+		a.id AS "id",
+		a.no AS "no",
+		a.stock_no AS "stockOrder.id",
+		a.pay_money AS "payMoney",
+		a.status AS "status",
+		a.approve_date AS "approveDate",
+		a.cancel_date AS "cancelDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+				
+				
+		stockOrder.no AS "stockOrder.no",
+				
+				
+				
+				
+				
+		createBy.name AS "createBy.name"
+	</sql>
+	
+	<sql id="billOrderJoins">
+		
+		LEFT JOIN j_stock_order stockOrder ON stockOrder.id = a.stock_no
+		LEFT JOIN sys_user createBy ON createBy.id = a.create_by
+	</sql>
+	
+    
+	<select id="get" resultType="BillOrder" >
+		SELECT 
+			<include refid="billOrderColumns"/>
+		FROM j_bill_order a
+		<include refid="billOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BillOrder" >
+		SELECT 
+			<include refid="billOrderColumns"/>
+		FROM j_bill_order a
+		<include refid="billOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="no != null and no != ''">
+				AND a.no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{no}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{no}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
+			</if>
+			<if test="stockOrder != null and stockOrder.no != null and stockOrder.no != ''">
+				AND stockOrder.no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{stockOrder.no}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{stockOrder.no}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{stockOrder.no},'%')</if>
+			</if>
+			<if test="status != null">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BillOrder" >
+		SELECT 
+			<include refid="billOrderColumns"/>
+		FROM j_bill_order a
+		<include refid="billOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO j_bill_order(
+			id,
+			no,
+			stock_no,
+			pay_money,
+			status,
+			approve_date,
+			cancel_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{no},
+			#{stockOrder.id},
+			#{payMoney},
+			#{status},
+			#{approveDate},
+			#{cancelDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE j_bill_order SET 	
+			no = #{no},
+			stock_no = #{stockOrder.id},
+			pay_money = #{payMoney},
+			status = #{status},
+			approve_date = #{approveDate},
+			cancel_date = #{cancelDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM j_bill_order
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE j_bill_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BillOrder" statementType="STATEMENT">
+		select * FROM j_bill_order  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

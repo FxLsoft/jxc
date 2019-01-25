@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.test.activiti.mapper.TestExpenseMapper">
+    
+	<sql id="testExpenseColumns">
+		a.id AS "id",
+		a.name AS "tuser.id",
+		a.office_id AS "office.id",
+		a.cost AS "cost",
+		a.reason AS "reason",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.proc_ins_id AS "procInsId",
+				
+		tuser.name AS "tuser.name",
+				
+		office.name AS "office.name"
+	</sql>
+	
+	<sql id="testExpenseJoins">
+		
+		LEFT JOIN sys_user tuser ON tuser.id = a.name
+		LEFT JOIN sys_office office ON office.id = a.office_id
+	</sql>
+	
+    
+	<select id="get" resultType="TestExpense" >
+		SELECT 
+			<include refid="testExpenseColumns"/>
+		FROM test_activiti_expense a
+		<include refid="testExpenseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TestExpense" >
+		SELECT 
+			<include refid="testExpenseColumns"/>
+		FROM test_activiti_expense a
+		<include refid="testExpenseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TestExpense" >
+		SELECT 
+			<include refid="testExpenseColumns"/>
+		FROM test_activiti_expense a
+		<include refid="testExpenseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO test_activiti_expense(
+			id,
+			name,
+			office_id,
+			cost,
+			reason,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			proc_ins_id
+		) VALUES (
+			#{id},
+			#{tuser.id},
+			#{office.id},
+			#{cost},
+			#{reason},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{procInsId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE test_activiti_expense SET 	
+			name = #{tuser.id},
+			office_id = #{office.id},
+			cost = #{cost},
+			reason = #{reason},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			proc_ins_id = #{procInsId}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM test_activiti_expense
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE test_activiti_expense SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TestExpense" statementType="STATEMENT">
+		select * FROM test_activiti_expense  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

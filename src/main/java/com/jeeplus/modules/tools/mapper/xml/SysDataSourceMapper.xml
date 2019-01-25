@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.tools.mapper.SysDataSourceMapper">
+    
+	<sql id="sysDataSourceColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.enname AS "enname",
+		a.db_username AS "dbUserName",
+		a.db_password AS "dbPassword",
+		a.db_url AS "dbUrl",
+		a.db_driver AS "dbDriver"
+	</sql>
+	
+	<sql id="sysDataSourceJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="SysDataSource" >
+		SELECT 
+			<include refid="sysDataSourceColumns"/>
+		FROM sys_datasource a
+		<include refid="sysDataSourceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByEnname" resultType="SysDataSource" >
+		SELECT
+		<include refid="sysDataSourceColumns"/>
+		FROM sys_datasource a
+		<include refid="sysDataSourceJoins"/>
+		WHERE a.enname = #{enname}
+	</select>
+	
+	<select id="findList" resultType="SysDataSource" >
+		SELECT 
+			<include refid="sysDataSourceColumns"/>
+		FROM sys_datasource a
+		<include refid="sysDataSourceJoins"/>
+		<where>
+			
+			${dataScope}
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysDataSource" >
+		SELECT 
+			<include refid="sysDataSourceColumns"/>
+		FROM sys_datasource a
+		<include refid="sysDataSourceJoins"/>
+		<where>
+			
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_datasource(
+			id,
+			name,
+			enname,
+			db_username,
+			db_password,
+			db_url,
+			db_driver
+		) VALUES (
+			#{id},
+			#{name},
+			#{enname},
+			#{dbUserName},
+			#{dbPassword},
+			#{dbUrl},
+			#{dbDriver}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_datasource SET
+			name = #{name},
+			enname = #{enname},
+			db_username = #{dbUserName},
+			db_password = #{dbPassword},
+			db_url = #{dbUrl},
+			db_driver = #{dbDriver}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM sys_datasource
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_datasource SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="SysDataSource" statementType="STATEMENT">
+		select * FROM sys_datasource  where ${propertyName} = '${value}'
+	</select>
+
+</mapper>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.iim.mapper.ChatHistoryMapper">
+    
+	<sql id="chatHistoryColumns">
+		a.id AS "id",
+		a.sender AS "sender",
+		a.receiver AS "receiver",
+		a.msg AS "msg",
+		a.status AS "status",
+		a.create_date AS "createDate",
+		a.type AS "type"
+	</sql>
+	
+	<sql id="chatHistoryJoins">
+	</sql>
+    
+	<select id="get" resultType="ChatHistory">
+		SELECT 
+			<include refid="chatHistoryColumns"/>
+		FROM iim_chat_history a
+		<include refid="chatHistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ChatHistory">
+		SELECT 
+			<include refid="chatHistoryColumns"/>
+		FROM iim_chat_history a
+		<include refid="chatHistoryJoins"/>
+		<where>
+			
+			<if test="sender != null and sender != ''">
+				AND a.sender = #{sender}
+			</if>
+			<if test="receiver != null and receiver != ''">
+				AND a.receiver = #{receiver}
+			</if>
+			<if test="msg != null and msg != ''">
+				AND a.msg LIKE 
+					<if test="dbName == 'oracle'">'%'||#{msg}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{msg}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{msg},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if>
+		</where>
+				ORDER BY a.create_date asc
+	</select>
+	
+	<select id="findLogList" resultType="ChatHistory">
+		SELECT 
+			<include refid="chatHistoryColumns"/>
+		FROM iim_chat_history a
+		<include refid="chatHistoryJoins"/>
+		<where>
+			
+			<if test="sender != null and sender != '' and receiver != null and receiver != ''">
+				AND  ((a.sender = #{sender} AND a.receiver = #{receiver}) or  (a.sender = #{receiver} AND a.receiver = #{sender}))
+			</if>
+			<if test="msg != null and msg != ''">
+				AND a.msg LIKE 
+					<if test="dbName == 'oracle'">'%'||#{msg}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{msg}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{msg},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if>
+		</where>
+				ORDER BY a.create_date desc
+	</select>
+	
+	<select id="findGroupLogList" resultType="ChatHistory">
+		SELECT 
+			<include refid="chatHistoryColumns"/>
+		FROM iim_chat_history a
+		<include refid="chatHistoryJoins"/>
+		<where>
+			
+			<if test="sender != null and sender != '' and receiver != null and receiver != ''">
+				AND  
+					((a.sender =
+					<if test="dbName == 'oracle'">#{receiver}||'_msg_'||#{sender}</if>
+					<if test="dbName == 'mssql'">#{receiver}+'_msg_'+#{sender}</if>
+					<if test="dbName == 'mysql'">concat(#{receiver},'_msg_',#{sender})</if>
+				     AND  a.receiver = #{sender})
+					
+					OR (a.sender like
+					<if test="dbName == 'oracle'">#{receiver}||'_msg_'||'%'</if>
+					<if test="dbName == 'mssql'">#{receiver}+'_msg_'+'%'</if>
+					<if test="dbName == 'mysql'">concat(#{receiver},'_msg_','%')</if>
+					and a.receiver = #{sender}))
+
+			</if>
+			<if test="msg != null and msg != ''">
+				AND a.msg LIKE 
+					<if test="dbName == 'oracle'">'%'||#{msg}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{msg}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{msg},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if>
+		</where>
+				ORDER BY a.create_date desc
+	</select>
+	<select id="findAllList" resultType="ChatHistory">
+		SELECT 
+			<include refid="chatHistoryColumns"/>
+		FROM iim_chat_history a
+		<include refid="chatHistoryJoins"/>
+		<where>
+			
+		</where>		
+		ORDER BY a.create_date asc
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO iim_chat_history(
+			id,
+			sender,
+			receiver,
+			msg,
+			status,
+			create_date,
+			type
+		) VALUES (
+			#{id},
+			#{sender},
+			#{receiver},
+			#{msg},
+			#{status},
+			#{createDate},
+			#{type}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE iim_chat_history SET 	
+			sender = #{sender},
+			receiver = #{receiver},
+			msg = #{msg},
+			status = #{status},
+			create_date = #{createDate},
+			type = #{type}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM iim_chat_history
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 查询全部用户数目 -->
+	<select id="findUnReadCount" resultType="int">
+		SELECT
+			COUNT(1)
+		FROM iim_chat_history a WHERE
+				a.sender = #{receiver} AND a.receiver = #{sender}
+				AND a.status = '0'
+	</select>
+	
+</mapper>

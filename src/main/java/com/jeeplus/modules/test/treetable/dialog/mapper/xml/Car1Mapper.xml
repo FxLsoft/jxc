@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.test.treetable.dialog.mapper.Car1Mapper">
+    
+	<sql id="car1Columns">
+		a.id AS "id",
+		a.name AS "name",
+		a.kind_id AS "kind.id",
+		a.del_flag AS "delFlag",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		b.name AS "kind.name"
+	</sql>
+	
+	<sql id="car1Joins">
+			LEFT JOIN test_car_kind b ON b.id = a.kind_id
+	</sql>
+	
+    
+	<select id="get" resultType="Car1" >
+		SELECT 
+			<include refid="car1Columns"/>
+		FROM test_car a
+		<include refid="car1Joins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Car1" >
+		SELECT 
+			<include refid="car1Columns"/>
+		FROM test_car a
+		<include refid="car1Joins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+                    <if test="kind != null  and kind.id != null and kind.id != ''">
+                        AND (b.id = #{kind.id} OR b.parent_ids LIKE
+                        <if test="dbName == 'oracle'">'%,'||#{kind.id}||',%')</if>
+                        <if test="dbName == 'mysql'">CONCAT('%,', #{kind.id}, ',%'))</if>
+                        <if test="dbName == 'mssql'">'%'+#{kind.id}+'%')</if>
+                    </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Car1" >
+		SELECT 
+			<include refid="car1Columns"/>
+		FROM test_car a
+		<include refid="car1Joins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO test_car(
+			id,
+			name,
+			kind_id,
+			del_flag,
+			remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date
+		) VALUES (
+			#{id},
+			#{name},
+			#{kind.id},
+			#{delFlag},
+			#{remarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE test_car SET 	
+			name = #{name},
+			kind_id = #{kind.id},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM test_car
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE kind_id = #{kind.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE test_car SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE kind_id = #{kind.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Car1" statementType="STATEMENT">
+		select * FROM test_car  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

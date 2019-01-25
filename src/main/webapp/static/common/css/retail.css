@@ -1,0 +1,75 @@
+@charset "UTF-8";
+
+.admin-retail {
+	padding: 30px;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.admin-retail .left {
+	padding-right: 10px;
+	
+}
+
+.admin-retail .right {
+	padding-left: 10px;
+}
+
+.product-area {
+	margin-top: 20px;
+}
+
+.product {
+	height: 80px;
+    width: 80px;
+    margin: 5px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: pre-wrap;
+    overflow: hidden;
+}
+.amount, .price {
+	border: none;
+	background: none;
+	box-shadow: none;
+}
+.amount:focus, .price:focus {
+	border: 1px solid #ccc;
+	background-color: #fff;
+}
+.order-footer {
+	text-align: center;
+}
+
+.order-footer button {
+	margin: 10px;
+}
+.order-list {
+	margin-top: 20px;
+	width: 100%;
+    height: calc(100% - 300px);
+}
+.pay-money {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.retail-a {
+	position: fixed;
+    right: 20px;
+    bottom: 20px;
+}
+.product-row {
+	line-height: 36px;
+	height: 36px;
+}
+.product-total{
+	margin-top: 10px;
+}

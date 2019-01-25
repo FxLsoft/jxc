@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.SaleOrderDetailMapper">
+    
+	<sql id="saleOrderDetailColumns">
+		a.id AS "id",
+		a.order_no AS "saleOrder.no",
+		a.product_id AS "product.id",
+		a.price AS "price",
+		a.quantity AS "quantity",
+		a.unit AS "unit",
+		a.intro AS "intro",
+		a.release_date AS "releaseDate",
+		a.expiry_date AS "expiryDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+				
+				
+		product.name AS "product.name"
+	</sql>
+	
+	<sql id="saleOrderDetailJoins">
+		
+			LEFT JOIN j_sale_order b ON b.id = a.order_no
+		LEFT JOIN j_product product ON product.id = a.product_id
+	</sql>
+	
+    
+	<select id="get" resultType="SaleOrderDetail" >
+		SELECT 
+			<include refid="saleOrderDetailColumns"/>
+		FROM j_sale_order_detail a
+		<include refid="saleOrderDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SaleOrderDetail" >
+		SELECT 
+			<include refid="saleOrderDetailColumns"/>
+		FROM j_sale_order_detail a
+		<include refid="saleOrderDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="saleOrder != null and saleOrder.no != null and saleOrder.no != ''">
+				AND a.order_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{saleOrder.no}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{saleOrder.no}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{saleOrder.no},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SaleOrderDetail" >
+		SELECT 
+			<include refid="saleOrderDetailColumns"/>
+		FROM j_sale_order_detail a
+		<include refid="saleOrderDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO j_sale_order_detail(
+			id,
+			order_no,
+			product_id,
+			price,
+			quantity,
+			unit,
+			intro,
+			release_date,
+			expiry_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{saleOrder.no},
+			#{product.id},
+			#{price},
+			#{quantity},
+			#{unit},
+			#{intro},
+			#{releaseDate},
+			#{expiryDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE j_sale_order_detail SET 	
+			order_no = #{saleOrder.no},
+			product_id = #{product.id},
+			price = #{price},
+			quantity = #{quantity},
+			unit = #{unit},
+			intro = #{intro},
+			release_date = #{releaseDate},
+			expiry_date = #{expiryDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM j_sale_order_detail
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE order_no = #{saleOrder.no}
+			</otherwise>
+		</choose>
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE j_sale_order_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE order_no = #{saleOrder.no}
+			</otherwise>
+		</choose>
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="SaleOrderDetail" statementType="STATEMENT">
+		select * FROM j_sale_order_detail  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

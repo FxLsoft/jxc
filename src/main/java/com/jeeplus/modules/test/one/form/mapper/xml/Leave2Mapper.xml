@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.test.one.form.mapper.Leave2Mapper">
+    
+	<sql id="leave2Columns">
+		a.id AS "id",
+		a.office_id AS "office.id",
+		a.user_id AS "tuser.id",
+		a.area_id AS "area",
+		a.begin_date AS "beginDate",
+		a.end_date AS "endDate",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+				
+		office.name AS "office.name",
+				
+		tuser.name AS "tuser.name"
+	</sql>
+	
+	<sql id="leave2Joins">
+		
+		LEFT JOIN sys_office office ON office.id = a.office_id
+		LEFT JOIN sys_user tuser ON tuser.id = a.user_id
+	</sql>
+	
+    
+	<select id="get" resultType="Leave2" >
+		SELECT 
+			<include refid="leave2Columns"/>
+		FROM test_leave a
+		<include refid="leave2Joins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Leave2" >
+		SELECT 
+			<include refid="leave2Columns"/>
+		FROM test_leave a
+		<include refid="leave2Joins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office_id = #{office.id}
+			</if>
+			<if test="tuser != null and tuser.id != null and tuser.id != ''">
+				AND a.user_id = #{tuser.id}
+			</if>
+			<if test="area != null and area != ''">
+				AND a.area_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{area}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{area}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{area},'%')</if>
+			</if>
+			<if test="beginBeginDate != null and endBeginDate != null ">
+				AND a.begin_date BETWEEN #{beginBeginDate} AND #{endBeginDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date = #{endDate}
+			</if>
+			<if test="remarks != null and remarks != ''">
+				AND a.remarks = #{remarks}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Leave2" >
+		SELECT 
+			<include refid="leave2Columns"/>
+		FROM test_leave a
+		<include refid="leave2Joins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO test_leave(
+			id,
+			office_id,
+			user_id,
+			area_id,
+			begin_date,
+			end_date,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{office.id},
+			#{tuser.id},
+			#{area},
+			#{beginDate},
+			#{endDate},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE test_leave SET 	
+			office_id = #{office.id},
+			user_id = #{tuser.id},
+			area_id = #{area},
+			begin_date = #{beginDate},
+			end_date = #{endDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM test_leave
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE test_leave SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Leave2" statementType="STATEMENT">
+		select * FROM test_leave  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>
