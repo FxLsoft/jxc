@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.AgencyMapper">
+    
+	<sql id="agencyColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.area AS "area",
+		a.address AS "address",
+		a.linkman AS "linkman",
+		a.phone AS "phone",
+		a.plate_number AS "plateNumber",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="agencyJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="Agency" >
+		SELECT 
+			<include refid="agencyColumns"/>
+		FROM c_agency a
+		<include refid="agencyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Agency" >
+		SELECT 
+			<include refid="agencyColumns"/>
+		FROM c_agency a
+		<include refid="agencyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="address != null and address != ''">
+				AND a.address LIKE 
+					<if test="dbName == 'oracle'">'%'||#{address}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{address}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{address},'%')</if>
+			</if>
+			<if test="linkman != null and linkman != ''">
+				AND a.linkman LIKE 
+					<if test="dbName == 'oracle'">'%'||#{linkman}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{linkman}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{linkman},'%')</if>
+			</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{phone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{phone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{phone},'%')</if>
+			</if>
+			<if test="plateNumber != null and plateNumber != ''">
+				AND a.plate_number LIKE 
+					<if test="dbName == 'oracle'">'%'||#{plateNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{plateNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{plateNumber},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Agency" >
+		SELECT 
+			<include refid="agencyColumns"/>
+		FROM c_agency a
+		<include refid="agencyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO c_agency(
+			id,
+			name,
+			area,
+			address,
+			linkman,
+			phone,
+			plate_number,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{area},
+			#{address},
+			#{linkman},
+			#{phone},
+			#{plateNumber},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE c_agency SET 	
+			name = #{name},
+			area = #{area},
+			address = #{address},
+			linkman = #{linkman},
+			phone = #{phone},
+			plate_number = #{plateNumber},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM c_agency
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE c_agency SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Agency" statementType="STATEMENT">
+		select * FROM c_agency  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.OperOrderDetailMapper">
+    
+	<sql id="operOrderDetailColumns">
+		a.id AS "id",
+		a.oper_order_id AS "operOrderId",
+		a.oper_type AS "operType",
+		a.product_id AS "product.id",
+		a.price_id AS "price.id",
+		a.amount AS "amount",
+		a.oper_price AS "operPrice",
+		a.discount AS "discount",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+				
+				
+				
+		product.name AS "product.name",
+				
+		price.cost_price AS "price.costPrice"
+	</sql>
+	
+	<sql id="operOrderDetailJoins">
+		
+			LEFT JOIN c_oper_order b ON b.id = a.oper_order_id
+		LEFT JOIN c_product product ON product.id = a.product_id
+		LEFT JOIN c_price price ON price.id = a.price_id
+	</sql>
+	
+    
+	<select id="get" resultType="OperOrderDetail" >
+		SELECT 
+			<include refid="operOrderDetailColumns"/>
+		FROM c_oper_order_detail a
+		<include refid="operOrderDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OperOrderDetail" >
+		SELECT 
+			<include refid="operOrderDetailColumns"/>
+		FROM c_oper_order_detail a
+		<include refid="operOrderDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="operOrderId != null and operOrderId != ''">
+				AND a.oper_order_id = #{operOrderId}
+			</if>
+			<if test="operType != null and operType != ''">
+				AND a.oper_type = #{operType}
+			</if>
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="price != null and price.id != null and price.id != ''">
+				AND a.price_id = #{price.id}
+			</if>
+			<if test="beginAmount != null and endAmount != null ">
+				AND a.amount BETWEEN #{beginAmount} AND #{endAmount}
+			</if>
+			<if test="beginOperPrice != null and endOperPrice != null ">
+				AND a.oper_price BETWEEN #{beginOperPrice} AND #{endOperPrice}
+			</if>
+			<if test="beginDiscount != null and endDiscount != null ">
+				AND a.discount BETWEEN #{beginDiscount} AND #{endDiscount}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OperOrderDetail" >
+		SELECT 
+			<include refid="operOrderDetailColumns"/>
+		FROM c_oper_order_detail a
+		<include refid="operOrderDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO c_oper_order_detail(
+			id,
+			oper_order_id,
+			oper_type,
+			product_id,
+			price_id,
+			amount,
+			oper_price,
+			discount,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{operOrderId},
+			#{operType},
+			#{product.id},
+			#{price.id},
+			#{amount},
+			#{operPrice},
+			#{discount},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE c_oper_order_detail SET 	
+			oper_order_id = #{operOrderId},
+			oper_type = #{operType},
+			product_id = #{product.id},
+			price_id = #{price.id},
+			amount = #{amount},
+			oper_price = #{operPrice},
+			discount = #{discount},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM c_oper_order_detail
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE oper_order_id = #{operOrderId}
+			</otherwise>
+		</choose>
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE c_oper_order_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE oper_order_id = #{operOrderId}
+			</otherwise>
+		</choose>
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="OperOrderDetail" statementType="STATEMENT">
+		select * FROM c_oper_order_detail  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

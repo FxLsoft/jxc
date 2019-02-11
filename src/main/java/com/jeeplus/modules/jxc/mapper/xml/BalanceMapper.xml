@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jeeplus.modules.jxc.mapper.ProductMapper">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.BalanceMapper">
     
-	<sql id="productColumns">
+	<sql id="balanceColumns">
 		a.id AS "id",
+		a.no AS "no",
 		a.name AS "name",
-		a.brevity_code AS "brevityCode",
-		a.is_weight AS "isWeight",
-		a.weight_no AS "weightNo",
-		a.agency_id AS "agency.id",
-		a.category_id AS "category.id",
+		a.store_id AS "office.id",
+		a.base_unit AS "baseUnit",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -19,36 +17,37 @@
 				
 				
 				
-				
-				
-		agency.name AS "agency.name",
-				
-		category.name AS "category.name"
+		office.name AS "office.name"
 	</sql>
 	
-	<sql id="productJoins">
+	<sql id="balanceJoins">
 		
-		LEFT JOIN c_agency agency ON agency.id = a.agency_id
-		LEFT JOIN c_category category ON category.id = a.category_id
+		LEFT JOIN sys_office office ON office.id = a.store_id
 	</sql>
 	
     
-	<select id="get" resultType="Product" >
+	<select id="get" resultType="Balance" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="balanceColumns"/>
+		FROM c_balance a
+		<include refid="balanceJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="Product" >
+	<select id="findList" resultType="Balance" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="balanceColumns"/>
+		FROM c_balance a
+		<include refid="balanceJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
+			<if test="no != null and no != ''">
+				AND a.no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{no}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{no}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -60,11 +59,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="Product" >
+	<select id="findAllList" resultType="Balance" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="balanceColumns"/>
+		FROM c_balance a
+		<include refid="balanceJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
@@ -80,14 +79,12 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO c_product(
+		INSERT INTO c_balance(
 			id,
+			no,
 			name,
-			brevity_code,
-			is_weight,
-			weight_no,
-			agency_id,
-			category_id,
+			store_id,
+			base_unit,
 			create_by,
 			create_date,
 			update_by,
@@ -96,12 +93,10 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{no},
 			#{name},
-			#{brevityCode},
-			#{isWeight},
-			#{weightNo},
-			#{agency.id},
-			#{category.id},
+			#{office.id},
+			#{baseUnit},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -112,13 +107,11 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE c_product SET 	
+		UPDATE c_balance SET 	
+			no = #{no},
 			name = #{name},
-			brevity_code = #{brevityCode},
-			is_weight = #{isWeight},
-			weight_no = #{weightNo},
-			agency_id = #{agency.id},
-			category_id = #{category.id},
+			store_id = #{office.id},
+			base_unit = #{baseUnit},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -128,21 +121,21 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_product
+		DELETE FROM c_balance
 		WHERE id = #{id}
 	</update>
 	
 	<!--逻辑删除-->
 	<update id="deleteByLogic">
-		UPDATE c_product SET 
+		UPDATE c_balance SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 	
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
-	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
-		select * FROM c_product  where ${propertyName} = '${value}'
+	<select id="findUniqueByProperty" resultType="Balance" statementType="STATEMENT">
+		select * FROM c_balance  where ${propertyName} = '${value}'
 	</select>
 	
 </mapper>

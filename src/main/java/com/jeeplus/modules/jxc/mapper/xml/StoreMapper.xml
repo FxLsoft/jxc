@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jeeplus.modules.jxc.mapper.ProductMapper">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.StoreMapper">
     
-	<sql id="productColumns">
+	<sql id="storeColumns">
 		a.id AS "id",
 		a.name AS "name",
-		a.brevity_code AS "brevityCode",
-		a.is_weight AS "isWeight",
-		a.weight_no AS "weightNo",
-		a.agency_id AS "agency.id",
-		a.category_id AS "category.id",
+		a.area AS "area",
+		a.address AS "address",
+		a.office AS "office.id",
+		a.admin AS "admin.id",
+		a.lon AS "lon",
+		a.lat AS "lat",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -20,35 +21,46 @@
 				
 				
 				
+		office.name AS "office.name",
 				
-		agency.name AS "agency.name",
-				
-		category.name AS "category.name"
+		admin.name AS "admin.name"
 	</sql>
 	
-	<sql id="productJoins">
+	<sql id="storeJoins">
 		
-		LEFT JOIN c_agency agency ON agency.id = a.agency_id
-		LEFT JOIN c_category category ON category.id = a.category_id
+		LEFT JOIN sys_office office ON office.id = a.office
+		LEFT JOIN sys_user admin ON admin.id = a.admin
 	</sql>
 	
     
-	<select id="get" resultType="Product" >
+	<select id="get" resultType="Store" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="storeColumns"/>
+		FROM c_store a
+		<include refid="storeJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="Product" >
+	<select id="findList" resultType="Store" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="storeColumns"/>
+		FROM c_store a
+		<include refid="storeJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="area != null and area != ''">
+				AND a.area LIKE 
+					<if test="dbName == 'oracle'">'%'||#{area}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{area}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{area},'%')</if>
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -60,11 +72,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="Product" >
+	<select id="findAllList" resultType="Store" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="storeColumns"/>
+		FROM c_store a
+		<include refid="storeJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
@@ -80,14 +92,15 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO c_product(
+		INSERT INTO c_store(
 			id,
 			name,
-			brevity_code,
-			is_weight,
-			weight_no,
-			agency_id,
-			category_id,
+			area,
+			address,
+			office,
+			admin,
+			lon,
+			lat,
 			create_by,
 			create_date,
 			update_by,
@@ -97,11 +110,12 @@
 		) VALUES (
 			#{id},
 			#{name},
-			#{brevityCode},
-			#{isWeight},
-			#{weightNo},
-			#{agency.id},
-			#{category.id},
+			#{area},
+			#{address},
+			#{office.id},
+			#{admin.id},
+			#{lon},
+			#{lat},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -112,13 +126,14 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE c_product SET 	
+		UPDATE c_store SET 	
 			name = #{name},
-			brevity_code = #{brevityCode},
-			is_weight = #{isWeight},
-			weight_no = #{weightNo},
-			agency_id = #{agency.id},
-			category_id = #{category.id},
+			area = #{area},
+			address = #{address},
+			office = #{office.id},
+			admin = #{admin.id},
+			lon = #{lon},
+			lat = #{lat},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -128,21 +143,21 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_product
+		DELETE FROM c_store
 		WHERE id = #{id}
 	</update>
 	
 	<!--逻辑删除-->
 	<update id="deleteByLogic">
-		UPDATE c_product SET 
+		UPDATE c_store SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 	
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
-	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
-		select * FROM c_product  where ${propertyName} = '${value}'
+	<select id="findUniqueByProperty" resultType="Store" statementType="STATEMENT">
+		select * FROM c_store  where ${propertyName} = '${value}'
 	</select>
 	
 </mapper>

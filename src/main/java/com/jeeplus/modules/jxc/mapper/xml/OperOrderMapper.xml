@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.OperOrderMapper">
+    
+	<sql id="operOrderColumns">
+		a.id AS "id",
+		a.no AS "no",
+		a.type AS "type",
+		a.status AS "status",
+		a.source AS "source",
+		a.total_price AS "totalPrice",
+		a.real_price AS "realPrice",
+		a.real_pay AS "realPay",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="operOrderJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="OperOrder" >
+		SELECT 
+			<include refid="operOrderColumns"/>
+		FROM c_oper_order a
+		<include refid="operOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OperOrder" >
+		SELECT 
+			<include refid="operOrderColumns"/>
+		FROM c_oper_order a
+		<include refid="operOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="no != null and no != ''">
+				AND a.no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{no}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{no}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="source != null and source != ''">
+				AND a.source = #{source}
+			</if>
+			<if test="beginTotalPrice != null and endTotalPrice != null ">
+				AND a.total_price BETWEEN #{beginTotalPrice} AND #{endTotalPrice}
+			</if>
+			<if test="realPrice != null and realPrice != ''">
+				AND a.real_price = #{realPrice}
+			</if>
+			<if test="realPay != null and realPay != ''">
+				AND a.real_pay = #{realPay}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OperOrder" >
+		SELECT 
+			<include refid="operOrderColumns"/>
+		FROM c_oper_order a
+		<include refid="operOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO c_oper_order(
+			id,
+			no,
+			type,
+			status,
+			source,
+			total_price,
+			real_price,
+			real_pay,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{no},
+			#{type},
+			#{status},
+			#{source},
+			#{totalPrice},
+			#{realPrice},
+			#{realPay},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE c_oper_order SET 	
+			no = #{no},
+			type = #{type},
+			status = #{status},
+			source = #{source},
+			total_price = #{totalPrice},
+			real_price = #{realPrice},
+			real_pay = #{realPay},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM c_oper_order
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE c_oper_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="OperOrder" statementType="STATEMENT">
+		select * FROM c_oper_order  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

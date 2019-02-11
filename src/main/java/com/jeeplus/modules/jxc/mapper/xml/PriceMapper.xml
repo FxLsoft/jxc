@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.PriceMapper">
+    
+	<sql id="priceColumns">
+		a.id AS "id",
+		a.product_id AS "product.id",
+		a.unit AS "unit",
+		a.ratio AS "ratio",
+		a.cost_price AS "costPrice",
+		a.advance_price AS "advancePrice",
+		a.is_basic AS "isBasic",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="priceJoins">
+		
+			LEFT JOIN c_product b ON b.id = a.product_id
+	</sql>
+	
+    
+	<select id="get" resultType="Price" >
+		SELECT 
+			<include refid="priceColumns"/>
+		FROM c_price a
+		<include refid="priceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Price" >
+		SELECT 
+			<include refid="priceColumns"/>
+		FROM c_price a
+		<include refid="priceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit LIKE 
+					<if test="dbName == 'oracle'">'%'||#{unit}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{unit}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{unit},'%')</if>
+			</if>
+			<if test="beginRatio != null and endRatio != null ">
+				AND a.ratio BETWEEN #{beginRatio} AND #{endRatio}
+			</if>
+			<if test="beginCostPrice != null and endCostPrice != null ">
+				AND a.cost_price BETWEEN #{beginCostPrice} AND #{endCostPrice}
+			</if>
+			<if test="beginAdvancePrice != null and endAdvancePrice != null ">
+				AND a.advance_price BETWEEN #{beginAdvancePrice} AND #{endAdvancePrice}
+			</if>
+			<if test="isBasic != null and isBasic != ''">
+				AND a.is_basic = #{isBasic}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Price" >
+		SELECT 
+			<include refid="priceColumns"/>
+		FROM c_price a
+		<include refid="priceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO c_price(
+			id,
+			product_id,
+			unit,
+			ratio,
+			cost_price,
+			advance_price,
+			is_basic,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{product.id},
+			#{unit},
+			#{ratio},
+			#{costPrice},
+			#{advancePrice},
+			#{isBasic},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE c_price SET 	
+			product_id = #{product.id},
+			unit = #{unit},
+			ratio = #{ratio},
+			cost_price = #{costPrice},
+			advance_price = #{advancePrice},
+			is_basic = #{isBasic},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM c_price
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE product_id = #{product.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE c_price SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE product_id = #{product.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Price" statementType="STATEMENT">
+		select * FROM c_price  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

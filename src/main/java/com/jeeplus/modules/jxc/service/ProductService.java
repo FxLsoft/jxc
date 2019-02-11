@@ -11,23 +11,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jeeplus.core.persistence.Page;
 import com.jeeplus.core.service.CrudService;
+import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.modules.jxc.entity.Product;
 import com.jeeplus.modules.jxc.mapper.ProductMapper;
+import com.jeeplus.modules.jxc.entity.Price;
+import com.jeeplus.modules.jxc.mapper.PriceMapper;
 
 /**
- * 商品信息Service
+ * 商品Service
  * @author FxLsoft
- * @version 2018-12-22
+ * @version 2019-02-11
  */
 @Service
 @Transactional(readOnly = true)
 public class ProductService extends CrudService<ProductMapper, Product> {
-	
-	@Autowired
-	private ProductMapper productMapper;
 
+	@Autowired
+	private PriceMapper priceMapper;
+	
 	public Product get(String id) {
-		return super.get(id);
+		Product product = super.get(id);
+		product.setPriceList(priceMapper.findList(new Price(product)));
+		return product;
 	}
 	
 	public List<Product> findList(Product product) {
@@ -41,18 +46,29 @@ public class ProductService extends CrudService<ProductMapper, Product> {
 	@Transactional(readOnly = false)
 	public void save(Product product) {
 		super.save(product);
+		for (Price price : product.getPriceList()){
+			if (price.getId() == null){
+				continue;
+			}
+			if (Price.DEL_FLAG_NORMAL.equals(price.getDelFlag())){
+				if (StringUtils.isBlank(price.getId())){
+					price.setProduct(product);
+					price.preInsert();
+					priceMapper.insert(price);
+				}else{
+					price.preUpdate();
+					priceMapper.update(price);
+				}
+			}else{
+				priceMapper.delete(price);
+			}
+		}
 	}
 	
 	@Transactional(readOnly = false)
 	public void delete(Product product) {
 		super.delete(product);
+		priceMapper.delete(new Price(product));
 	}
 	
-	public List<Product> queryProductByKey(String key, Integer retail, int start, int end, String company) {
-		return productMapper.queryProductByKey(key, retail, start, end, company);
-	}
-	
-	public Integer countProductByKey(String value, Integer retail, String company) {
-		return productMapper.countProductByKey(value, retail, company);
-	}
 }

@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jeeplus.modules.jxc.mapper.ProductMapper">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.StorageMapper">
     
-	<sql id="productColumns">
+	<sql id="storageColumns">
 		a.id AS "id",
-		a.name AS "name",
-		a.brevity_code AS "brevityCode",
-		a.is_weight AS "isWeight",
-		a.weight_no AS "weightNo",
-		a.agency_id AS "agency.id",
-		a.category_id AS "category.id",
+		a.product_id AS "product.id",
+		a.price_id AS "price.id",
+		a.amount AS "amount",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -17,38 +14,37 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 				
+		product.name AS "product.name",
 				
-				
-				
-				
-		agency.name AS "agency.name",
-				
-		category.name AS "category.name"
+		price.cost_price AS "price.costPrice"
 	</sql>
 	
-	<sql id="productJoins">
+	<sql id="storageJoins">
 		
-		LEFT JOIN c_agency agency ON agency.id = a.agency_id
-		LEFT JOIN c_category category ON category.id = a.category_id
+		LEFT JOIN c_product product ON product.id = a.product_id
+		LEFT JOIN c_price price ON price.id = a.price_id
 	</sql>
 	
     
-	<select id="get" resultType="Product" >
+	<select id="get" resultType="Storage" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="storageColumns"/>
+		FROM c_storage a
+		<include refid="storageJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="Product" >
+	<select id="findList" resultType="Storage" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="storageColumns"/>
+		FROM c_storage a
+		<include refid="storageJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
+			<if test="beginAmount != null and endAmount != null ">
+				AND a.amount BETWEEN #{beginAmount} AND #{endAmount}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -60,11 +56,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="Product" >
+	<select id="findAllList" resultType="Storage" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="storageColumns"/>
+		FROM c_storage a
+		<include refid="storageJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
@@ -80,14 +76,11 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO c_product(
+		INSERT INTO c_storage(
 			id,
-			name,
-			brevity_code,
-			is_weight,
-			weight_no,
-			agency_id,
-			category_id,
+			product_id,
+			price_id,
+			amount,
 			create_by,
 			create_date,
 			update_by,
@@ -96,12 +89,9 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{name},
-			#{brevityCode},
-			#{isWeight},
-			#{weightNo},
-			#{agency.id},
-			#{category.id},
+			#{product.id},
+			#{price.id},
+			#{amount},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -112,13 +102,10 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE c_product SET 	
-			name = #{name},
-			brevity_code = #{brevityCode},
-			is_weight = #{isWeight},
-			weight_no = #{weightNo},
-			agency_id = #{agency.id},
-			category_id = #{category.id},
+		UPDATE c_storage SET 	
+			product_id = #{product.id},
+			price_id = #{price.id},
+			amount = #{amount},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -128,21 +115,21 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_product
+		DELETE FROM c_storage
 		WHERE id = #{id}
 	</update>
 	
 	<!--逻辑删除-->
 	<update id="deleteByLogic">
-		UPDATE c_product SET 
+		UPDATE c_storage SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 	
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
-	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
-		select * FROM c_product  where ${propertyName} = '${value}'
+	<select id="findUniqueByProperty" resultType="Storage" statementType="STATEMENT">
+		select * FROM c_storage  where ${propertyName} = '${value}'
 	</select>
 	
 </mapper>

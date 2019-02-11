@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <script>
 $(document).ready(function() {
-	$('#productTable').bootstrapTable({
+	$('#operOrderTable').bootstrapTable({
 		 
 		  //请求方法
                method: 'post',
@@ -41,7 +41,7 @@ $(document).ready(function() {
                //可供选择的每页的行数（*）    
                pageList: [10, 25, 50, 100],
                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据  
-               url: "${ctx}/jxc/product/data",
+               url: "${ctx}/jxc/operOrder/data",
                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
                //queryParamsType:'',   
                ////查询参数,每次调用是会带上这个参数，可自定义                         
@@ -63,11 +63,11 @@ $(document).ready(function() {
                    }else if($el.data("item") == "view"){
                        view(row.id);
                    } else if($el.data("item") == "delete"){
-                        jp.confirm('确认要删除该商品记录吗？', function(){
+                        jp.confirm('确认要删除该单据信息记录吗？', function(){
                        	jp.loading();
-                       	jp.get("${ctx}/jxc/product/delete?id="+row.id, function(data){
+                       	jp.get("${ctx}/jxc/operOrder/delete?id="+row.id, function(data){
                    	  		if(data.success){
-                   	  			$('#productTable').bootstrapTable('refresh');
+                   	  			$('#operOrderTable').bootstrapTable('refresh');
                    	  			jp.success(data.msg);
                    	  		}else{
                    	  			jp.error(data.msg);
@@ -89,17 +89,17 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'name',
-		        title: '名称',
+		        field: 'no',
+		        title: '编号',
 		        sortable: true,
-		        sortName: 'name'
+		        sortName: 'no'
 		        ,formatter:function(value, row , index){
 		        	value = jp.unescapeHTML(value);
 				   <c:choose>
-					   <c:when test="${fns:hasPermission('jxc:product:edit')}">
+					   <c:when test="${fns:hasPermission('jxc:operOrder:edit')}">
 					      return "<a href='javascript:edit(\""+row.id+"\")'>"+value+"</a>";
 				      </c:when>
-					  <c:when test="${fns:hasPermission('jxc:product:view')}">
+					  <c:when test="${fns:hasPermission('jxc:operOrder:view')}">
 					      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
 				      </c:when>
 					  <c:otherwise>
@@ -110,41 +110,54 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'brevityCode',
-		        title: '简码',
+		        field: 'type',
+		        title: '单据类型（0：入库，1：出库，2：盘点）',
 		        sortable: true,
-		        sortName: 'brevityCode'
-		       
-		    }
-			,{
-		        field: 'isWeight',
-		        title: '是否计重（0：否；1：是）',
-		        sortable: true,
-		        sortName: 'isWeight',
+		        sortName: 'type',
 		        formatter:function(value, row , index){
-		        	return jp.getDictLabel(${fns:toJson(fns:getDictList('yes_no'))}, value, "-");
+		        	return jp.getDictLabel(${fns:toJson(fns:getDictList('order_type'))}, value, "-");
 		        }
 		       
 		    }
 			,{
-		        field: 'weightNo',
-		        title: '计重编号',
+		        field: 'status',
+		        title: '单据状态（0：保存，1：提交，2：作废，3：完成）',
 		        sortable: true,
-		        sortName: 'weightNo'
+		        sortName: 'status',
+		        formatter:function(value, row , index){
+		        	return jp.getDictLabel(${fns:toJson(fns:getDictList('order_status'))}, value, "-");
+		        }
 		       
 		    }
 			,{
-		        field: 'agency.name',
-		        title: '经销商',
+		        field: 'source',
+		        title: '单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）',
 		        sortable: true,
-		        sortName: 'agency.name'
+		        sortName: 'source',
+		        formatter:function(value, row , index){
+		        	return jp.getDictLabel(${fns:toJson(fns:getDictList('order_from'))}, value, "-");
+		        }
 		       
 		    }
 			,{
-		        field: 'category.name',
-		        title: '所属类型',
+		        field: 'totalPrice',
+		        title: '总计',
 		        sortable: true,
-		        sortName: 'category.name'
+		        sortName: 'totalPrice'
+		       
+		    }
+			,{
+		        field: 'realPrice',
+		        title: '实际总额',
+		        sortable: true,
+		        sortName: 'realPrice'
+		       
+		    }
+			,{
+		        field: 'realPay',
+		        title: '实付',
+		        sortable: true,
+		        sortName: 'realPay'
 		       
 		    }
 			,{
@@ -162,13 +175,13 @@ $(document).ready(function() {
 	  if(navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)){//如果是移动端
 
 		 
-		  $('#productTable').bootstrapTable("toggleView");
+		  $('#operOrderTable').bootstrapTable("toggleView");
 		}
 	  
-	  $('#productTable').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+	  $('#operOrderTable').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
                 'check-all.bs.table uncheck-all.bs.table', function () {
-            $('#remove').prop('disabled', ! $('#productTable').bootstrapTable('getSelections').length);
-            $('#view,#edit').prop('disabled', $('#productTable').bootstrapTable('getSelections').length!=1);
+            $('#remove').prop('disabled', ! $('#operOrderTable').bootstrapTable('getSelections').length);
+            $('#view,#edit').prop('disabled', $('#operOrderTable').bootstrapTable('getSelections').length!=1);
         });
 		  
 		$("#btnImport").click(function(){
@@ -180,11 +193,11 @@ $(document).ready(function() {
 			    content: "${ctx}/tag/importExcel" ,
 			    btn: ['下载模板','确定', '关闭'],
 				    btn1: function(index, layero){
-					  jp.downloadFile('${ctx}/jxc/product/import/template');
+					  jp.downloadFile('${ctx}/jxc/operOrder/import/template');
 				  },
 			    btn2: function(index, layero){
 				        var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
-						iframeWin.contentWindow.importExcel('${ctx}/jxc/product/import', function (data) {
+						iframeWin.contentWindow.importExcel('${ctx}/jxc/operOrder/import', function (data) {
 							if(data.success){
 								jp.success(data.msg);
 								refresh();
@@ -205,8 +218,8 @@ $(document).ready(function() {
 	        var searchParam = $("#searchForm").serializeJSON();
 	        searchParam.pageNo = 1;
 	        searchParam.pageSize = -1;
-            var sortName = $('#productTable').bootstrapTable("getOptions", "none").sortName;
-            var sortOrder = $('#productTable').bootstrapTable("getOptions", "none").sortOrder;
+            var sortName = $('#operOrderTable').bootstrapTable("getOptions", "none").sortName;
+            var sortOrder = $('#operOrderTable').bootstrapTable("getOptions", "none").sortOrder;
             var values = "";
             for(var key in searchParam){
                 values = values + key + "=" + searchParam[key] + "&";
@@ -215,36 +228,36 @@ $(document).ready(function() {
                 values = values + "orderBy=" + sortName + " "+sortOrder;
             }
 
-			jp.downloadFile('${ctx}/jxc/product/export?'+values);
+			jp.downloadFile('${ctx}/jxc/operOrder/export?'+values);
 	  })
 		    
 	  $("#search").click("click", function() {// 绑定查询按扭
-		  $('#productTable').bootstrapTable('refresh');
+		  $('#operOrderTable').bootstrapTable('refresh');
 		});
 	 
 	 $("#reset").click("click", function() {// 绑定查询按扭
 		  $("#searchForm  input").val("");
 		  $("#searchForm  select").val("");
 		   $("#searchForm  .select-item").html("");
-		  $('#productTable').bootstrapTable('refresh');
+		  $('#operOrderTable').bootstrapTable('refresh');
 		});
 		
 		
 	});
 		
   function getIdSelections() {
-        return $.map($("#productTable").bootstrapTable('getSelections'), function (row) {
+        return $.map($("#operOrderTable").bootstrapTable('getSelections'), function (row) {
             return row.id
         });
     }
   
   function deleteAll(){
 
-		jp.confirm('确认要删除该商品记录吗？', function(){
+		jp.confirm('确认要删除该单据信息记录吗？', function(){
 			jp.loading();  	
-			jp.get("${ctx}/jxc/product/deleteAll?ids=" + getIdSelections(), function(data){
+			jp.get("${ctx}/jxc/operOrder/deleteAll?ids=" + getIdSelections(), function(data){
          	  		if(data.success){
-         	  			$('#productTable').bootstrapTable('refresh');
+         	  			$('#operOrderTable').bootstrapTable('refresh');
          	  			jp.success(data.msg);
          	  		}else{
          	  			jp.error(data.msg);
@@ -256,24 +269,24 @@ $(document).ready(function() {
 
      //刷新列表
   function refresh(){
-  	$('#productTable').bootstrapTable('refresh');
+  	$('#operOrderTable').bootstrapTable('refresh');
   }
   function add(){
-		jp.go("${ctx}/jxc/product/form/add");
+		jp.go("${ctx}/jxc/operOrder/form/add");
 	}
 
   function edit(id){
 	  if(id == undefined){
 		  id = getIdSelections();
 	  }
-	  jp.go("${ctx}/jxc/product/form/edit?id=" + id);
+	  jp.go("${ctx}/jxc/operOrder/form/edit?id=" + id);
   }
   
  function view(id){//没有权限时，不显示确定按钮
       if(id == undefined){
              id = getIdSelections();
       }
-         jp.go("${ctx}/jxc/product/form/view?id=" + id);
+         jp.go("${ctx}/jxc/operOrder/form/view?id=" + id);
  }
 
   
@@ -281,18 +294,18 @@ $(document).ready(function() {
   
 		   
   function detailFormatter(index, row) {
-	  var htmltpl =  $("#productChildrenTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+	  var htmltpl =  $("#operOrderChildrenTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
 	  var html = Mustache.render(htmltpl, {
 			idx:row.id
 		});
-	  $.get("${ctx}/jxc/product/detail?id="+row.id, function(product){
-    	var productChild1RowIdx = 0, productChild1Tpl = $("#productChild1Tpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
-		var data1 =  product.priceList;
+	  $.get("${ctx}/jxc/operOrder/detail?id="+row.id, function(operOrder){
+    	var operOrderChild1RowIdx = 0, operOrderChild1Tpl = $("#operOrderChild1Tpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+		var data1 =  operOrder.operOrderDetailList;
 		for (var i=0; i<data1.length; i++){
 			data1[i].dict = {};
-			data1[i].dict.isBasic = jp.getDictLabel(${fns:toJson(fns:getDictList('yes_no'))}, data1[i].isBasic, "-");
-			addRow('#productChild-'+row.id+'-1-List', productChild1RowIdx, productChild1Tpl, data1[i]);
-			productChild1RowIdx = productChild1RowIdx + 1;
+			data1[i].dict.operType = jp.getDictLabel(${fns:toJson(fns:getDictList('oper_type'))}, data1[i].operType, "-");
+			addRow('#operOrderChild-'+row.id+'-1-List', operOrderChild1RowIdx, operOrderChild1Tpl, data1[i]);
+			operOrderChild1RowIdx = operOrderChild1RowIdx + 1;
 		}
 				
       	  			
@@ -308,49 +321,53 @@ $(document).ready(function() {
 	}
 			
 </script>
-<script type="text/template" id="productChildrenTpl">//<!--
+<script type="text/template" id="operOrderChildrenTpl">//<!--
 	<div class="tabs-container">
 		<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#tab-{{idx}}-1" aria-expanded="true">价格表</a></li>
+				<li class="active"><a data-toggle="tab" href="#tab-{{idx}}-1" aria-expanded="true">操作单据详情</a></li>
 		</ul>
 		<div class="tab-content">
 				 <div id="tab-{{idx}}-1" class="tab-pane fade in active">
 						<table class="ani table">
 						<thead>
 							<tr>
-								<th>单位</th>
-								<th>换算比例</th>
-								<th>进价</th>
-								<th>预售价</th>
-								<th>是否基本单位（0：是；1：否）</th>
-								<th>备注信息</th>
+								<th>单据</th>
+								<th>类型（-1：减库，1：加库）</th>
+								<th>商品</th>
+								<th>价格属性</th>
+								<th>数量</th>
+								<th>价格</th>
+								<th>折扣</th>
 							</tr>
 						</thead>
-						<tbody id="productChild-{{idx}}-1-List">
+						<tbody id="operOrderChild-{{idx}}-1-List">
 						</tbody>
 					</table>
 				</div>
 		</div>//-->
 	</script>
-	<script type="text/template" id="productChild1Tpl">//<!--
+	<script type="text/template" id="operOrderChild1Tpl">//<!--
 				<tr>
 					<td>
-						{{row.unit}}
+						{{row.operOrderId}}
 					</td>
 					<td>
-						{{row.ratio}}
+						{{row.dict.operType}}
 					</td>
 					<td>
-						{{row.costPrice}}
+						{{row.product.name}}
 					</td>
 					<td>
-						{{row.advancePrice}}
+						{{row.price.costPrice}}
 					</td>
 					<td>
-						{{row.dict.isBasic}}
+						{{row.amount}}
 					</td>
 					<td>
-						{{row.remarks}}
+						{{row.operPrice}}
+					</td>
+					<td>
+						{{row.discount}}
 					</td>
 				</tr>//-->
 	</script>

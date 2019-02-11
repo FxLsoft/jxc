@@ -3,8 +3,6 @@
  */
 package com.jeeplus.modules.jxc.web;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -34,115 +32,115 @@ import com.jeeplus.core.web.BaseController;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
-import com.jeeplus.modules.jxc.entity.Product;
-import com.jeeplus.modules.jxc.service.ProductService;
+import com.jeeplus.modules.jxc.entity.Store;
+import com.jeeplus.modules.jxc.service.StoreService;
 
 /**
- * 商品Controller
+ * 门店Controller
  * @author FxLsoft
  * @version 2019-02-11
  */
 @Controller
-@RequestMapping(value = "${adminPath}/jxc/product")
-public class ProductController extends BaseController {
+@RequestMapping(value = "${adminPath}/jxc/store")
+public class StoreController extends BaseController {
 
 	@Autowired
-	private ProductService productService;
+	private StoreService storeService;
 	
 	@ModelAttribute
-	public Product get(@RequestParam(required=false) String id) {
-		Product entity = null;
+	public Store get(@RequestParam(required=false) String id) {
+		Store entity = null;
 		if (StringUtils.isNotBlank(id)){
-			entity = productService.get(id);
+			entity = storeService.get(id);
 		}
 		if (entity == null){
-			entity = new Product();
+			entity = new Store();
 		}
 		return entity;
 	}
 	
 	/**
-	 * 商品列表页面
+	 * 门店列表页面
 	 */
-	@RequiresPermissions("jxc:product:list")
+	@RequiresPermissions("jxc:store:list")
 	@RequestMapping(value = {"list", ""})
-	public String list(Product product, Model model) {
-		model.addAttribute("product", product);
-		return "modules/jxc/productList";
+	public String list(Store store, Model model) {
+		model.addAttribute("store", store);
+		return "modules/jxc/storeList";
 	}
 	
 		/**
-	 * 商品列表数据
+	 * 门店列表数据
 	 */
 	@ResponseBody
-	@RequiresPermissions("jxc:product:list")
+	@RequiresPermissions("jxc:store:list")
 	@RequestMapping(value = "data")
-	public Map<String, Object> data(Product product, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Product> page = productService.findPage(new Page<Product>(request, response), product); 
+	public Map<String, Object> data(Store store, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<Store> page = storeService.findPage(new Page<Store>(request, response), store); 
 		return getBootstrapData(page);
 	}
 
 	/**
-	 * 查看，增加，编辑商品表单页面
+	 * 查看，增加，编辑门店表单页面
 	 */
-	@RequiresPermissions(value={"jxc:product:view","jxc:product:add","jxc:product:edit"},logical=Logical.OR)
+	@RequiresPermissions(value={"jxc:store:view","jxc:store:add","jxc:store:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form/{mode}")
-	public String form(@PathVariable String mode, Product product, Model model) {
-		model.addAttribute("product", product);
+	public String form(@PathVariable String mode, Store store, Model model) {
+		model.addAttribute("store", store);
 		model.addAttribute("mode", mode);
-		return "modules/jxc/productForm";
+		return "modules/jxc/storeForm";
 	}
 
 	/**
-	 * 保存商品
+	 * 保存门店
 	 */
 	@ResponseBody
-	@RequiresPermissions(value={"jxc:product:add","jxc:product:edit"},logical=Logical.OR)
+	@RequiresPermissions(value={"jxc:store:add","jxc:store:edit"},logical=Logical.OR)
 	@RequestMapping(value = "save")
-	public AjaxJson save(Product product, Model model) throws Exception{
+	public AjaxJson save(Store store, Model model) throws Exception{
 		AjaxJson j = new AjaxJson();
 		/**
 		 * 后台hibernate-validation插件校验
 		 */
-		String errMsg = beanValidator(product);
+		String errMsg = beanValidator(store);
 		if (StringUtils.isNotBlank(errMsg)){
 			j.setSuccess(false);
 			j.setMsg(errMsg);
 			return j;
 		}
 		//新增或编辑表单保存
-		productService.save(product);//保存
+		storeService.save(store);//保存
 		j.setSuccess(true);
-		j.setMsg("保存商品成功");
+		j.setMsg("保存门店成功");
 		return j;
 	}
 	
 	/**
-	 * 删除商品
+	 * 删除门店
 	 */
 	@ResponseBody
-	@RequiresPermissions("jxc:product:del")
+	@RequiresPermissions("jxc:store:del")
 	@RequestMapping(value = "delete")
-	public AjaxJson delete(Product product) {
+	public AjaxJson delete(Store store) {
 		AjaxJson j = new AjaxJson();
-		productService.delete(product);
-		j.setMsg("删除商品成功");
+		storeService.delete(store);
+		j.setMsg("删除门店成功");
 		return j;
 	}
 	
 	/**
-	 * 批量删除商品
+	 * 批量删除门店
 	 */
 	@ResponseBody
-	@RequiresPermissions("jxc:product:del")
+	@RequiresPermissions("jxc:store:del")
 	@RequestMapping(value = "deleteAll")
 	public AjaxJson deleteAll(String ids) {
 		AjaxJson j = new AjaxJson();
 		String idArray[] =ids.split(",");
 		for(String id : idArray){
-			productService.delete(productService.get(id));
+			storeService.delete(storeService.get(id));
 		}
-		j.setMsg("删除商品成功");
+		j.setMsg("删除门店成功");
 		return j;
 	}
 	
@@ -150,37 +148,30 @@ public class ProductController extends BaseController {
 	 * 导出excel文件
 	 */
 	@ResponseBody
-	@RequiresPermissions("jxc:product:export")
+	@RequiresPermissions("jxc:store:export")
     @RequestMapping(value = "export")
-    public AjaxJson exportFile(Product product, HttpServletRequest request, HttpServletResponse response) {
+    public AjaxJson exportFile(Store store, HttpServletRequest request, HttpServletResponse response) {
 		AjaxJson j = new AjaxJson();
 		try {
-            String fileName = "商品"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
-            Page<Product> page = productService.findPage(new Page<Product>(request, response, -1), product);
-    		new ExportExcel("商品", Product.class).setDataList(page.getList()).write(response, fileName).dispose();
+            String fileName = "门店"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            Page<Store> page = storeService.findPage(new Page<Store>(request, response, -1), store);
+    		new ExportExcel("门店", Store.class).setDataList(page.getList()).write(response, fileName).dispose();
     		j.setSuccess(true);
     		j.setMsg("导出成功！");
     		return j;
 		} catch (Exception e) {
 			j.setSuccess(false);
-			j.setMsg("导出商品记录失败！失败信息："+e.getMessage());
+			j.setMsg("导出门店记录失败！失败信息："+e.getMessage());
 		}
 			return j;
     }
-    
-    @ResponseBody
-    @RequestMapping(value = "detail")
-	public Product detail(String id) {
-		return productService.get(id);
-	}
-	
 
 	/**
 	 * 导入Excel数据
 
 	 */
 	@ResponseBody
-	@RequiresPermissions("jxc:product:import")
+	@RequiresPermissions("jxc:store:import")
     @RequestMapping(value = "import")
    	public AjaxJson importFile(@RequestParam("file")MultipartFile file, HttpServletResponse response, HttpServletRequest request) {
 		AjaxJson j = new AjaxJson();
@@ -189,10 +180,10 @@ public class ProductController extends BaseController {
 			int failureNum = 0;
 			StringBuilder failureMsg = new StringBuilder();
 			ImportExcel ei = new ImportExcel(file, 1, 0);
-			List<Product> list = ei.getDataList(Product.class);
-			for (Product product : list){
+			List<Store> list = ei.getDataList(Store.class);
+			for (Store store : list){
 				try{
-					productService.save(product);
+					storeService.save(store);
 					successNum++;
 				}catch(ConstraintViolationException ex){
 					failureNum++;
@@ -201,28 +192,28 @@ public class ProductController extends BaseController {
 				}
 			}
 			if (failureNum>0){
-				failureMsg.insert(0, "，失败 "+failureNum+" 条商品记录。");
+				failureMsg.insert(0, "，失败 "+failureNum+" 条门店记录。");
 			}
-			j.setMsg( "已成功导入 "+successNum+" 条商品记录"+failureMsg);
+			j.setMsg( "已成功导入 "+successNum+" 条门店记录"+failureMsg);
 		} catch (Exception e) {
 			j.setSuccess(false);
-			j.setMsg("导入商品失败！失败信息："+e.getMessage());
+			j.setMsg("导入门店失败！失败信息："+e.getMessage());
 		}
 		return j;
     }
 	
 	/**
-	 * 下载导入商品数据模板
+	 * 下载导入门店数据模板
 	 */
 	@ResponseBody
-	@RequiresPermissions("jxc:product:import")
+	@RequiresPermissions("jxc:store:import")
     @RequestMapping(value = "import/template")
      public AjaxJson importFileTemplate(HttpServletResponse response) {
 		AjaxJson j = new AjaxJson();
 		try {
-            String fileName = "商品数据导入模板.xlsx";
-    		List<Product> list = Lists.newArrayList(); 
-    		new ExportExcel("商品数据", Product.class, 1).setDataList(list).write(response, fileName).dispose();
+            String fileName = "门店数据导入模板.xlsx";
+    		List<Store> list = Lists.newArrayList(); 
+    		new ExportExcel("门店数据", Store.class, 1).setDataList(list).write(response, fileName).dispose();
     		return null;
 		} catch (Exception e) {
 			j.setSuccess(false);
@@ -230,6 +221,5 @@ public class ProductController extends BaseController {
 		}
 		return j;
     }
-	
 
 }

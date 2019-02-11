@@ -1,54 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jeeplus.modules.jxc.mapper.ProductMapper">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.BalanceSaleMapper">
     
-	<sql id="productColumns">
+	<sql id="balanceSaleColumns">
 		a.id AS "id",
-		a.name AS "name",
-		a.brevity_code AS "brevityCode",
-		a.is_weight AS "isWeight",
+		a.balance_no AS "balanceNo",
 		a.weight_no AS "weightNo",
-		a.agency_id AS "agency.id",
-		a.category_id AS "category.id",
+		a.amount AS "amount",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag",
-				
-				
-				
-				
-				
-		agency.name AS "agency.name",
-				
-		category.name AS "category.name"
+		a.del_flag AS "delFlag"
 	</sql>
 	
-	<sql id="productJoins">
+	<sql id="balanceSaleJoins">
 		
-		LEFT JOIN c_agency agency ON agency.id = a.agency_id
-		LEFT JOIN c_category category ON category.id = a.category_id
 	</sql>
 	
     
-	<select id="get" resultType="Product" >
+	<select id="get" resultType="BalanceSale" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="balanceSaleColumns"/>
+		FROM c_balance_sale a
+		<include refid="balanceSaleJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="Product" >
+	<select id="findList" resultType="BalanceSale" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="balanceSaleColumns"/>
+		FROM c_balance_sale a
+		<include refid="balanceSaleJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
+			<if test="balanceNo != null and balanceNo != ''">
+				AND a.balance_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{balanceNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{balanceNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{balanceNo},'%')</if>
+			</if>
+			<if test="weightNo != null and weightNo != ''">
+				AND a.weight_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{weightNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{weightNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{weightNo},'%')</if>
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -60,11 +59,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="Product" >
+	<select id="findAllList" resultType="BalanceSale" >
 		SELECT 
-			<include refid="productColumns"/>
-		FROM c_product a
-		<include refid="productJoins"/>
+			<include refid="balanceSaleColumns"/>
+		FROM c_balance_sale a
+		<include refid="balanceSaleJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
@@ -80,14 +79,11 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO c_product(
+		INSERT INTO c_balance_sale(
 			id,
-			name,
-			brevity_code,
-			is_weight,
+			balance_no,
 			weight_no,
-			agency_id,
-			category_id,
+			amount,
 			create_by,
 			create_date,
 			update_by,
@@ -96,12 +92,9 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{name},
-			#{brevityCode},
-			#{isWeight},
+			#{balanceNo},
 			#{weightNo},
-			#{agency.id},
-			#{category.id},
+			#{amount},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -112,13 +105,10 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE c_product SET 	
-			name = #{name},
-			brevity_code = #{brevityCode},
-			is_weight = #{isWeight},
+		UPDATE c_balance_sale SET 	
+			balance_no = #{balanceNo},
 			weight_no = #{weightNo},
-			agency_id = #{agency.id},
-			category_id = #{category.id},
+			amount = #{amount},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -128,21 +118,21 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_product
+		DELETE FROM c_balance_sale
 		WHERE id = #{id}
 	</update>
 	
 	<!--逻辑删除-->
 	<update id="deleteByLogic">
-		UPDATE c_product SET 
+		UPDATE c_balance_sale SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 	
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
-	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
-		select * FROM c_product  where ${propertyName} = '${value}'
+	<select id="findUniqueByProperty" resultType="BalanceSale" statementType="STATEMENT">
+		select * FROM c_balance_sale  where ${propertyName} = '${value}'
 	</select>
 	
 </mapper>

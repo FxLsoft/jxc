@@ -5,14 +5,14 @@ package com.jeeplus.modules.jxc.mapper;
 
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
-import com.jeeplus.modules.jxc.entity.Product;
+import com.jeeplus.modules.jxc.entity.BalanceSale;
 
 /**
- * 商品MAPPER接口
+ * 电子秤销售MAPPER接口
  * @author FxLsoft
  * @version 2019-02-11
  */
 @MyBatisMapper
-public interface ProductMapper extends BaseMapper<Product> {
+public interface BalanceSaleMapper extends BaseMapper<BalanceSale> {
 	
 }
