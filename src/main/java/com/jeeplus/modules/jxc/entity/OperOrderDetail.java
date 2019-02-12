@@ -12,7 +12,7 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 /**
  * 单据详情Entity
  * @author FxLsoft
- * @version 2019-02-12
+ * @version 2019-02-13
  */
 public class OperOrderDetail extends DataEntity<OperOrderDetail> {
 	

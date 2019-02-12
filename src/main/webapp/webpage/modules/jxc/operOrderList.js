@@ -110,8 +110,15 @@ $(document).ready(function() {
 		       
 		    }
 			,{
+		        field: 'agency.name',
+		        title: '商家',
+		        sortable: true,
+		        sortName: 'agency.name'
+		       
+		    }
+			,{
 		        field: 'type',
-		        title: '单据类型（0：入库，1：出库，2：盘点）',
+		        title: '单据类型',
 		        sortable: true,
 		        sortName: 'type',
 		        formatter:function(value, row , index){
@@ -121,7 +128,7 @@ $(document).ready(function() {
 		    }
 			,{
 		        field: 'status',
-		        title: '单据状态（0：保存，1：提交，2：作废，3：完成）',
+		        title: '单据状态',
 		        sortable: true,
 		        sortName: 'status',
 		        formatter:function(value, row , index){
@@ -131,7 +138,7 @@ $(document).ready(function() {
 		    }
 			,{
 		        field: 'source',
-		        title: '单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）',
+		        title: '单据来源',
 		        sortable: true,
 		        sortName: 'source',
 		        formatter:function(value, row , index){
@@ -341,9 +348,9 @@ $(document).ready(function() {
 						<table class="ani table">
 						<thead>
 							<tr>
-								<th>类型（-1：减库，1：加库）</th>
+								<th>类型</th>
 								<th>商品</th>
-								<th>价格属性</th>
+								<th>单位价格</th>
 								<th>数量</th>
 								<th>价格信息</th>
 								<th>折扣</th>
@@ -358,7 +365,7 @@ $(document).ready(function() {
 						<thead>
 							<tr>
 								<th>单据</th>
-								<th>付款类型（-1：付款，1：收款）</th>
+								<th>付款类型</th>
 								<th>金额</th>
 								<th>备注信息</th>
 							</tr>
@@ -378,7 +385,7 @@ $(document).ready(function() {
 						{{row.product.name}}
 					</td>
 					<td>
-						{{row.price.costPrice}}
+						{{row.price.unit}}/{{row.price.costPrice}}
 					</td>
 					<td>
 						{{row.amount}}

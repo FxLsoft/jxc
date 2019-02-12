@@ -10,7 +10,7 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 /**
  * 付款记录Entity
  * @author FxLsoft
- * @version 2019-02-12
+ * @version 2019-02-13
  */
 public class OperOrderPay extends DataEntity<OperOrderPay> {
 	

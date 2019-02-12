@@ -26,21 +26,26 @@
 				<form:input path="no" htmlEscape="false" maxlength="64"  class=" form-control"/>
 			</div>
 			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="单据类型（0：入库，1：出库，2：盘点）：">单据类型（0：入库，1：出库，2：盘点）：</label>
+				<label class="label-item single-overflow pull-left" title="商家：">商家：</label>
+										<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="${operOrder.agency.id}" labelName="agency.name" labelValue="${operOrder.agency.name}"
+							 title="选择商家" cssClass="form-control " fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
+			</div>
+			 <div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="单据类型（0：入库，1：出库，2：盘点）：">单据类型：</label>
 				<form:select path="type"  class="form-control m-b">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('order_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
 			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="单据状态（0：保存，1：提交，2：作废，3：完成）：">单据状态（0：保存，1：提交，2：作废，3：完成）：</label>
+				<label class="label-item single-overflow pull-left" title="单据状态（0：保存，1：提交，2：作废，3：完成）：">单据状态：</label>
 				<form:select path="status"  class="form-control m-b">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('order_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
 			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）：">单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）：</label>
+				<label class="label-item single-overflow pull-left" title="单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）：">单据来源：</label>
 				<form:select path="source"  class="form-control m-b">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('order_from')}" itemLabel="label" itemValue="value" htmlEscape="false"/>

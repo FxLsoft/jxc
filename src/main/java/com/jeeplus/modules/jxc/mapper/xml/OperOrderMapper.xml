@@ -5,6 +5,7 @@
 	<sql id="operOrderColumns">
 		a.id AS "id",
 		a.no AS "no",
+		a.agency_id AS "agency.id",
 		a.type AS "type",
 		a.status AS "status",
 		a.source AS "source",
@@ -16,11 +17,15 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+				
+				
+		agency.name AS "agency.name"
 	</sql>
 	
 	<sql id="operOrderJoins">
 		
+		LEFT JOIN c_agency agency ON agency.id = a.agency_id
 	</sql>
 	
     
@@ -45,6 +50,9 @@
 					<if test="dbName == 'oracle'">'%'||#{no}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{no}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
+			</if>
+			<if test="agency != null and agency.id != null and agency.id != ''">
+				AND a.agency_id = #{agency.id}
 			</if>
 			<if test="type != null and type != ''">
 				AND a.type = #{type}
@@ -98,6 +106,7 @@
 		INSERT INTO c_oper_order(
 			id,
 			no,
+			agency_id,
 			type,
 			status,
 			source,
@@ -113,6 +122,7 @@
 		) VALUES (
 			#{id},
 			#{no},
+			#{agency.id},
 			#{type},
 			#{status},
 			#{source},
@@ -131,6 +141,7 @@
 	<update id="update">
 		UPDATE c_oper_order SET 	
 			no = #{no},
+			agency_id = #{agency.id},
 			type = #{type},
 			status = #{status},
 			source = #{source},

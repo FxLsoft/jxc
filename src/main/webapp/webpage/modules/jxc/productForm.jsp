@@ -71,19 +71,19 @@
 		<form:form id="inputForm" modelAttribute="product" action="${ctx}/jxc/product/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">名称：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>名称：</label>
 					<div class="col-sm-10">
 						<form:input path="name" htmlEscape="false"    class="form-control "/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">简码：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>简码：</label>
 					<div class="col-sm-10">
 						<form:input path="brevityCode" htmlEscape="false"    class="form-control "/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">是否计重（0：否；1：是）：</label>
+					<label class="col-sm-2 control-label">是否计重：</label>
 					<div class="col-sm-10">
 						<form:radiobuttons path="isWeight" items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" class="i-checks "/>
 					</div>
@@ -130,8 +130,7 @@
 						<th><font color="red">*</font>换算比例</th>
 						<th><font color="red">*</font>进价</th>
 						<th><font color="red">*</font>预售价</th>
-						<th><font color="red">*</font>是否基本单位（0：是；1：否）</th>
-						<th>备注信息</th>
+						<th><font color="red">*</font>是否基本单位</th>
 						<th width="10">&nbsp;</th>
 					</tr>
 				</thead>
@@ -169,11 +168,6 @@
 						<c:forEach items="${fns:getDictList('yes_no')}" var="dict" varStatus="dictStatus">
 							<span><input id="priceList{{idx}}_isBasic${dictStatus.index}" name="priceList[{{idx}}].isBasic" type="radio" class="i-checks" value="${dict.value}" data-value="{{row.isBasic}}"><label for="priceList{{idx}}_isBasic${dictStatus.index}">${dict.label}</label></span>
 						</c:forEach>
-					</td>
-					
-					
-					<td>
-						<textarea id="priceList{{idx}}_remarks" name="priceList[{{idx}}].remarks" rows="4"    class="form-control ">{{row.remarks}}</textarea>
 					</td>
 					
 					<td class="text-center" width="10">

@@ -22,7 +22,7 @@ import com.jeeplus.modules.jxc.mapper.OperOrderPayMapper;
 /**
  * 单据Service
  * @author FxLsoft
- * @version 2019-02-12
+ * @version 2019-02-13
  */
 @Service
 @Transactional(readOnly = true)

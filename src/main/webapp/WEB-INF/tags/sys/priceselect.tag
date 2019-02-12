@@ -57,7 +57,7 @@ $(document).ready(function(){
 		    	 for(var i=0; i<items.length; i++){
 		    		 var item = items[i];
 		    		 ids.push(item.id);
-		    		 names.push(item${fn:substring(labelName, fns:lastIndexOf(labelName, '.'), fn:length(labelName))})
+		    		 names.push(item.unit + '/' + item.costPrice)
 		    	 }
 		    	 $("#${id}Id").val(ids.join(","));
 		    	 $("#${id}Name").val(names.join(","));

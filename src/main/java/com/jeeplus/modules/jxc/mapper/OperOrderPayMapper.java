@@ -10,7 +10,7 @@ import com.jeeplus.modules.jxc.entity.OperOrderPay;
 /**
  * 付款记录MAPPER接口
  * @author FxLsoft
- * @version 2019-02-12
+ * @version 2019-02-13
  */
 @MyBatisMapper
 public interface OperOrderPayMapper extends BaseMapper<OperOrderPay> {

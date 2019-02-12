@@ -3,6 +3,7 @@
  */
 package com.jeeplus.modules.jxc.entity;
 
+import com.jeeplus.modules.jxc.entity.Agency;
 import java.util.List;
 import com.google.common.collect.Lists;
 
@@ -12,12 +13,13 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 /**
  * 单据Entity
  * @author FxLsoft
- * @version 2019-02-12
+ * @version 2019-02-13
  */
 public class OperOrder extends DataEntity<OperOrder> {
 	
 	private static final long serialVersionUID = 1L;
 	private String no;		// 编号
+	private Agency agency;		// 商家
 	private String type;		// 单据类型（0：入库，1：出库，2：盘点）
 	private String status;		// 单据状态（0：保存，1：提交，2：作废，3：完成）
 	private String source;		// 单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
@@ -46,7 +48,16 @@ public class OperOrder extends DataEntity<OperOrder> {
 		this.no = no;
 	}
 	
-	@ExcelField(title="单据类型（0：入库，1：出库，2：盘点）", dictType="order_type", align=2, sort=2)
+	@ExcelField(title="商家", fieldType=Agency.class, value="agency.name", align=2, sort=2)
+	public Agency getAgency() {
+		return agency;
+	}
+
+	public void setAgency(Agency agency) {
+		this.agency = agency;
+	}
+	
+	@ExcelField(title="单据类型（0：入库，1：出库，2：盘点）", dictType="order_type", align=2, sort=3)
 	public String getType() {
 		return type;
 	}
@@ -55,7 +66,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 		this.type = type;
 	}
 	
-	@ExcelField(title="单据状态（0：保存，1：提交，2：作废，3：完成）", dictType="order_status", align=2, sort=3)
+	@ExcelField(title="单据状态（0：保存，1：提交，2：作废，3：完成）", dictType="order_status", align=2, sort=4)
 	public String getStatus() {
 		return status;
 	}
@@ -64,7 +75,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 		this.status = status;
 	}
 	
-	@ExcelField(title="单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）", dictType="order_from", align=2, sort=4)
+	@ExcelField(title="单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）", dictType="order_from", align=2, sort=5)
 	public String getSource() {
 		return source;
 	}
@@ -73,7 +84,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 		this.source = source;
 	}
 	
-	@ExcelField(title="总计", align=2, sort=5)
+	@ExcelField(title="总计", align=2, sort=6)
 	public Double getTotalPrice() {
 		return totalPrice;
 	}
@@ -82,7 +93,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 		this.totalPrice = totalPrice;
 	}
 	
-	@ExcelField(title="实际总额", align=2, sort=6)
+	@ExcelField(title="实际总额", align=2, sort=7)
 	public Double getRealPrice() {
 		return realPrice;
 	}
@@ -91,7 +102,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 		this.realPrice = realPrice;
 	}
 	
-	@ExcelField(title="实付", align=2, sort=7)
+	@ExcelField(title="实付", align=2, sort=8)
 	public Double getRealPay() {
 		return realPay;
 	}

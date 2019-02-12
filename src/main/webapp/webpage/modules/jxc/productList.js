@@ -118,7 +118,7 @@ $(document).ready(function() {
 		    }
 			,{
 		        field: 'isWeight',
-		        title: '是否计重（0：否；1：是）',
+		        title: '是否计重',
 		        sortable: true,
 		        sortName: 'isWeight',
 		        formatter:function(value, row , index){
@@ -145,13 +145,6 @@ $(document).ready(function() {
 		        title: '所属类型',
 		        sortable: true,
 		        sortName: 'category.name'
-		       
-		    }
-			,{
-		        field: 'remarks',
-		        title: '备注信息',
-		        sortable: true,
-		        sortName: 'remarks'
 		       
 		    }
 		     ]
@@ -322,8 +315,7 @@ $(document).ready(function() {
 								<th>换算比例</th>
 								<th>进价</th>
 								<th>预售价</th>
-								<th>是否基本单位（0：是；1：否）</th>
-								<th>备注信息</th>
+								<th>是否基本单位</th>
 							</tr>
 						</thead>
 						<tbody id="productChild-{{idx}}-1-List">
@@ -348,9 +340,6 @@ $(document).ready(function() {
 					</td>
 					<td>
 						{{row.dict.isBasic}}
-					</td>
-					<td>
-						{{row.remarks}}
 					</td>
 				</tr>//-->
 	</script>

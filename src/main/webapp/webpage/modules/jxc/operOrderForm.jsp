@@ -77,7 +77,14 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">单据类型（0：入库，1：出库，2：盘点）：</label>
+					<label class="col-sm-2 control-label">商家：</label>
+					<div class="col-sm-10">
+						<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="${operOrder.agency.id}" labelName="agency.name" labelValue="${operOrder.agency.name}"
+							 title="选择商家" cssClass="form-control " fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">单据类型：</label>
 					<div class="col-sm-10">
 						<form:select path="type" class="form-control ">
 							<form:option value="" label=""/>
@@ -86,7 +93,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">单据状态（0：保存，1：提交，2：作废，3：完成）：</label>
+					<label class="col-sm-2 control-label">单据状态：</label>
 					<div class="col-sm-10">
 						<form:select path="status" class="form-control ">
 							<form:option value="" label=""/>
@@ -95,7 +102,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）：</label>
+					<label class="col-sm-2 control-label">单据来源：</label>
 					<div class="col-sm-10">
 						<form:select path="source" class="form-control ">
 							<form:option value="" label=""/>
@@ -141,9 +148,9 @@
 				<thead>
 					<tr>
 						<th class="hide"></th>
-						<th>类型（-1：减库，1：加库）</th>
+						<th>类型</th>
 						<th>商品</th>
-						<th>价格属性</th>
+						<th>单位/价格</th>
 						<th>数量</th>
 						<th>价格信息</th>
 						<th>折扣</th>
@@ -174,7 +181,7 @@
 					
 					
 					<td>
-						<sys:priceselect url="${ctx}/api/getPrice" id="operOrderDetailList{{idx}}_price" name="operOrderDetailList[{{idx}}].price.id" value="{{row.price.id}}" labelName="operOrderDetailList{{idx}}.price.costPrice" labelValue="{{row.price.costPrice}}"
+						<sys:priceselect url="${ctx}/api/getPrice" id="operOrderDetailList{{idx}}_price" name="operOrderDetailList[{{idx}}].price.id" value="{{row.price.id}}" labelName="operOrderDetailList{{idx}}.price.costPrice" labelValue="{{row.price.unit}}/{{row.price.costPrice}}"
 							 title="选择价格属性" cssClass="form-control  " fieldLabels="单位|换算比例|进价|预售价" fieldKeys="unit|ratio|costPrice|advancePrice" searchLabels="关键字" searchKeys="searchKey" ></sys:priceselect>
 					</td>
 					
@@ -215,7 +222,7 @@
 				<thead>
 					<tr>
 						<th class="hide"></th>
-						<th>付款类型（-1：付款，1：收款）</th>
+						<th>款项类型</th>
 						<th>金额</th>
 						<th>备注信息</th>
 						<th width="10">&nbsp;</th>
@@ -244,7 +251,7 @@
 					
 					
 					<td>
-						<textarea id="operOrderPayList{{idx}}_remarks" name="operOrderPayList[{{idx}}].remarks" rows="4"    class="form-control ">{{row.remarks}}</textarea>
+						<textarea id="operOrderPayList{{idx}}_remarks" name="operOrderPayList[{{idx}}].remarks" rows="1"    class="form-control ">{{row.remarks}}</textarea>
 					</td>
 					
 					<td class="text-center" width="10">
