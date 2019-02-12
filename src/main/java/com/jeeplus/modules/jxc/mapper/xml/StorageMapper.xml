@@ -4,6 +4,7 @@
     
 	<sql id="storageColumns">
 		a.id AS "id",
+		a.store_id AS "store.id",
 		a.product_id AS "product.id",
 		a.price_id AS "price.id",
 		a.amount AS "amount",
@@ -14,6 +15,8 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 				
+		store.name AS "store.name",
+				
 		product.name AS "product.name",
 				
 		price.cost_price AS "price.costPrice"
@@ -21,6 +24,7 @@
 	
 	<sql id="storageJoins">
 		
+		LEFT JOIN c_store store ON store.id = a.store_id
 		LEFT JOIN c_product product ON product.id = a.product_id
 		LEFT JOIN c_price price ON price.id = a.price_id
 	</sql>
@@ -42,6 +46,9 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
+			<if test="store != null and store.id != null and store.id != ''">
+				AND a.store_id = #{store.id}
+			</if>
 			<if test="beginAmount != null and endAmount != null ">
 				AND a.amount BETWEEN #{beginAmount} AND #{endAmount}
 			</if>
@@ -78,6 +85,7 @@
 	<insert id="insert">
 		INSERT INTO c_storage(
 			id,
+			store_id,
 			product_id,
 			price_id,
 			amount,
@@ -89,6 +97,7 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{store.id},
 			#{product.id},
 			#{price.id},
 			#{amount},
@@ -103,6 +112,7 @@
 	
 	<update id="update">
 		UPDATE c_storage SET 	
+			store_id = #{store.id},
 			product_id = #{product.id},
 			price_id = #{price.id},
 			amount = #{amount},

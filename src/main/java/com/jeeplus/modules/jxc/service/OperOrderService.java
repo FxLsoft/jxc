@@ -16,11 +16,13 @@ import com.jeeplus.modules.jxc.entity.OperOrder;
 import com.jeeplus.modules.jxc.mapper.OperOrderMapper;
 import com.jeeplus.modules.jxc.entity.OperOrderDetail;
 import com.jeeplus.modules.jxc.mapper.OperOrderDetailMapper;
+import com.jeeplus.modules.jxc.entity.OperOrderPay;
+import com.jeeplus.modules.jxc.mapper.OperOrderPayMapper;
 
 /**
  * 单据Service
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 @Service
 @Transactional(readOnly = true)
@@ -28,10 +30,13 @@ public class OperOrderService extends CrudService<OperOrderMapper, OperOrder> {
 
 	@Autowired
 	private OperOrderDetailMapper operOrderDetailMapper;
+	@Autowired
+	private OperOrderPayMapper operOrderPayMapper;
 	
 	public OperOrder get(String id) {
 		OperOrder operOrder = super.get(id);
 		operOrder.setOperOrderDetailList(operOrderDetailMapper.findList(new OperOrderDetail(operOrder)));
+		operOrder.setOperOrderPayList(operOrderPayMapper.findList(new OperOrderPay(operOrder)));
 		return operOrder;
 	}
 	
@@ -52,7 +57,7 @@ public class OperOrderService extends CrudService<OperOrderMapper, OperOrder> {
 			}
 			if (OperOrderDetail.DEL_FLAG_NORMAL.equals(operOrderDetail.getDelFlag())){
 				if (StringUtils.isBlank(operOrderDetail.getId())){
-					operOrderDetail.setOperOrderId(operOrder);
+					operOrderDetail.setOperOrder(operOrder);
 					operOrderDetail.preInsert();
 					operOrderDetailMapper.insert(operOrderDetail);
 				}else{
@@ -63,12 +68,30 @@ public class OperOrderService extends CrudService<OperOrderMapper, OperOrder> {
 				operOrderDetailMapper.delete(operOrderDetail);
 			}
 		}
+		for (OperOrderPay operOrderPay : operOrder.getOperOrderPayList()){
+			if (operOrderPay.getId() == null){
+				continue;
+			}
+			if (OperOrderPay.DEL_FLAG_NORMAL.equals(operOrderPay.getDelFlag())){
+				if (StringUtils.isBlank(operOrderPay.getId())){
+					operOrderPay.setOperOrder(operOrder);
+					operOrderPay.preInsert();
+					operOrderPayMapper.insert(operOrderPay);
+				}else{
+					operOrderPay.preUpdate();
+					operOrderPayMapper.update(operOrderPay);
+				}
+			}else{
+				operOrderPayMapper.delete(operOrderPay);
+			}
+		}
 	}
 	
 	@Transactional(readOnly = false)
 	public void delete(OperOrder operOrder) {
 		super.delete(operOrder);
 		operOrderDetailMapper.delete(new OperOrderDetail(operOrder));
+		operOrderPayMapper.delete(new OperOrderPay(operOrder));
 	}
 	
 }

@@ -40,7 +40,7 @@ import com.jeeplus.modules.jxc.service.StorageService;
 /**
  * 库存Controller
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 @Controller
 @RequestMapping(value = "${adminPath}/jxc/storage")

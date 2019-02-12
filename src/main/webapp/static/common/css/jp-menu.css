@@ -273,6 +273,7 @@
     background-clip: padding-box;
     float: left;
     width: 80px;
+    height: 80px;
 }
 
 #user-left-box .user-box {

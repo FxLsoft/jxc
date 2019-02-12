@@ -3,8 +3,9 @@
  */
 package com.jeeplus.modules.jxc.entity;
 
-import com.jeeplus.modules.jxc.entity.Product;
+import com.jeeplus.modules.jxc.entity.Store;
 import javax.validation.constraints.NotNull;
+import com.jeeplus.modules.jxc.entity.Product;
 import com.jeeplus.modules.jxc.entity.Price;
 
 import com.jeeplus.core.persistence.DataEntity;
@@ -13,11 +14,12 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 /**
  * 库存Entity
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 public class Storage extends DataEntity<Storage> {
 	
 	private static final long serialVersionUID = 1L;
+	private Store store;		// 门店
 	private Product product;		// 商品
 	private Price price;		// 价格
 	private Double amount;		// 数量
@@ -32,8 +34,18 @@ public class Storage extends DataEntity<Storage> {
 		super(id);
 	}
 
+	@NotNull(message="门店不能为空")
+	@ExcelField(title="门店", fieldType=Store.class, value="store.name", align=2, sort=1)
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+	
 	@NotNull(message="商品不能为空")
-	@ExcelField(title="商品", fieldType=Product.class, value="product.name", align=2, sort=1)
+	@ExcelField(title="商品", fieldType=Product.class, value="product.name", align=2, sort=2)
 	public Product getProduct() {
 		return product;
 	}
@@ -43,7 +55,7 @@ public class Storage extends DataEntity<Storage> {
 	}
 	
 	@NotNull(message="价格不能为空")
-	@ExcelField(title="价格", fieldType=Price.class, value="price.costPrice", align=2, sort=2)
+	@ExcelField(title="价格", fieldType=Price.class, value="price.costPrice", align=2, sort=3)
 	public Price getPrice() {
 		return price;
 	}
@@ -53,7 +65,7 @@ public class Storage extends DataEntity<Storage> {
 	}
 	
 	@NotNull(message="数量不能为空")
-	@ExcelField(title="数量", align=2, sort=3)
+	@ExcelField(title="数量", align=2, sort=4)
 	public Double getAmount() {
 		return amount;
 	}

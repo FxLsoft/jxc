@@ -129,7 +129,9 @@
 				</div>
 		<div class="tabs-container">
             <ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">操作单据详情：</a>
+				<li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">单据详情：</a>
+                </li>
+				<li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">付款记录：</a>
                 </li>
             </ul>
             <div class="tab-content">
@@ -143,7 +145,7 @@
 						<th>商品</th>
 						<th>价格属性</th>
 						<th>数量</th>
-						<th>价格</th>
+						<th>价格信息</th>
 						<th>折扣</th>
 						<th width="10">&nbsp;</th>
 					</tr>
@@ -172,8 +174,8 @@
 					
 					
 					<td>
-						<sys:gridselect url="${ctx}/jxc/price/data" id="operOrderDetailList{{idx}}_price" name="operOrderDetailList[{{idx}}].price.id" value="{{row.price.id}}" labelName="operOrderDetailList{{idx}}.price.costPrice" labelValue="{{row.price.costPrice}}"
-							 title="选择价格属性" cssClass="form-control  " fieldLabels="单位|换算比例|进价|预售价|是否是基本单位" fieldKeys="unit|ratio|costPrice|advancePrice|isBasic" searchLabels="" searchKeys="" ></sys:gridselect>
+						<sys:priceselect url="${ctx}/api/getPrice" id="operOrderDetailList{{idx}}_price" name="operOrderDetailList[{{idx}}].price.id" value="{{row.price.id}}" labelName="operOrderDetailList{{idx}}.price.costPrice" labelValue="{{row.price.costPrice}}"
+							 title="选择价格属性" cssClass="form-control  " fieldLabels="单位|换算比例|进价|预售价" fieldKeys="unit|ratio|costPrice|advancePrice" searchLabels="关键字" searchKeys="searchKey" ></sys:priceselect>
 					</td>
 					
 					
@@ -203,6 +205,60 @@
 					for (var i=0; i<data.length; i++){
 						addRow('#operOrderDetailList', operOrderDetailRowIdx, operOrderDetailTpl, data[i]);
 						operOrderDetailRowIdx = operOrderDetailRowIdx + 1;
+					}
+				});
+			</script>
+			</div>
+				<div id="tab-2" class="tab-pane fade">
+			<a class="btn btn-white btn-sm" onclick="addRow('#operOrderPayList', operOrderPayRowIdx, operOrderPayTpl);operOrderPayRowIdx = operOrderPayRowIdx + 1;" title="新增"><i class="fa fa-plus"></i> 新增</a>
+			<table class="table table-striped table-bordered table-condensed">
+				<thead>
+					<tr>
+						<th class="hide"></th>
+						<th>付款类型（-1：付款，1：收款）</th>
+						<th>金额</th>
+						<th>备注信息</th>
+						<th width="10">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody id="operOrderPayList">
+				</tbody>
+			</table>
+			<script type="text/template" id="operOrderPayTpl">//<!--
+				<tr id="operOrderPayList{{idx}}">
+					<td class="hide">
+						<input id="operOrderPayList{{idx}}_id" name="operOrderPayList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
+						<input id="operOrderPayList{{idx}}_delFlag" name="operOrderPayList[{{idx}}].delFlag" type="hidden" value="0"/>
+					</td>
+					
+					<td>
+						<c:forEach items="${fns:getDictList('pay_type')}" var="dict" varStatus="dictStatus">
+							<span><input id="operOrderPayList{{idx}}_payType${dictStatus.index}" name="operOrderPayList[{{idx}}].payType" type="radio" class="i-checks" value="${dict.value}" data-value="{{row.payType}}"><label for="operOrderPayList{{idx}}_payType${dictStatus.index}">${dict.label}</label></span>
+						</c:forEach>
+					</td>
+					
+					
+					<td>
+						<input id="operOrderPayList{{idx}}_price" name="operOrderPayList[{{idx}}].price" type="text" value="{{row.price}}"    class="form-control  isFloatGtZero"/>
+					</td>
+					
+					
+					<td>
+						<textarea id="operOrderPayList{{idx}}_remarks" name="operOrderPayList[{{idx}}].remarks" rows="4"    class="form-control ">{{row.remarks}}</textarea>
+					</td>
+					
+					<td class="text-center" width="10">
+						{{#delBtn}}<span class="close" onclick="delRow(this, '#operOrderPayList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
+					</td>
+				</tr>//-->
+			</script>
+			<script type="text/javascript">
+				var operOrderPayRowIdx = 0, operOrderPayTpl = $("#operOrderPayTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+				$(document).ready(function() {
+					var data = ${fns:toJson(operOrder.operOrderPayList)};
+					for (var i=0; i<data.length; i++){
+						addRow('#operOrderPayList', operOrderPayRowIdx, operOrderPayTpl, data[i]);
+						operOrderPayRowIdx = operOrderPayRowIdx + 1;
 					}
 				});
 			</script>

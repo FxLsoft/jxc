@@ -308,6 +308,15 @@ $(document).ready(function() {
 			operOrderChild1RowIdx = operOrderChild1RowIdx + 1;
 		}
 				
+    	var operOrderChild2RowIdx = 0, operOrderChild2Tpl = $("#operOrderChild2Tpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+		var data2 =  operOrder.operOrderPayList;
+		for (var i=0; i<data2.length; i++){
+			data2[i].dict = {};
+			data2[i].dict.payType = jp.getDictLabel(${fns:toJson(fns:getDictList('pay_type'))}, data2[i].payType, "-");
+			addRow('#operOrderChild-'+row.id+'-2-List', operOrderChild2RowIdx, operOrderChild2Tpl, data2[i]);
+			operOrderChild2RowIdx = operOrderChild2RowIdx + 1;
+		}
+				
       	  			
       })
      
@@ -324,19 +333,19 @@ $(document).ready(function() {
 <script type="text/template" id="operOrderChildrenTpl">//<!--
 	<div class="tabs-container">
 		<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#tab-{{idx}}-1" aria-expanded="true">操作单据详情</a></li>
+				<li class="active"><a data-toggle="tab" href="#tab-{{idx}}-1" aria-expanded="true">单据详情</a></li>
+				<li><a data-toggle="tab" href="#tab-{{idx}}-2" aria-expanded="true">付款记录</a></li>
 		</ul>
 		<div class="tab-content">
 				 <div id="tab-{{idx}}-1" class="tab-pane fade in active">
 						<table class="ani table">
 						<thead>
 							<tr>
-								<th>单据</th>
 								<th>类型（-1：减库，1：加库）</th>
 								<th>商品</th>
 								<th>价格属性</th>
 								<th>数量</th>
-								<th>价格</th>
+								<th>价格信息</th>
 								<th>折扣</th>
 							</tr>
 						</thead>
@@ -344,13 +353,24 @@ $(document).ready(function() {
 						</tbody>
 					</table>
 				</div>
+				<div id="tab-{{idx}}-2" class="tab-pane fade">
+					<table class="ani table">
+						<thead>
+							<tr>
+								<th>单据</th>
+								<th>付款类型（-1：付款，1：收款）</th>
+								<th>金额</th>
+								<th>备注信息</th>
+							</tr>
+						</thead>
+						<tbody id="operOrderChild-{{idx}}-2-List">
+						</tbody>
+					</table>
+				</div>
 		</div>//-->
 	</script>
 	<script type="text/template" id="operOrderChild1Tpl">//<!--
 				<tr>
-					<td>
-						{{row.operOrderId}}
-					</td>
 					<td>
 						{{row.dict.operType}}
 					</td>
@@ -368,6 +388,22 @@ $(document).ready(function() {
 					</td>
 					<td>
 						{{row.discount}}
+					</td>
+				</tr>//-->
+	</script>
+	<script type="text/template" id="operOrderChild2Tpl">//<!--
+				<tr>
+					<td>
+						{{row.}}
+					</td>
+					<td>
+						{{row.dict.payType}}
+					</td>
+					<td>
+						{{row.price}}
+					</td>
+					<td>
+						{{row.remarks}}
 					</td>
 				</tr>//-->
 	</script>

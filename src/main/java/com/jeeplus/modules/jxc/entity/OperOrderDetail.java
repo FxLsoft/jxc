@@ -10,24 +10,24 @@ import com.jeeplus.core.persistence.DataEntity;
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
 
 /**
- * 操作单据详情Entity
+ * 单据详情Entity
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 public class OperOrderDetail extends DataEntity<OperOrderDetail> {
 	
 	private static final long serialVersionUID = 1L;
-	private OperOrder operOrderId;		// 单据 父类
+	private OperOrder operOrder;		// 单据 父类
 	private String operType;		// 类型（-1：减库，1：加库）
 	private Product product;		// 商品
 	private Price price;		// 价格属性
 	private Double amount;		// 数量
-	private Double operPrice;		// 价格
+	private Double operPrice;		// 价格信息
 	private Double discount;		// 折扣
 	private Double beginAmount;		// 开始 数量
 	private Double endAmount;		// 结束 数量
-	private Double beginOperPrice;		// 开始 价格
-	private Double endOperPrice;		// 结束 价格
+	private Double beginOperPrice;		// 开始 价格信息
+	private Double endOperPrice;		// 结束 价格信息
 	private Double beginDiscount;		// 开始 折扣
 	private Double endDiscount;		// 结束 折扣
 	
@@ -39,16 +39,16 @@ public class OperOrderDetail extends DataEntity<OperOrderDetail> {
 		super(id);
 	}
 
-	public OperOrderDetail(OperOrder operOrderId){
-		this.operOrderId = operOrderId;
+	public OperOrderDetail(OperOrder operOrder){
+		this.operOrder = operOrder;
 	}
 
-	public OperOrder getOperOrderId() {
-		return operOrderId;
+	public OperOrder getOperOrder() {
+		return operOrder;
 	}
 
-	public void setOperOrderId(OperOrder operOrderId) {
-		this.operOrderId = operOrderId;
+	public void setOperOrder(OperOrder operOrder) {
+		this.operOrder = operOrder;
 	}
 	
 	@ExcelField(title="类型（-1：减库，1：加库）", dictType="oper_type", align=2, sort=2)
@@ -87,7 +87,7 @@ public class OperOrderDetail extends DataEntity<OperOrderDetail> {
 		this.amount = amount;
 	}
 	
-	@ExcelField(title="价格", align=2, sort=6)
+	@ExcelField(title="价格信息", align=2, sort=6)
 	public Double getOperPrice() {
 		return operPrice;
 	}

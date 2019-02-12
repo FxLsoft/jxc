@@ -85,10 +85,10 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'product.name',
-		        title: '商品',
+		        field: 'store.name',
+		        title: '门店',
 		        sortable: true,
-		        sortName: 'product.name'
+		        sortName: 'store.name'
 		        ,formatter:function(value, row , index){
 
 			   if(value == null || value ==""){
@@ -107,6 +107,13 @@ $(document).ready(function() {
 			   </c:choose>
 
 		        }
+		       
+		    }
+			,{
+		        field: 'product.name',
+		        title: '商品',
+		        sortable: true,
+		        sortName: 'product.name'
 		       
 		    }
 			,{

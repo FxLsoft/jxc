@@ -5,14 +5,14 @@ package com.jeeplus.modules.jxc.mapper;
 
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
-import com.jeeplus.modules.jxc.entity.OperOrder;
+import com.jeeplus.modules.jxc.entity.OperOrderPay;
 
 /**
- * 单据MAPPER接口
+ * 付款记录MAPPER接口
  * @author FxLsoft
  * @version 2019-02-12
  */
 @MyBatisMapper
-public interface OperOrderMapper extends BaseMapper<OperOrder> {
+public interface OperOrderPayMapper extends BaseMapper<OperOrderPay> {
 	
 }

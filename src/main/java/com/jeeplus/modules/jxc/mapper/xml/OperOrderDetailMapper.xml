@@ -4,7 +4,7 @@
     
 	<sql id="operOrderDetailColumns">
 		a.id AS "id",
-		a.oper_order_id AS "operOrderId",
+		a.oper_order_id AS "operOrder.id",
 		a.oper_type AS "operType",
 		a.product_id AS "product.id",
 		a.price_id AS "price.id",
@@ -49,8 +49,8 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
-			<if test="operOrderId != null and operOrderId != ''">
-				AND a.oper_order_id = #{operOrderId}
+			<if test="operOrder != null and operOrder.id != null and operOrder.id != ''">
+				AND a.oper_order_id = #{operOrder.id}
 			</if>
 			<if test="operType != null and operType != ''">
 				AND a.oper_type = #{operType}
@@ -118,7 +118,7 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{operOrderId},
+			#{operOrder.id},
 			#{operType},
 			#{product.id},
 			#{price.id},
@@ -136,7 +136,7 @@
 	
 	<update id="update">
 		UPDATE c_oper_order_detail SET 	
-			oper_order_id = #{operOrderId},
+			oper_order_id = #{operOrder.id},
 			oper_type = #{operType},
 			product_id = #{product.id},
 			price_id = #{price.id},
@@ -158,7 +158,7 @@
 				WHERE id = #{id}
 			</when>
 			<otherwise>
-				WHERE oper_order_id = #{operOrderId}
+				WHERE oper_order_id = #{operOrder.id}
 			</otherwise>
 		</choose>
 	</update>
@@ -172,7 +172,7 @@
 				WHERE id = #{id}
 			</when>
 			<otherwise>
-				WHERE oper_order_id = #{operOrderId}
+				WHERE oper_order_id = #{operOrder.id}
 			</otherwise>
 		</choose>
 	</update>

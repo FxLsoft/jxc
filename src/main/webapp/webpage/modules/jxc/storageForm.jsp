@@ -34,6 +34,13 @@
 		<form:form id="inputForm" modelAttribute="storage" action="${ctx}/jxc/storage/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 				<div class="form-group">
+					<label class="col-sm-2 control-label"><font color="red">*</font>门店：</label>
+					<div class="col-sm-10">
+						<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${storage.store.id}" labelName="store.name" labelValue="${storage.store.name}"
+							 title="选择门店" cssClass="form-control required" fieldLabels="名称|省市区" fieldKeys="name|area" searchLabels="名称" searchKeys="name" ></sys:gridselect>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="col-sm-2 control-label"><font color="red">*</font>商品：</label>
 					<div class="col-sm-10">
 						<sys:gridselect url="${ctx}/jxc/product/data" id="product" name="product.id" value="${storage.product.id}" labelName="product.name" labelValue="${storage.product.name}"
@@ -43,8 +50,8 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label"><font color="red">*</font>价格：</label>
 					<div class="col-sm-10">
-						<sys:gridselect url="${ctx}/jxc/price/data" id="price" name="price.id" value="${storage.price.id}" labelName="price.costPrice" labelValue="${storage.price.costPrice}"
-							 title="选择价格" cssClass="form-control required" fieldLabels="单位|换算比例|进价|预售价|是否是基本单位" fieldKeys="unit|ratio|costPrice|advancePrice|isBasic" searchLabels="" searchKeys="" ></sys:gridselect>
+						<sys:gridselect url="${ctx}/api/getPrice" id="price" name="price.id" value="${storage.price.id}" labelName="price.costPrice" labelValue="${storage.price.costPrice}"
+							 title="选择价格" cssClass="form-control required" fieldLabels="单位|换算比例|进价|预售价" fieldKeys="unit|ratio|costPrice|advancePrice" searchLabels="关键字" searchKeys="searchKey" ></sys:gridselect>
 					</div>
 				</div>
 				<div class="form-group">

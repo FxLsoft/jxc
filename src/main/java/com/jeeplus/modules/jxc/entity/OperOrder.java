@@ -12,7 +12,7 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 /**
  * 单据Entity
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 public class OperOrder extends DataEntity<OperOrder> {
 	
@@ -27,6 +27,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 	private Double beginTotalPrice;		// 开始 总计
 	private Double endTotalPrice;		// 结束 总计
 	private List<OperOrderDetail> operOrderDetailList = Lists.newArrayList();		// 子表列表
+	private List<OperOrderPay> operOrderPayList = Lists.newArrayList();		// 子表列表
 	
 	public OperOrder() {
 		super();
@@ -121,5 +122,12 @@ public class OperOrder extends DataEntity<OperOrder> {
 
 	public void setOperOrderDetailList(List<OperOrderDetail> operOrderDetailList) {
 		this.operOrderDetailList = operOrderDetailList;
+	}
+	public List<OperOrderPay> getOperOrderPayList() {
+		return operOrderPayList;
+	}
+
+	public void setOperOrderPayList(List<OperOrderPay> operOrderPayList) {
+		this.operOrderPayList = operOrderPayList;
 	}
 }

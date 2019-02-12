@@ -10,7 +10,7 @@ import com.jeeplus.modules.jxc.entity.Storage;
 /**
  * 库存MAPPER接口
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 @MyBatisMapper
 public interface StorageMapper extends BaseMapper<Storage> {

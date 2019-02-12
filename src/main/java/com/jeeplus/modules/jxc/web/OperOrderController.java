@@ -38,7 +38,7 @@ import com.jeeplus.modules.jxc.service.OperOrderService;
 /**
  * 单据Controller
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 @Controller
 @RequestMapping(value = "${adminPath}/jxc/operOrder")

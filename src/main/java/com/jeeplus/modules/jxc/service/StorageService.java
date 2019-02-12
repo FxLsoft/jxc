@@ -16,7 +16,7 @@ import com.jeeplus.modules.jxc.mapper.StorageMapper;
 /**
  * 库存Service
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-12
  */
 @Service
 @Transactional(readOnly = true)

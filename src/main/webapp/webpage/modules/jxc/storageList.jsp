@@ -22,6 +22,11 @@
 		<div class="accordion-inner">
 			<form:form id="searchForm" modelAttribute="storage" class="form form-horizontal well clearfix">
 			 <div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="门店：">门店：</label>
+				<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${storage.store.id}" labelName="store.name" labelValue="${storage.store.name}"
+					title="选择门店" cssClass="form-control required" fieldLabels="名称|省市区" fieldKeys="name|area" searchLabels="名称" searchKeys="name" ></sys:gridselect>
+			</div>
+			 <div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="数量：">数量：</label>
 				<form:input path="amount" htmlEscape="false"  class=" form-control"/>
 			</div>
