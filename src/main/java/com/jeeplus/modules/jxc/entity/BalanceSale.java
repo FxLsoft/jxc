@@ -18,6 +18,8 @@ public class BalanceSale extends DataEntity<BalanceSale> {
 	private String balanceNo;		// 电子秤编号
 	private String weightNo;		// 商品计重编号
 	private Double amount;		// 数量
+	private Balance balance;
+	private Product product;
 	
 	public BalanceSale() {
 		super();
@@ -52,6 +54,22 @@ public class BalanceSale extends DataEntity<BalanceSale> {
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
+	}
+
+	public Balance getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Balance balance) {
+		this.balance = balance;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 	
 }
