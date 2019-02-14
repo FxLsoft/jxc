@@ -3,6 +3,9 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
+
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
 import com.jeeplus.modules.jxc.entity.OperOrder;
@@ -14,5 +17,6 @@ import com.jeeplus.modules.jxc.entity.OperOrder;
  */
 @MyBatisMapper
 public interface OperOrderMapper extends BaseMapper<OperOrder> {
-	
+	@Update("UPDATE c_oper_order SET status = '${status}' WHERE id = '${id}'")
+	int updateOrderStatus(@Param("id") String id, @Param("status") String status);
 }

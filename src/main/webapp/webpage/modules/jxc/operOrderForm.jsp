@@ -5,8 +5,37 @@
 	<title>单据信息管理</title>
 	<meta name="decorator" content="ani"/>
 	<script type="text/javascript">
-
+	function getUrlParam (name) {
+	    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+	    var r = window.location.search.substr(1).match(reg);
+	    if (r != null) return unescape(r[2]); return null;
+	}
+	//单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+	var from = getUrlParam('from') || 0;
+	
+	console.log('from', from);
+	
 		$(document).ready(function() {
+			var isAddMode = !$('#id').val();
+			var orderStatus = '${status}' || 0;
+			// 初始化 
+			if (isAddMode) {
+				/* $('#source').val(from);
+				
+				// 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+				if (from == 1) {
+					// 盘点
+					$('#type').val(2);
+				} else if (from == 0 || from == 2) {
+					// 入库
+					$('#type').val(0);
+				} else {
+					// 出库
+					$('#type').val(1);
+				}
+				$('#status').val(0); */ 
+			}
+			
 			jp.ajaxForm("#inputForm",function(data){
 				if(data.success){
 				    jp.success(data.msg);
@@ -71,59 +100,59 @@
 		<form:form id="inputForm" modelAttribute="operOrder" action="${ctx}/jxc/operOrder/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">编号：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>编号：</label>
 					<div class="col-sm-10">
-						<form:input path="no" htmlEscape="false"    class="form-control "/>
+						<form:input path="no" htmlEscape="false" class="form-control required" readonly="true"/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">商家：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>商家：</label>
 					<div class="col-sm-10">
 						<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="${operOrder.agency.id}" labelName="agency.name" labelValue="${operOrder.agency.name}"
-							 title="选择商家" cssClass="form-control " fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
+							 title="选择商家" cssClass="form-control required" fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">单据类型：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>单据类型：</label>
 					<div class="col-sm-10">
-						<form:select path="type" class="form-control ">
+						<form:select readonly="true" path="type" class="form-control ">
 							<form:option value="" label=""/>
 							<form:options items="${fns:getDictList('order_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 						</form:select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">单据状态：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>单据状态：</label>
 					<div class="col-sm-10">
-						<form:select path="status" class="form-control ">
+						<form:select readonly="true" path="status" class="form-control ">
 							<form:option value="" label=""/>
 							<form:options items="${fns:getDictList('order_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 						</form:select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">单据来源：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>单据来源：</label>
 					<div class="col-sm-10">
-						<form:select path="source" class="form-control ">
+						<form:select readonly="true" path="source" class="form-control ">
 							<form:option value="" label=""/>
 							<form:options items="${fns:getDictList('order_from')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 						</form:select>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">总计：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>总计：</label>
 					<div class="col-sm-10">
 						<form:input path="totalPrice" htmlEscape="false"    class="form-control "/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">实际总额：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>实际总额：</label>
 					<div class="col-sm-10">
 						<form:input path="realPrice" htmlEscape="false"    class="form-control "/>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">实付：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>实付：</label>
 					<div class="col-sm-10">
 						<form:input path="realPay" htmlEscape="false"    class="form-control "/>
 					</div>
@@ -152,7 +181,7 @@
 						<th>商品</th>
 						<th>单位/价格</th>
 						<th>数量</th>
-						<th>价格信息</th>
+						<th>价格</th>
 						<th>折扣</th>
 						<th width="10">&nbsp;</th>
 					</tr>
@@ -167,7 +196,7 @@
 						<input id="operOrderDetailList{{idx}}_delFlag" name="operOrderDetailList[{{idx}}].delFlag" type="hidden" value="0"/>
 					</td>
 					
-					<td>
+					<td style="white-space: nowrap;">
 						<c:forEach items="${fns:getDictList('oper_type')}" var="dict" varStatus="dictStatus">
 							<span><input id="operOrderDetailList{{idx}}_operType${dictStatus.index}" name="operOrderDetailList[{{idx}}].operType" type="radio" class="i-checks" value="${dict.value}" data-value="{{row.operType}}"><label for="operOrderDetailList{{idx}}_operType${dictStatus.index}">${dict.label}</label></span>
 						</c:forEach>

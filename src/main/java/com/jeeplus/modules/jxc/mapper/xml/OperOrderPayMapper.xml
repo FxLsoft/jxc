@@ -4,6 +4,7 @@
     
 	<sql id="operOrderPayColumns">
 		a.id AS "id",
+		a.no AS "no",
 		a.oper_order_id AS "operOrder.id",
 		a.pay_type AS "payType",
 		a.price AS "price",
@@ -73,6 +74,7 @@
 	<insert id="insert">
 		INSERT INTO c_oper_order_pay(
 			id,
+			no,
 			oper_order_id,
 			pay_type,
 			price,
@@ -84,6 +86,7 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{no},
 			#{operOrder.id},
 			#{payType},
 			#{price},
@@ -98,6 +101,7 @@
 	
 	<update id="update">
 		UPDATE c_oper_order_pay SET 	
+			no = #{no},
 			oper_order_id = #{operOrder.id},
 			pay_type = #{payType},
 			price = #{price},

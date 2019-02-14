@@ -1,8 +1,68 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <script>
+function getUrlParam (name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]); return null;
+}
+//单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+var from = getUrlParam('from') || 0;
+console.log('from', from);
+
+function checkOrder(id, status) {
+	var message = status == 1 ? '确认提交此单？' : '确认作废此单？';
+	jp.confirm(message, function(){
+		updateStatus(id, status);
+	})
+}
+
+function updateStatus(id, status) {
+	jp.get("${ctx}/api/updateOrderStatus?id="+id + "&status=" + status + "&from=" + from, function(data){
+	  	if(data.success){
+	  		$('#operOrderTable').bootstrapTable('refresh');
+	  		jp.success(data.msg);
+	  	}else{
+	  		jp.error(data.msg);
+	  	}
+	})
+}
+
+var order_url = "${ctx}/api/payOrder";
+//1 付款 // 2 收帐 // 3 退款
+function payOrder(ids, maxPay, type) {
+	jp.prompt("确认应付金额", maxPay.toFixed(2), function(text) {
+		if (/^\d+(\.\d+)?$/.test(text)) {
+			var pay = parseFloat(text);
+			var loading = jp.loading('正在付款。。。')
+			jp.post(order_url, {
+				payMoney: pay,
+				ids: ids,
+				type: type
+			}, function (res) {
+				console.log(res);
+				if (res.success) {
+					jp.close(loading);
+					jp.success("付款成功");
+					$('#operOrderTable').bootstrapTable('refresh');
+				} else {
+					jp.warning(res.msg);
+				}
+			});
+		} else {
+			jp.warning("输入数字非法");
+		}
+	});
+}
+
+
 $(document).ready(function() {
+	// 标题
+	if(from == 0) {
+		$('.panel-title').text('采购信息列表');
+	} else {
+		$('#payAll').hide();
+	}
 	$('#operOrderTable').bootstrapTable({
-		 
 		  //请求方法
                method: 'post',
                //类型json
@@ -46,10 +106,13 @@ $(document).ready(function() {
                //queryParamsType:'',   
                ////查询参数,每次调用是会带上这个参数，可自定义                         
                queryParams : function(params) {
-               	var searchParam = $("#searchForm").serializeJSON();
-               	searchParam.pageNo = params.limit === undefined? "1" :params.offset/params.limit+1;
-               	searchParam.pageSize = params.limit === undefined? -1 : params.limit;
-               	searchParam.orderBy = params.sort === undefined? "" : params.sort+ " "+  params.order;
+	               	var searchParam = $("#searchForm").serializeJSON();
+	               	searchParam.pageNo = params.limit === undefined? "1" :params.offset/params.limit+1;
+	               	searchParam.pageSize = params.limit === undefined? -1 : params.limit;
+	               	searchParam.orderBy = params.sort === undefined? "" : params.sort+ " "+  params.order;
+	               	
+	               	searchParam.source = from;
+	               	
                    return searchParam;
                },
                //分页方式：client客户端分页，server服务端分页（*）
@@ -168,11 +231,26 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'remarks',
-		        title: '备注信息',
-		        sortable: true,
-		        sortName: 'remarks'
-		       
+		        title: '操作',
+		        sortable: false,
+		        formatter:function(value, row, index){
+		        	var btn = [];
+		        	btn.push('<button class="btn btn-primary btn-sm" onclick="printDialog(\'' +row.id+ '\')">打印</button>');
+		        	if (row.status == 0) {
+		        		// 1 提交
+		        		// 2 作废
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="checkOrder(\'' +row.id+ '\', 1)">提交</button>');
+		        		btn.push('<button class="btn btn-warning btn-sm" onclick="checkOrder(\'' +row.id+ '\', 2)">作废</button>');
+		        	}
+		        	if (from == 0 && row.status == 1) {
+		        		// 1 付款
+		        		// 2 收帐
+		        		// 3 退款
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', -1)">付款</button>');
+		        	}
+		        	
+		        	return btn.join();
+		        }
 		    }
 		     ]
 		
@@ -188,6 +266,7 @@ $(document).ready(function() {
 	  $('#operOrderTable').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
                 'check-all.bs.table uncheck-all.bs.table', function () {
             $('#remove').prop('disabled', ! $('#operOrderTable').bootstrapTable('getSelections').length);
+            $('#payAll').prop('disabled', ! getPayList().length);
             $('#view,#edit').prop('disabled', $('#operOrderTable').bootstrapTable('getSelections').length!=1);
         });
 		  
@@ -257,6 +336,16 @@ $(document).ready(function() {
             return row.id
         });
     }
+  function getPayList() {
+	  var selected = $("#operOrderTable").bootstrapTable('getSelections');
+	  var out = [];
+	  for (var i = 0; i < selected.length; i++) {
+		  if (selected[i].status == 1) {
+			  out.push(selected[i]);
+		  }
+	  }
+	  return out;
+  }
   
   function deleteAll(){
 
@@ -273,27 +362,59 @@ $(document).ready(function() {
           	   
 		})
   }
+  
+  function payAll() {
+	  var payList = getPayList();
+	  if (payList.length > 0) {
+		  var maxPay = 0;
+		  var ids = [];
+		  var pays = [];
+		  for (var i = 0; i < payList.length; i++) {
+			  var pay = (payList[i].realPrice || 0) - (payList[i].realPay || 0);
+			  pays.push(pay);
+			  maxPay += pay;
+			  ids.push(payList[i].id);
+		  }
+		  jp.confirm("确认整体支付 " + maxPay.toFixed(2) + "?", function(){
+			  var loading = jp.loading('正在付款。。。')
+				jp.post(order_url, {
+					payMoney: pays.join(","),
+					ids: ids.join(","),
+					type: from == 0 ? -1 : 1
+				}, function (res) {
+					console.log(res);
+					if (res.success) {
+						jp.close(loading);
+						jp.success("付款成功");
+						$('#operOrderTable').bootstrapTable('refresh');
+					} else {
+						jp.warning(res.msg);
+					}
+				});
+		  })
+	  }
+  }
 
      //刷新列表
   function refresh(){
   	$('#operOrderTable').bootstrapTable('refresh');
   }
   function add(){
-		jp.go("${ctx}/jxc/operOrder/form/add");
+		jp.go("${ctx}/jxc/operOrder/form/add?from=" + from);
 	}
 
   function edit(id){
 	  if(id == undefined){
 		  id = getIdSelections();
 	  }
-	  jp.go("${ctx}/jxc/operOrder/form/edit?id=" + id);
+	  jp.go("${ctx}/jxc/operOrder/form/edit?id=" + id + "&from=" + from);
   }
   
  function view(id){//没有权限时，不显示确定按钮
       if(id == undefined){
              id = getIdSelections();
       }
-         jp.go("${ctx}/jxc/operOrder/form/view?id=" + id);
+         jp.go("${ctx}/jxc/operOrder/form/view?id=" + id + "&from=" + from);
  }
 
   
@@ -307,7 +428,7 @@ $(document).ready(function() {
 		});
 	  $.get("${ctx}/jxc/operOrder/detail?id="+row.id, function(operOrder){
     	var operOrderChild1RowIdx = 0, operOrderChild1Tpl = $("#operOrderChild1Tpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
-		var data1 =  operOrder.operOrderDetailList;
+		var data1 =  operOrder.operOrderDetailList || [];
 		for (var i=0; i<data1.length; i++){
 			data1[i].dict = {};
 			data1[i].dict.operType = jp.getDictLabel(${fns:toJson(fns:getDictList('oper_type'))}, data1[i].operType, "-");
@@ -316,7 +437,7 @@ $(document).ready(function() {
 		}
 				
     	var operOrderChild2RowIdx = 0, operOrderChild2Tpl = $("#operOrderChild2Tpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
-		var data2 =  operOrder.operOrderPayList;
+		var data2 =  operOrder.operOrderPayList || [];
 		for (var i=0; i<data2.length; i++){
 			data2[i].dict = {};
 			data2[i].dict.payType = jp.getDictLabel(${fns:toJson(fns:getDictList('pay_type'))}, data2[i].payType, "-");
@@ -364,10 +485,10 @@ $(document).ready(function() {
 					<table class="ani table">
 						<thead>
 							<tr>
-								<th>单据</th>
-								<th>付款类型</th>
+								<th>水流号</th>
+								<th>款项</th>
 								<th>金额</th>
-								<th>备注信息</th>
+								<th>发生时间</th>
 							</tr>
 						</thead>
 						<tbody id="operOrderChild-{{idx}}-2-List">
@@ -401,7 +522,7 @@ $(document).ready(function() {
 	<script type="text/template" id="operOrderChild2Tpl">//<!--
 				<tr>
 					<td>
-						{{row.}}
+						{{row.no}}
 					</td>
 					<td>
 						{{row.dict.payType}}
@@ -410,7 +531,7 @@ $(document).ready(function() {
 						{{row.price}}
 					</td>
 					<td>
-						{{row.remarks}}
+						{{row.createDate}}
 					</td>
 				</tr>//-->
 	</script>

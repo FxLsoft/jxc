@@ -15,6 +15,7 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 public class OperOrderPay extends DataEntity<OperOrderPay> {
 	
 	private static final long serialVersionUID = 1L;
+	private String no;
 	private OperOrder operOrder;		// 单据 父类
 	private String payType;		// 付款类型（-1：付款，1：收款）
 	private Double price;		// 金额
@@ -55,6 +56,14 @@ public class OperOrderPay extends DataEntity<OperOrderPay> {
 
 	public void setPrice(Double price) {
 		this.price = price;
+	}
+
+	public String getNo() {
+		return no;
+	}
+
+	public void setNo(String no) {
+		this.no = no;
 	}
 	
 }

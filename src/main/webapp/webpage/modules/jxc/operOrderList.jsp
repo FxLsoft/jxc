@@ -44,13 +44,13 @@
 					<form:options items="${fns:getDictList('order_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
-			 <div class="col-xs-12 col-sm-6 col-md-4">
+			 <%-- <div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）：">单据来源：</label>
 				<form:select path="source"  class="form-control m-b">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('order_from')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
-			</div>
+			</div> --%>
 			 <div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="总计：">总计：</label>
 				<form:input path="totalPrice" htmlEscape="false"  class=" form-control"/>
@@ -103,6 +103,9 @@
 					<i class="fa fa-search-plus"></i> 查看
 				</button>
 			</shiro:hasPermission>
+				<button id="payAll" class="btn btn-success" disabled onclick="payAll()">
+	            	<i class="glyphicon glyphicon-edit"></i> 付款
+	        	</button>
 		    </div>
 		
 	<!-- 表格 -->

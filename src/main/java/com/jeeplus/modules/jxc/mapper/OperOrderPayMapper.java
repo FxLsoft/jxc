@@ -15,4 +15,5 @@ import com.jeeplus.modules.jxc.entity.OperOrderPay;
 @MyBatisMapper
 public interface OperOrderPayMapper extends BaseMapper<OperOrderPay> {
 	
+	
 }

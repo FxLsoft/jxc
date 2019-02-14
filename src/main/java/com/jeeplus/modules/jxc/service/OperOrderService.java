@@ -94,4 +94,8 @@ public class OperOrderService extends CrudService<OperOrderMapper, OperOrder> {
 		operOrderPayMapper.delete(new OperOrderPay(operOrder));
 	}
 	
+	@Transactional(readOnly = false)
+	public int updateOrderStatus(String id, String status) {
+		return mapper.updateOrderStatus(id, status);
+	}
 }

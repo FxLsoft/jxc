@@ -3,8 +3,6 @@
  */
 package com.jeeplus.modules.jxc.web;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -18,22 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.collect.Lists;
-import com.jeeplus.common.utils.DateUtils;
-import com.jeeplus.common.config.Global;
 import com.jeeplus.common.json.AjaxJson;
-import com.jeeplus.core.persistence.Page;
-import com.jeeplus.core.web.BaseController;
+import com.jeeplus.common.utils.DateUtils;
+import com.jeeplus.common.utils.IdWorker;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
+import com.jeeplus.core.persistence.Page;
+import com.jeeplus.core.web.BaseController;
 import com.jeeplus.modules.jxc.entity.OperOrder;
 import com.jeeplus.modules.jxc.service.OperOrderService;
 
@@ -87,7 +84,23 @@ public class OperOrderController extends BaseController {
 	 */
 	@RequiresPermissions(value={"jxc:operOrder:view","jxc:operOrder:add","jxc:operOrder:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form/{mode}")
-	public String form(@PathVariable String mode, OperOrder operOrder, Model model) {
+	public String form(@PathVariable String mode, OperOrder operOrder, Model model, String from) {
+		if ("add".equals(mode)) {
+			operOrder.setNo("D" + IdWorker.getId());
+			operOrder.setStatus("0");
+			operOrder.setSource(from);
+			// 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+			if ("1".equals(from)) {
+				// 盘点
+				operOrder.setType("2");
+			} else if ("0".equals(from) || "2".equals(from)) {
+				// 入库
+				operOrder.setType("0");
+			} else {
+				// 出库
+				operOrder.setType("1");
+			}
+		}
 		model.addAttribute("operOrder", operOrder);
 		model.addAttribute("mode", mode);
 		return "modules/jxc/operOrderForm";

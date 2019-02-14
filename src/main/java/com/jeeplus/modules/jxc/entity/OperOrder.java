@@ -104,6 +104,9 @@ public class OperOrder extends DataEntity<OperOrder> {
 	
 	@ExcelField(title="实付", align=2, sort=8)
 	public Double getRealPay() {
+		if (realPay == null) {
+			return 0d;
+		}
 		return realPay;
 	}
 
