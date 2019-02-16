@@ -55,7 +55,7 @@ public class Storage extends DataEntity<Storage> {
 	}
 	
 	@NotNull(message="价格不能为空")
-	@ExcelField(title="价格", fieldType=Price.class, value="price.costPrice", align=2, sort=3)
+	@ExcelField(title="单位", fieldType=Price.class, value="price.unit", align=2, sort=3)
 	public Price getPrice() {
 		return price;
 	}
@@ -67,6 +67,9 @@ public class Storage extends DataEntity<Storage> {
 	@NotNull(message="数量不能为空")
 	@ExcelField(title="数量", align=2, sort=4)
 	public Double getAmount() {
+		if (amount == null) {
+			amount = 0d;
+		}
 		return amount;
 	}
 

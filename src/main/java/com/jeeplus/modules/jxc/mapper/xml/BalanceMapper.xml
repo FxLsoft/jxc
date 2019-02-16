@@ -6,7 +6,7 @@
 		a.id AS "id",
 		a.no AS "no",
 		a.name AS "name",
-		a.store_id AS "office.id",
+		a.store_id AS "store.id",
 		a.base_unit AS "baseUnit",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -17,12 +17,12 @@
 				
 				
 				
-		office.name AS "office.name"
+		store.name AS "store.name"
 	</sql>
 	
 	<sql id="balanceJoins">
 		
-		LEFT JOIN sys_office office ON office.id = a.store_id
+		LEFT JOIN c_store store ON store.id = a.store_id
 	</sql>
 	
     
@@ -47,6 +47,9 @@
 					<if test="dbName == 'oracle'">'%'||#{no}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{no}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
+			</if>
+			<if test="store != null and store.id != null and store.id != ''">
+				AND a.store_id = #{store.id}
 			</if>
 		</where>
 		<choose>
@@ -95,7 +98,7 @@
 			#{id},
 			#{no},
 			#{name},
-			#{office.id},
+			#{store.id},
 			#{baseUnit},
 			#{createBy.id},
 			#{createDate},
@@ -110,7 +113,7 @@
 		UPDATE c_balance SET 	
 			no = #{no},
 			name = #{name},
-			store_id = #{office.id},
+			store_id = #{store.id},
 			base_unit = #{baseUnit},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},

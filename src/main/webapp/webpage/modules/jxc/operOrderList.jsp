@@ -25,17 +25,15 @@
 				<label class="label-item single-overflow pull-left" title="编号：">编号：</label>
 				<form:input path="no" htmlEscape="false" maxlength="64"  class=" form-control"/>
 			</div>
-			 <div class="col-xs-12 col-sm-6 col-md-4">
+			<div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="商家：">商家：</label>
 										<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="${operOrder.agency.id}" labelName="agency.name" labelValue="${operOrder.agency.name}"
 							 title="选择商家" cssClass="form-control " fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
 			</div>
-			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="单据类型（0：入库，1：出库，2：盘点）：">单据类型：</label>
-				<form:select path="type"  class="form-control m-b">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('order_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
+			<div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="门店">门店：</label>
+										<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${operOrder.store.id}" labelName="store.name" labelValue="${operOrder.store.name}"
+							 title="选择门店" cssClass="form-control " fieldLabels="名称|区域|地址" fieldKeys="name|area|address" searchLabels="名称" searchKeys="name" ></sys:gridselect>
 			</div>
 			 <div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="单据状态（0：保存，1：提交，2：作废，3：完成）：">单据状态：</label>
@@ -51,18 +49,7 @@
 					<form:options items="${fns:getDictList('order_from')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div> --%>
-			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="总计：">总计：</label>
-				<form:input path="totalPrice" htmlEscape="false"  class=" form-control"/>
-			</div>
-			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="实际总额：">实际总额：</label>
-				<form:input path="realPrice" htmlEscape="false"  class=" form-control"/>
-			</div>
-			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="实付：">实付：</label>
-				<form:input path="realPay" htmlEscape="false"  class=" form-control"/>
-			</div>
+			 
 		 <div class="col-xs-12 col-sm-6 col-md-4">
 			<div style="margin-top:26px">
 			  <a  id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a>

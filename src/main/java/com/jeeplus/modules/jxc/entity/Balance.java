@@ -3,7 +3,8 @@
  */
 package com.jeeplus.modules.jxc.entity;
 
-import com.jeeplus.modules.sys.entity.Office;
+import com.jeeplus.modules.jxc.entity.Store;
+import javax.validation.constraints.NotNull;
 
 import com.jeeplus.core.persistence.DataEntity;
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
@@ -11,14 +12,14 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 /**
  * 电子秤管理Entity
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-15
  */
 public class Balance extends DataEntity<Balance> {
 	
 	private static final long serialVersionUID = 1L;
 	private String no;		// 编号
 	private String name;		// 品牌
-	private Office office;		// 所属店
+	private Store store;		// 所属店
 	private String baseUnit;		// 基本单位
 	
 	public Balance() {
@@ -47,13 +48,14 @@ public class Balance extends DataEntity<Balance> {
 		this.name = name;
 	}
 	
-	@ExcelField(title="所属店", fieldType=Office.class, value="office.name", align=2, sort=3)
-	public Office getOffice() {
-		return office;
+	@NotNull(message="所属店不能为空")
+	@ExcelField(title="所属店", fieldType=Store.class, value="store.name", align=2, sort=3)
+	public Store getStore() {
+		return store;
 	}
 
-	public void setOffice(Office office) {
-		this.office = office;
+	public void setStore(Store store) {
+		this.store = store;
 	}
 	
 	@ExcelField(title="基本单位", dictType="weight_base_unit", align=2, sort=4)

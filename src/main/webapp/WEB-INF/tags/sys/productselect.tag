@@ -32,18 +32,18 @@ $(document).ready(function(){
 		if ($("#${id}Button").hasClass("disabled")){
 			return true;
 		}
-		var productId = document.getElementById('${id}'.replace('price', 'productId')).value;
-		if (!productId) {
-			jp.warning("请先选择商品");
+		var agencyId = document.getElementById('agencyId').value || '';
+		/* if (!agencyId) {
+			jp.warning("请先选择经销商");
 			return;
-		}
+		} */
 		top.layer.open({
 		    type: 2,  
 		    area: ['800px', '500px'],
 		    title:"${title}",
 		    auto:true,
 		    name:'friend',
-		    content: "${ctx}/tag/gridselect?url="+encodeURIComponent("${url}" + "?product.id=" + productId)+"&fieldLabels="+encodeURIComponent("${fieldLabels}")+"&fieldKeys="+encodeURIComponent("${fieldKeys}")+"&searchLabels="+encodeURIComponent("${searchLabels}")+"&searchKeys="+encodeURIComponent("${searchKeys}")+"&isMultiSelected=${isMultiSelected? true:false}",
+		    content: "${ctx}/tag/gridselect?url="+encodeURIComponent("${url}" + "?agency.id=" + agencyId)+"&fieldLabels="+encodeURIComponent("${fieldLabels}")+"&fieldKeys="+encodeURIComponent("${fieldKeys}")+"&searchLabels="+encodeURIComponent("${searchLabels}")+"&searchKeys="+encodeURIComponent("${searchKeys}")+"&isMultiSelected=${isMultiSelected? true:false}",
 		    btn: ['确定', '关闭'],
 		    yes: function(index, layero){
 		    	 var iframeWin = layero.find('iframe')[0].contentWindow; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
@@ -57,14 +57,11 @@ $(document).ready(function(){
 		    	 for(var i=0; i<items.length; i++){
 		    		 var item = items[i];
 		    		 ids.push(item.id);
-		    		 names.push(item.unit + '/' + from == 0 ? item.costPrice : item.advancePrice)
+		    		 names.push(item.name)
 		    	 }
 		    	 $("#${id}Id").val(ids.join(","));
 		    	 $("#${id}Name").val(names.join(","));
 		    	 $("#${id}Id").change();
-		    	 if (items.length == 1) {
-		    		 $('#${id}'.replace('price', 'operPrice')).val(from == 0 ? items[0].costPrice : items[0].advancePrice);
-		    	 }
 				 top.layer.close(index);//关闭对话框。
 			  },
 			  cancel: function(index){ 

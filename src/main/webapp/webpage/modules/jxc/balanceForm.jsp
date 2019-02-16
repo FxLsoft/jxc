@@ -34,9 +34,9 @@
 		<form:form id="inputForm" modelAttribute="balance" action="${ctx}/jxc/balance/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">编号：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>编号：</label>
 					<div class="col-sm-10">
-						<form:input path="no" htmlEscape="false"    class="form-control "/>
+						<form:input path="no" htmlEscape="false"    class="form-control required"/>
 					</div>
 				</div>
 				<div class="form-group">
@@ -46,16 +46,16 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">所属店：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>所属店：</label>
 					<div class="col-sm-10">
-						<sys:treeselect id="office" name="office.id" value="${balance.office.id}" labelName="office.name" labelValue="${balance.office.name}"
-							title="部门" url="/sys/office/treeData?type=2" cssClass="form-control " allowClear="true" notAllowSelectParent="true"/>
+						<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${balance.store.id}" labelName="store.name" labelValue="${balance.store.name}"
+							 title="选择所属店" cssClass="form-control required" fieldLabels="名称|区域|地址" fieldKeys="name|area|address" searchLabels="名称" searchKeys="name" ></sys:gridselect>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-sm-2 control-label">基本单位：</label>
+					<label class="col-sm-2 control-label"><font color="red">*</font>基本单位：</label>
 					<div class="col-sm-10">
-						<form:select path="baseUnit" class="form-control ">
+						<form:select path="baseUnit" class="form-control required">
 							<form:option value="" label=""/>
 							<form:options items="${fns:getDictList('weight_base_unit')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 						</form:select>

@@ -17,6 +17,7 @@ function checkOrder(id, status) {
 }
 
 function updateStatus(id, status) {
+	var loading = jp.loading('load...')
 	jp.get("${ctx}/api/updateOrderStatus?id="+id + "&status=" + status + "&from=" + from, function(data){
 	  	if(data.success){
 	  		$('#operOrderTable').bootstrapTable('refresh');
@@ -24,13 +25,14 @@ function updateStatus(id, status) {
 	  	}else{
 	  		jp.error(data.msg);
 	  	}
+	  	jp.close(loading);
 	})
 }
 
 var order_url = "${ctx}/api/payOrder";
 //1 付款 // 2 收帐 // 3 退款
 function payOrder(ids, maxPay, type) {
-	jp.prompt("确认应付金额", maxPay.toFixed(2), function(text) {
+	jp.prompt("确认" + (type == '1' ? '应收' : '应付') + "金额", maxPay.toFixed(2), function(text) {
 		if (/^\d+(\.\d+)?$/.test(text)) {
 			var pay = parseFloat(text);
 			var loading = jp.loading('正在付款。。。')
@@ -101,7 +103,7 @@ $(document).ready(function() {
                //可供选择的每页的行数（*）    
                pageList: [10, 25, 50, 100],
                //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据  
-               url: "${ctx}/jxc/operOrder/data",
+               url: "${ctx}/jxc/operOrder/data?source=" + from,
                //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
                //queryParamsType:'',   
                ////查询参数,每次调用是会带上这个参数，可自定义                         
@@ -111,7 +113,7 @@ $(document).ready(function() {
 	               	searchParam.pageSize = params.limit === undefined? -1 : params.limit;
 	               	searchParam.orderBy = params.sort === undefined? "" : params.sort+ " "+  params.order;
 	               	
-	               	searchParam.source = from;
+//	               	searchParam.source = from;
 	               	
                    return searchParam;
                },
@@ -153,14 +155,14 @@ $(document).ready(function() {
 		    }
 			,{
 		        field: 'no',
-		        title: '编号',
+		        title: '单号',
 		        sortable: true,
 		        sortName: 'no'
 		        ,formatter:function(value, row , index){
 		        	value = jp.unescapeHTML(value);
 				   <c:choose>
 					   <c:when test="${fns:hasPermission('jxc:operOrder:edit')}">
-					      return "<a href='javascript:edit(\""+row.id+"\")'>"+value+"</a>";
+					      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
 				      </c:when>
 					  <c:when test="${fns:hasPermission('jxc:operOrder:view')}">
 					      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
@@ -209,25 +211,41 @@ $(document).ready(function() {
 		        }
 		       
 		    }
-			,{
-		        field: 'totalPrice',
-		        title: '总计',
-		        sortable: true,
-		        sortName: 'totalPrice'
-		       
-		    }
+			
 			,{
 		        field: 'realPrice',
-		        title: '实际总额',
+		        title: '总计',
 		        sortable: true,
-		        sortName: 'realPrice'
+		        sortName: 'realPrice',
+		        formatter: function (value, row, index) {
+		        	return (value || 0).toFixed(2);
+		        }
 		       
 		    }
 			,{
 		        field: 'realPay',
-		        title: '实付',
+		        // 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+		        title: from == 0 ? '实付' : from == 2 ? '实退' : from == 3 || from == 4 || from == 5 ? '实收' : '',
 		        sortable: true,
-		        sortName: 'realPay'
+		        sortName: 'realPay',
+		        visible: from != 1,
+		        formatter: function (value, row, index) {
+		        	return (value || 0).toFixed(2);
+		        }
+		       
+		    }
+			,{
+		        field: 'updateDate',
+		        title: '更新时间',
+		        sortable: true,
+		        sortName: 'updateDate'
+		       
+		    }
+			,{
+		        field: 'store.name',
+		        title: '门店',
+		        sortable: false,
+		        sortName: 'store.name'
 		       
 		    }
 			,{
@@ -243,10 +261,15 @@ $(document).ready(function() {
 		        		btn.push('<button class="btn btn-warning btn-sm" onclick="checkOrder(\'' +row.id+ '\', 2)">作废</button>');
 		        	}
 		        	if (from == 0 && row.status == 1) {
-		        		// 1 付款
-		        		// 2 收帐
-		        		// 3 退款
 		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', -1)">付款</button>');
+		        	}
+		        	
+		        	if (from == 2 && row.status == 1) {
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', -1)">退款</button>');
+		        	}
+		        	
+		        	if ((from == 3 || from == 4 || from == 5) && row.status == 1) {
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', 1)">收款</button>');
 		        	}
 		        	
 		        	return btn.join();
@@ -336,6 +359,15 @@ $(document).ready(function() {
             return row.id
         });
     }
+  function isCanEdit(id) {
+	  var data = $("#operOrderTable").bootstrapTable('getData');
+	  for (var i = 0; i < data.length; i++) {
+		  if (data[i].id == id && data[i].status == 0) {
+			  return true;
+		  }
+	  }
+	  return false;
+  }
   function getPayList() {
 	  var selected = $("#operOrderTable").bootstrapTable('getSelections');
 	  var out = [];
@@ -407,6 +439,10 @@ $(document).ready(function() {
 	  if(id == undefined){
 		  id = getIdSelections();
 	  }
+	  if (!isCanEdit(id)) {
+		   	 jp.alert("已提交单据不能被修改");
+		   	 return;
+		  }
 	  jp.go("${ctx}/jxc/operOrder/form/edit?id=" + id + "&from=" + from);
   }
   
@@ -462,7 +498,7 @@ $(document).ready(function() {
 	<div class="tabs-container">
 		<ul class="nav nav-tabs">
 				<li class="active"><a data-toggle="tab" href="#tab-{{idx}}-1" aria-expanded="true">单据详情</a></li>
-				<li><a data-toggle="tab" href="#tab-{{idx}}-2" aria-expanded="true">付款记录</a></li>
+				<li><a data-toggle="tab" href="#tab-{{idx}}-2" aria-expanded="true">账务记录</a></li>
 		</ul>
 		<div class="tab-content">
 				 <div id="tab-{{idx}}-1" class="tab-pane fade in active">

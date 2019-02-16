@@ -3,6 +3,8 @@
  */
 package com.jeeplus.modules.jxc.web;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ import com.jeeplus.modules.jxc.service.BalanceService;
 /**
  * 电子秤管理Controller
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-15
  */
 @Controller
 @RequestMapping(value = "${adminPath}/jxc/balance")

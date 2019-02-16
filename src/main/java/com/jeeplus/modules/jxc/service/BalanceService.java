@@ -16,7 +16,7 @@ import com.jeeplus.modules.jxc.mapper.BalanceMapper;
 /**
  * 电子秤管理Service
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-15
  */
 @Service
 @Transactional(readOnly = true)

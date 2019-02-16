@@ -16,6 +16,8 @@ import com.jeeplus.modules.jxc.service.BalanceService;
 import com.jeeplus.modules.jxc.service.OperOrderService;
 import com.jeeplus.modules.jxc.service.ProductService;
 import com.jeeplus.modules.monitor.entity.Task;
+import com.jeeplus.modules.sys.entity.Log;
+import com.jeeplus.modules.sys.service.LogService;
 
 public class DailyTask extends Task{
 	
@@ -26,6 +28,7 @@ public class DailyTask extends Task{
 		ProductService productService = SpringContextHolder.getBean(ProductService.class);
 		BalanceService balanceService = SpringContextHolder.getBean(BalanceService.class);
 		OperOrderService operOrderService = SpringContextHolder.getBean(OperOrderService.class);
+		LogService logService = SpringContextHolder.getBean(LogService.class);
 	 	List<BalanceSale> saleList = balanceSaleService.findAllList(new BalanceSale());
 	 	if (saleList != null && saleList.size() > 0) {
 	 		List<OperOrderDetail> operOrderDetailList = Lists.newArrayList();
@@ -37,20 +40,35 @@ public class DailyTask extends Task{
 	 			balanceSale.setProduct(product);
 	 			balanceSale.setBalance(balance);
 	 			List<Price> priceList = product.getPriceList();
-	 			
+	 			Price orderPrice = null;
 	 			for (int i = 0; i < priceList.size(); i++) {
 	 				if (priceList.get(i).getUnit().equals(balance.getBaseUnit())) {
-	 					
+	 					orderPrice = priceList.get(i);
+	 					break;
+	 				}
+	 				if (i == priceList.size() - 1) {
+	 					orderPrice = priceList.get(0);
 	 				}
 	 			}
+	 			if (orderPrice == null) {
+	 				Log log = new Log();
+	 				log.setMethod("DailyTask.run");
+	 				log.setException("" + balanceSale.getBalanceNo() + "生成订单失败");
+	 				logService.save(log);
+	 				continue;
+	 			};
+	 			operOrderDetail.setProduct(product);
+	 			operOrderDetail.setPrice(orderPrice);
+	 			operOrderDetail.setAmount(balanceSale.getAmount());
+	 			operOrderDetail.setOperPrice(orderPrice.getAdvancePrice());
 	 			operOrderDetailList.add(operOrderDetail);
 	 		}
 	 		OperOrder operOrder = new OperOrder();
 	 		operOrder.setNo("D" + IdWorker.getId());
 	 		// 电子秤出库
-	 		operOrder.setType("出库");
+	 		operOrder.setType("1");
 	 		// 提交状态
-	 		operOrder.setStatus("提交");
+	 		operOrder.setStatus("1");
 	 		// 电子秤销售
 	 		operOrder.setSource("3");
 	 		// 总计

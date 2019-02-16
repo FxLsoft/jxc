@@ -67,7 +67,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.create_date ASC
+				ORDER BY a.ratio ASC
 			</otherwise>
 		</choose>
 	</select>

@@ -19,7 +19,9 @@
 				
 		product.name AS "product.name",
 				
-		price.cost_price AS "price.costPrice"
+		price.cost_price AS "price.costPrice",
+		
+		price.unit AS "price.unit"
 	</sql>
 	
 	<sql id="storageJoins">
@@ -48,6 +50,12 @@
 			${dataScope}
 			<if test="store != null and store.id != null and store.id != ''">
 				AND a.store_id = #{store.id}
+			</if>
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="price != null and price.id != null and price.id != ''">
+				AND a.price_id = #{price.id}
 			</if>
 			<if test="beginAmount != null and endAmount != null ">
 				AND a.amount BETWEEN #{beginAmount} AND #{endAmount}

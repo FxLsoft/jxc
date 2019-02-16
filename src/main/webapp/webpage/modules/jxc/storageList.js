@@ -117,19 +117,20 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'price.costPrice',
-		        title: '价格',
-		        sortable: true,
-		        sortName: 'price.costPrice'
-		       
-		    }
-			,{
 		        field: 'amount',
 		        title: '数量',
 		        sortable: true,
 		        sortName: 'amount'
 		       
 		    }
+			,{
+		        field: 'price.unit',
+		        title: '单位',
+		        sortable: true,
+		        sortName: 'price.unit'
+		       
+		    }
+			
 			,{
 		        field: 'remarks',
 		        title: '备注信息',

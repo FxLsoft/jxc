@@ -20,6 +20,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 	private static final long serialVersionUID = 1L;
 	private String no;		// 编号
 	private Agency agency;		// 商家
+	private Store store;
 	private String type;		// 单据类型（0：入库，1：出库，2：盘点）
 	private String status;		// 单据状态（0：保存，1：提交，2：作废，3：完成）
 	private String source;		// 单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
@@ -143,5 +144,13 @@ public class OperOrder extends DataEntity<OperOrder> {
 
 	public void setOperOrderPayList(List<OperOrderPay> operOrderPayList) {
 		this.operOrderPayList = operOrderPayList;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
 	}
 }
