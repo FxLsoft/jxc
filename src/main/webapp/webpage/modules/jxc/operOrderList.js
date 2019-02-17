@@ -56,6 +56,10 @@ function payOrder(ids, maxPay, type) {
 	});
 }
 
+function printDialog(id, type) {
+	jp.openPrintDialog('打印', "${ctx}/api/print?id=" + id + "&type=ys",'250px', '500px');
+}
+
 
 $(document).ready(function() {
 	// 标题

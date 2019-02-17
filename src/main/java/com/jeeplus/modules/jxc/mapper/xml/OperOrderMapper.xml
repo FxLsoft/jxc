@@ -22,6 +22,11 @@
 				
 				
 		agency.name AS "agency.name",
+		agency.area AS "agency.area",
+		agency.address AS "agency.address",
+		agency.linkman AS "agency.linkman",
+		agency.phone AS "agency.phone",
+		agency.plate_number AS "agency.plateNumber",
 		store.name AS "store.name"
 	</sql>
 	

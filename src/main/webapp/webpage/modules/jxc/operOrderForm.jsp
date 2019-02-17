@@ -114,7 +114,12 @@
 			if (from != 1) {
 				$(".operType").addClass('hide');
 			}
-			$("#realPrice").val(sum.toFixed(2))
+			if (sum == 0) {
+				$("#realPrice").val('')
+			} else {
+				$("#realPrice").val(sum.toFixed(2))
+			}
+			
 		}
 	</script>
 </head>

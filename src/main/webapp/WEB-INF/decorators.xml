@@ -5,4 +5,5 @@
 	<decorator name="blank" page="layouts/blank.jsp" />
 	<decorator name="default" page="layouts/default.jsp" />
 	<decorator name="ani" page="layouts/ani.jsp" />
+	<decorator name="vue" page="layouts/vue.jsp" />
 </decorators>

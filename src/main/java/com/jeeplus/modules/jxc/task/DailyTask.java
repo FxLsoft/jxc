@@ -73,6 +73,7 @@ public class DailyTask extends Task{
 	 		operOrder.setSource("3");
 	 		// 总计
 	 		operOrder.setTotalPrice(totalPrice);
+	 		operOrder.setRealPrice(totalPrice);
 	 		// 单据详情
 	 		operOrder.setOperOrderDetailList(operOrderDetailList);
 	 		// 统一插入/保存

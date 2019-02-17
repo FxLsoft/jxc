@@ -1,5 +1,6 @@
 package com.jeeplus.modules.jxc.api;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,10 @@ public class MainController extends BaseController{
 	@Autowired
 	private StorageService storageService;
 	
+	@RequestMapping(value = "print")
+	public String print(Model model) {
+		return "modules/jxc/print";
+	}
 	
 	/**
 	 * 获取 Price 列表
@@ -63,6 +68,16 @@ public class MainController extends BaseController{
 	@ResponseBody
 	public AjaxJson uploadBalanceSell() {
 		AjaxJson result = new AjaxJson();
+		return result;
+	}
+	
+	@RequestMapping("/getOperOrderById")
+	@ResponseBody
+	public AjaxJson getOperOrderById(String id) {
+		AjaxJson result = new AjaxJson();
+		LinkedHashMap<String, Object> body = new LinkedHashMap<String, Object>();
+		body.put("operOrder", operOrderService.get(id));
+		result.setBody(body);
 		return result;
 	}
 	

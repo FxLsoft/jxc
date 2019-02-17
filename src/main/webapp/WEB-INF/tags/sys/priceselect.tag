@@ -57,7 +57,7 @@ $(document).ready(function(){
 		    	 for(var i=0; i<items.length; i++){
 		    		 var item = items[i];
 		    		 ids.push(item.id);
-		    		 names.push(item.unit + '/' + from == 0 ? item.costPrice : item.advancePrice)
+		    		 names.push(item.unit + '/' + (from == 0 ? item.costPrice : item.advancePrice))
 		    	 }
 		    	 $("#${id}Id").val(ids.join(","));
 		    	 $("#${id}Name").val(names.join(","));

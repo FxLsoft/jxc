@@ -112,7 +112,7 @@ public class ProductController extends BaseController {
 		}
 		if (product.getWeightNo() != null && !product.getWeightNo().equals("")) {
 			Product p = productService.findUniqueByProperty("weight_no", product.getWeightNo());
-			if (p != null) {
+			if (p != null && !p.getId().equals(product.getId())) {
 				j.setSuccess(false);
 				j.setMsg("计重编号不能与已有商品重复");
 				return j;

@@ -6,12 +6,10 @@
 <html style="overflow-x:auto;overflow-y:auto;">
 <head>
 	<title><sitemesh:title/></title>
+	<%@ include file="/webpage/include/vue.jsp"%>
 	<sitemesh:head/>
-	<link rel="stylesheet" href="${ctxStatic}/common/css/vendor.css" />
-	<script type="text/javascript" src="https://cdn.bootcss.com/vue/2.5.22/vue.common.js"></script>
-	<script src="${ctxStatic}/common/js/vendor.js"></script>
 </head>
-<body>
+<body id="<sitemesh:getProperty property='body.id'/>" class="<sitemesh:getProperty property='body.class'/>"  style="<sitemesh:getProperty property='body.style'/>">
 	<sitemesh:body/>
 </body>
 </html>

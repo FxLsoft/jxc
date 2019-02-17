@@ -27,6 +27,7 @@ public class WebSocketConfig extends WebMvcConfigurerAdapter implements WebSocke
         //注册 系统通知socket服务
         registry.addHandler(systemInfoSocketHandler(),"/systemInfoSocketServer").addInterceptors(new SystemInfoSocketHandshakeInterceptor());
         registry.addHandler(systemInfoSocketHandler(), "/sockjs/systemInfoSocketServer").addInterceptors(new SystemInfoSocketHandshakeInterceptor()).withSockJS();
+        
     }
 
     @Bean
