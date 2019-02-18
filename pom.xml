@@ -137,7 +137,7 @@
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.1</version>
+				<version>${tomcat.version}</version>
 				<configuration>
 					<port>${webserver.port}</port>
 					<path>/${project.artifactId}</path>
