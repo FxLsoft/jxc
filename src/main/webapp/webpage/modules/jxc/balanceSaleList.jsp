@@ -22,12 +22,42 @@
 		<div class="accordion-inner">
 			<form:form id="searchForm" modelAttribute="balanceSale" class="form form-horizontal well clearfix">
 			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="电子秤编号：">电子秤编号：</label>
+				<label class="label-item single-overflow pull-left" title="唯一码：">唯一码：</label>
+				<form:input path="saleId" htmlEscape="false" maxlength="64"  class=" form-control"/>
+			</div>
+			 <div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="销售编号：">销售编号：</label>
+				<form:input path="saleNo" htmlEscape="false" maxlength="64"  class=" form-control"/>
+			</div>
+			 <div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="称编号：">称编号：</label>
 				<form:input path="balanceNo" htmlEscape="false" maxlength="64"  class=" form-control"/>
 			</div>
 			 <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="商品计重编号：">商品计重编号：</label>
-				<form:input path="weightNo" htmlEscape="false" maxlength="64"  class=" form-control"/>
+				 <div class="form-group">
+					<label class="label-item single-overflow pull-left" title="销售时间：">&nbsp;销售时间：</label>
+					<div class="col-xs-12">
+						   <div class="col-xs-12 col-sm-5">
+					        	  <div class='input-group date' id='beginSaleTime' style="left: -10px;" >
+					                   <input type='text'  name="beginSaleTime" class="form-control"  />
+					                   <span class="input-group-addon">
+					                       <span class="glyphicon glyphicon-calendar"></span>
+					                   </span>
+					             </div>	
+					        </div>
+					        <div class="col-xs-12 col-sm-1">
+					        		~
+					       	</div>
+					        <div class="col-xs-12 col-sm-5">
+					          	<div class='input-group date' id='endSaleTime' style="left: -10px;" >
+					                   <input type='text'  name="endSaleTime" class="form-control" />
+					                   <span class="input-group-addon">
+					                       <span class="glyphicon glyphicon-calendar"></span>
+					                   </span>
+					           	</div>	
+					        </div>
+					</div>
+				</div>
 			</div>
 		 <div class="col-xs-12 col-sm-6 col-md-4">
 			<div style="margin-top:26px">
@@ -69,6 +99,9 @@
 					<i class="fa fa-search-plus"></i> 查看
 				</button>
 			</shiro:hasPermission>
+				<button id="confirmSale" class="btn btn-success" disabled onclick="confirmSale()">
+	            	<i class="glyphicon glyphicon-edit"></i> 确认
+	        	</button>
 		    </div>
 		
 	<!-- 表格 -->

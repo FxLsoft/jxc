@@ -1,5 +1,6 @@
 package com.jeeplus.modules.jxc.api;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,20 +12,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.collect.Lists;
 import com.jeeplus.common.json.AjaxJson;
 import com.jeeplus.common.utils.IdWorker;
 import com.jeeplus.core.persistence.Page;
 import com.jeeplus.core.web.BaseController;
+import com.jeeplus.modules.jxc.entity.Balance;
+import com.jeeplus.modules.jxc.entity.BalanceSale;
+import com.jeeplus.modules.jxc.entity.BalanceSaleDetail;
 import com.jeeplus.modules.jxc.entity.OperOrder;
 import com.jeeplus.modules.jxc.entity.OperOrderDetail;
 import com.jeeplus.modules.jxc.entity.OperOrderPay;
 import com.jeeplus.modules.jxc.entity.Price;
+import com.jeeplus.modules.jxc.entity.Product;
 import com.jeeplus.modules.jxc.entity.Storage;
+import com.jeeplus.modules.jxc.service.BalanceSaleService;
+import com.jeeplus.modules.jxc.service.BalanceService;
 import com.jeeplus.modules.jxc.service.OperOrderPayService;
 import com.jeeplus.modules.jxc.service.OperOrderService;
 import com.jeeplus.modules.jxc.service.PriceService;
+import com.jeeplus.modules.jxc.service.ProductService;
 import com.jeeplus.modules.jxc.service.StorageService;
 import com.jeeplus.modules.sys.utils.DictUtils;
 
@@ -43,6 +53,15 @@ public class MainController extends BaseController{
 	
 	@Autowired
 	private StorageService storageService;
+	
+	@Autowired
+	private BalanceSaleService balanceSaleService;
+	
+	@Autowired
+	private ProductService productService;
+	
+	@Autowired
+	private BalanceService balanceService;
 	
 	@RequestMapping(value = "print")
 	public String print(Model model) {
@@ -64,10 +83,27 @@ public class MainController extends BaseController{
 		return getBootstrapData(page);
 	}
 	
-	@RequestMapping("/uploadBalanceSell")
+	@RequestMapping("/confirmBalanceSale")
 	@ResponseBody
-	public AjaxJson uploadBalanceSell() {
+	public AjaxJson confirmBalanceSale(@RequestParam(defaultValue="") String ids) {
 		AjaxJson result = new AjaxJson();
+		String[] idArr = ids.split(",");
+		List<String> errMsg = Lists.newArrayList();
+		for (int i = 0; i < idArr.length; i++) {
+			BalanceSale balanceSale = balanceSaleService.get(idArr[i]);
+			if (balanceSale != null) {
+				// 处理
+				ArrayList<String> errArr = dealBalanceSale(balanceSale);
+				if (errArr.isEmpty()) {
+					balanceSale.setStatus("1");
+					balanceSaleService.saveOnly(balanceSale);
+				}
+			}
+		}
+		if (!errMsg.isEmpty()) {
+			result.setSuccess(false);
+			result.setMsg(errMsg.toString());
+		}
 		return result;
 	}
 	
@@ -96,12 +132,16 @@ public class MainController extends BaseController{
 		}
 		// 由保存状态改成提交状态，那么就需要进行入库操作
 		if ("0".equals(operOrder.getStatus()) && "1".equals(status)) {
-			OperOrderDetail returnOperOrder = dealStorage(operOrder, true);
-			if (returnOperOrder == null) {
+			List<OperOrderDetail> errDetails = dealStorage(operOrder, true);
+			if (errDetails.size() == 0) {
 				dealStorage(operOrder, false);
 			} else {
+				StringBuffer errMsg = new StringBuffer();
+				for (OperOrderDetail operOrderDetail: errDetails) {
+					errMsg.append(operOrderDetail.getRemarks() + "\r\n");
+				}
 				result.setSuccess(false);
-				result.setMsg(returnOperOrder.getProduct().getName() + " 库存不足");
+				result.setMsg(errMsg.toString());
 				return result;
 			}
 		}
@@ -141,7 +181,8 @@ public class MainController extends BaseController{
 		return result;
 	}
 	
-	public OperOrderDetail dealStorage(OperOrder operOrder, Boolean isCheck) {
+	public List<OperOrderDetail> dealStorage(OperOrder operOrder, Boolean isCheck) {
+		List<OperOrderDetail> errDetail = Lists.newArrayList();
 		List<OperOrderDetail> detailList = operOrder.getOperOrderDetailList();
 		for (OperOrderDetail operOrderDetail: detailList) {
 			Price sPrice = new Price();
@@ -176,7 +217,9 @@ public class MainController extends BaseController{
 			}
 			if (base == -1 || orderIndex == -1) {
 				// 库存操作失败 原因：产品价格信息错误
-				return operOrderDetail;
+				operOrderDetail.setRemarks("库存操作失败 原因： " + operOrderDetail.getProduct().getName() + " 产品价格信息错误");
+				errDetail.add(operOrderDetail);
+				continue;
 			}
 			// 减库
 			if ("-1".equals(operOrderDetail.getOperType())) {
@@ -192,7 +235,10 @@ public class MainController extends BaseController{
 				Double remainder = storageAmount - needAmount;
 				// 库存不足
 				if (remainder < 0) {
-					return operOrderDetail;
+					// 库存操作失败 原因：产品价格信息错误
+					operOrderDetail.setRemarks("库存操作失败 原因： " + operOrderDetail.getProduct().getName() + " 产品价格信息错误");
+					errDetail.add(operOrderDetail);
+					continue;
 				} else {
 					if (isCheck) continue;
 					for (int i = priceList.size() - 1; i >= 0; i--) {
@@ -241,6 +287,70 @@ public class MainController extends BaseController{
 				storageService.save(storage);
 			}
 		}
-		return null;
+		return errDetail;
+	}
+	
+	public ArrayList<String> dealBalanceSale (BalanceSale balanceSale) {
+		ArrayList<String> errMsg = Lists.newArrayList();
+		// 通过电子秤编号获取电子秤详情
+		Balance balance = balanceService.findUniqueByProperty("no", balanceSale.getSaleId());
+		OperOrder operOrder = new OperOrder();
+		if (balance == null) {
+			errMsg.add("电子秤编号：" + balanceSale.getSaleId() + " 未被管理；");
+		} else {
+			operOrder.setNo(balanceSale.getSaleNo());
+			// 出库
+			operOrder.setType("1");
+			// 提交
+			operOrder.setStatus("1");
+			// 电子秤零售
+			operOrder.setSource("3");
+			operOrder.setStore(balance.getStore());
+			operOrder.setTotalPrice(balanceSale.getRealPay());
+			operOrder.setRealPay(balanceSale.getRealPay());
+			operOrder.setRealPrice(balanceSale.getRealPay());
+			operOrder.setOperOrderDetailList(Lists.newArrayList());
+		}
+		for (BalanceSaleDetail balanceSaleDetail: balanceSale.getBalanceSaleDetailList()) {
+			// 通过产品计重编号获取产品详情
+			Product product = productService.findUniqueByProperty("weight_no", balanceSaleDetail.getProductNo());
+			if (product == null) {
+				errMsg.add("计重编号为：" + balanceSaleDetail.getProductNo() + " 的产品未被管理；\r\n");
+			} else if (balance != null){
+				Price basePrice = null;
+				for (Price price: product.getPriceList()) {
+					if (price.getUnit().equals(balance.getBaseUnit())) {
+						basePrice = price;
+						break;
+					}
+				}
+				if (basePrice == null) {
+					errMsg.add(product.getName() + " 产品的价格设置与称的设置不相符；\r\n");
+				} else {
+					OperOrderDetail operOrderDetail = new OperOrderDetail();
+					operOrderDetail.setOperType("-1");
+					operOrderDetail.setProduct(product);
+					operOrderDetail.setPrice(basePrice);
+					operOrderDetail.setAmount(balanceSaleDetail.getAmount());
+					operOrderDetail.setOperPrice(balanceSaleDetail.getSalePrice());
+					operOrder.getOperOrderDetailList().add(operOrderDetail);
+				}
+			}
+		}
+		if (errMsg.size() == 0) {
+			operOrderService.save(operOrder);
+			// 操作库存 先检查再入库
+			List<OperOrderDetail> errDetails = dealStorage(operOrder, false);
+			if (errDetails.size() == 0) {
+				dealStorage(operOrder, true);
+			} else {
+				StringBuffer msg = new StringBuffer();
+				for (OperOrderDetail operOrderDetail: errDetails) {
+					msg.append(operOrderDetail.getRemarks() + "\r\n");
+				}
+				errMsg.add(msg.toString());
+			}
+		}
+		return errMsg;
 	}
 }

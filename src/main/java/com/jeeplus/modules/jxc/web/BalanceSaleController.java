@@ -38,7 +38,7 @@ import com.jeeplus.modules.jxc.service.BalanceSaleService;
 /**
  * 电子秤销售Controller
  * @author FxLsoft
- * @version 2019-02-11
+ * @version 2019-02-19
  */
 @Controller
 @RequestMapping(value = "${adminPath}/jxc/balanceSale")
@@ -165,6 +165,13 @@ public class BalanceSaleController extends BaseController {
 		}
 			return j;
     }
+    
+    @ResponseBody
+    @RequestMapping(value = "detail")
+	public BalanceSale detail(String id) {
+		return balanceSaleService.get(id);
+	}
+	
 
 	/**
 	 * 导入Excel数据
@@ -221,5 +228,6 @@ public class BalanceSaleController extends BaseController {
 		}
 		return j;
     }
+	
 
 }
