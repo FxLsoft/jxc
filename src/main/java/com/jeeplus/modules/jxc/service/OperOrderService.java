@@ -52,7 +52,9 @@ public class OperOrderService extends CrudService<OperOrderMapper, OperOrder> {
 	public void save(OperOrder operOrder) {
 		super.save(operOrder);
 		for (OperOrderDetail operOrderDetail : operOrder.getOperOrderDetailList()){
-			operOrderDetail.setOperOrder(operOrder);
+			if (operOrderDetail.getId() == null){
+				continue;
+			}
 			if (OperOrderDetail.DEL_FLAG_NORMAL.equals(operOrderDetail.getDelFlag())){
 				if (StringUtils.isBlank(operOrderDetail.getId())){
 					operOrderDetail.setOperOrder(operOrder);

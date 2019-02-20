@@ -340,9 +340,9 @@ public class MainController extends BaseController{
 		if (errMsg.size() == 0) {
 			operOrderService.save(operOrder);
 			// 操作库存 先检查再入库
-			List<OperOrderDetail> errDetails = dealStorage(operOrder, false);
+			List<OperOrderDetail> errDetails = dealStorage(operOrder, true);
 			if (errDetails.size() == 0) {
-				dealStorage(operOrder, true);
+				dealStorage(operOrder, false);
 			} else {
 				StringBuffer msg = new StringBuffer();
 				for (OperOrderDetail operOrderDetail: errDetails) {

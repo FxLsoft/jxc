@@ -17,7 +17,7 @@ $(document).ready(function() {
 			}
 		},
 		mounted() {
-			this.date = new Date().Format('yyyy年MM月dd日 HH:mm:ss');
+			this.date = new Date().Format('yyyy年MM月dd日 hh:mm:ss');
 			var _self = this;
 			var loading = jp.loading('load...');
 			jp.get("${ctx}/api/getOperOrderById?id="+getUrlParam("id"), function(data){
