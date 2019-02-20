@@ -4,15 +4,27 @@
     
 	<sql id="balanceSaleColumns">
 		a.id AS "id",
+		a.sale_id AS "saleId",
+		a.sale_no AS "saleNo",
 		a.balance_no AS "balanceNo",
-		a.weight_no AS "weightNo",
-		a.amount AS "amount",
+		a.sale_time AS "saleTime",
+		a.whole_no AS "wholeNo",
+		a.current_no AS "currentNo",
+		a.seller_no AS "sellerNo",
+		a.buyer_card_no AS "buyerCardNo",
+		a.real_pay AS "realPay",
+		a.money_pay AS "moneyPay",
+		a.card_pay AS "cardPay",
+		a.is_regular_sale AS "isRegularSale",
+		a.seller_card_no AS "sellerCardNo",
+		a.pay_type AS "payType",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.status AS "status"
 	</sql>
 	
 	<sql id="balanceSaleJoins">
@@ -36,17 +48,26 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
+			<if test="saleId != null and saleId != ''">
+				AND a.sale_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{saleId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{saleId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{saleId},'%')</if>
+			</if>
+			<if test="saleNo != null and saleNo != ''">
+				AND a.sale_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{saleNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{saleNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{saleNo},'%')</if>
+			</if>
 			<if test="balanceNo != null and balanceNo != ''">
 				AND a.balance_no LIKE 
 					<if test="dbName == 'oracle'">'%'||#{balanceNo}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{balanceNo}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{balanceNo},'%')</if>
 			</if>
-			<if test="weightNo != null and weightNo != ''">
-				AND a.weight_no LIKE 
-					<if test="dbName == 'oracle'">'%'||#{weightNo}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{weightNo}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{weightNo},'%')</if>
+			<if test="beginSaleTime != null and endSaleTime != null ">
+				AND a.sale_time BETWEEN #{beginSaleTime} AND #{endSaleTime}
 			</if>
 		</where>
 		<choose>
@@ -81,37 +102,73 @@
 	<insert id="insert">
 		INSERT INTO c_balance_sale(
 			id,
+			sale_id,
+			sale_no,
 			balance_no,
-			weight_no,
-			amount,
+			sale_time,
+			whole_no,
+			current_no,
+			seller_no,
+			buyer_card_no,
+			real_pay,
+			money_pay,
+			card_pay,
+			is_regular_sale,
+			seller_card_no,
+			pay_type,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			status
 		) VALUES (
 			#{id},
+			#{saleId},
+			#{saleNo},
 			#{balanceNo},
-			#{weightNo},
-			#{amount},
+			#{saleTime},
+			#{wholeNo},
+			#{currentNo},
+			#{sellerNo},
+			#{buyerCardNo},
+			#{realPay},
+			#{moneyPay},
+			#{cardPay},
+			#{isRegularSale},
+			#{sellerCardNo},
+			#{payType},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{status}
 		)
 	</insert>
 	
 	<update id="update">
 		UPDATE c_balance_sale SET 	
+			sale_id = #{saleId},
+			sale_no = #{saleNo},
 			balance_no = #{balanceNo},
-			weight_no = #{weightNo},
-			amount = #{amount},
+			sale_time = #{saleTime},
+			whole_no = #{wholeNo},
+			current_no = #{currentNo},
+			seller_no = #{sellerNo},
+			buyer_card_no = #{buyerCardNo},
+			real_pay = #{realPay},
+			money_pay = #{moneyPay},
+			card_pay = #{cardPay},
+			is_regular_sale = #{isRegularSale},
+			seller_card_no = #{sellerCardNo},
+			pay_type = #{payType},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			status = #{status}
 		WHERE id = #{id}
 	</update>
 	

@@ -24,61 +24,61 @@ public class DailyTask extends Task{
 	
 	@Override
 	public void run() {
-		BalanceSaleService balanceSaleService = SpringContextHolder.getBean(BalanceSaleService.class);
-		ProductService productService = SpringContextHolder.getBean(ProductService.class);
-		BalanceService balanceService = SpringContextHolder.getBean(BalanceService.class);
-		OperOrderService operOrderService = SpringContextHolder.getBean(OperOrderService.class);
-		LogService logService = SpringContextHolder.getBean(LogService.class);
-	 	List<BalanceSale> saleList = balanceSaleService.findAllList(new BalanceSale());
-	 	if (saleList != null && saleList.size() > 0) {
-	 		List<OperOrderDetail> operOrderDetailList = Lists.newArrayList();
-	 		Double totalPrice = 0d;
-	 		for (BalanceSale balanceSale: saleList) {
-	 			OperOrderDetail operOrderDetail = new OperOrderDetail();
-	 			Product product = productService.findUniqueByProperty("weight_no", balanceSale.getWeightNo());
-	 			Balance balance = balanceService.findUniqueByProperty("no", balanceSale.getBalanceNo());
-	 			balanceSale.setProduct(product);
-	 			balanceSale.setBalance(balance);
-	 			List<Price> priceList = product.getPriceList();
-	 			Price orderPrice = null;
-	 			for (int i = 0; i < priceList.size(); i++) {
-	 				if (priceList.get(i).getUnit().equals(balance.getBaseUnit())) {
-	 					orderPrice = priceList.get(i);
-	 					break;
-	 				}
-	 				if (i == priceList.size() - 1) {
-	 					orderPrice = priceList.get(0);
-	 				}
-	 			}
-	 			if (orderPrice == null) {
-	 				Log log = new Log();
-	 				log.setMethod("DailyTask.run");
-	 				log.setException("" + balanceSale.getBalanceNo() + "生成订单失败");
-	 				logService.save(log);
-	 				continue;
-	 			};
-	 			operOrderDetail.setProduct(product);
-	 			operOrderDetail.setPrice(orderPrice);
-	 			operOrderDetail.setAmount(balanceSale.getAmount());
-	 			operOrderDetail.setOperPrice(orderPrice.getAdvancePrice());
-	 			operOrderDetailList.add(operOrderDetail);
-	 		}
-	 		OperOrder operOrder = new OperOrder();
-	 		operOrder.setNo("D" + IdWorker.getId());
-	 		// 电子秤出库
-	 		operOrder.setType("1");
-	 		// 提交状态
-	 		operOrder.setStatus("1");
-	 		// 电子秤销售
-	 		operOrder.setSource("3");
-	 		// 总计
-	 		operOrder.setTotalPrice(totalPrice);
-	 		operOrder.setRealPrice(totalPrice);
-	 		// 单据详情
-	 		operOrder.setOperOrderDetailList(operOrderDetailList);
-	 		// 统一插入/保存
-	 		operOrderService.save(operOrder);
-	 	}
+//		BalanceSaleService balanceSaleService = SpringContextHolder.getBean(BalanceSaleService.class);
+//		ProductService productService = SpringContextHolder.getBean(ProductService.class);
+//		BalanceService balanceService = SpringContextHolder.getBean(BalanceService.class);
+//		OperOrderService operOrderService = SpringContextHolder.getBean(OperOrderService.class);
+//		LogService logService = SpringContextHolder.getBean(LogService.class);
+//	 	List<BalanceSale> saleList = balanceSaleService.findAllList(new BalanceSale());
+//	 	if (saleList != null && saleList.size() > 0) {
+//	 		List<OperOrderDetail> operOrderDetailList = Lists.newArrayList();
+//	 		Double totalPrice = 0d;
+//	 		for (BalanceSale balanceSale: saleList) {
+//	 			OperOrderDetail operOrderDetail = new OperOrderDetail();
+//	 			Product product = productService.findUniqueByProperty("weight_no", balanceSale.getWeightNo());
+//	 			Balance balance = balanceService.findUniqueByProperty("no", balanceSale.getBalanceNo());
+//	 			balanceSale.setProduct(product);
+//	 			balanceSale.setBalance(balance);
+//	 			List<Price> priceList = product.getPriceList();
+//	 			Price orderPrice = null;
+//	 			for (int i = 0; i < priceList.size(); i++) {
+//	 				if (priceList.get(i).getUnit().equals(balance.getBaseUnit())) {
+//	 					orderPrice = priceList.get(i);
+//	 					break;
+//	 				}
+//	 				if (i == priceList.size() - 1) {
+//	 					orderPrice = priceList.get(0);
+//	 				}
+//	 			}
+//	 			if (orderPrice == null) {
+//	 				Log log = new Log();
+//	 				log.setMethod("DailyTask.run");
+//	 				log.setException("" + balanceSale.getBalanceNo() + "生成订单失败");
+//	 				logService.save(log);
+//	 				continue;
+//	 			};
+//	 			operOrderDetail.setProduct(product);
+//	 			operOrderDetail.setPrice(orderPrice);
+//	 			operOrderDetail.setAmount(balanceSale.getAmount());
+//	 			operOrderDetail.setOperPrice(orderPrice.getAdvancePrice());
+//	 			operOrderDetailList.add(operOrderDetail);
+//	 		}
+//	 		OperOrder operOrder = new OperOrder();
+//	 		operOrder.setNo("D" + IdWorker.getId());
+//	 		// 电子秤出库
+//	 		operOrder.setType("1");
+//	 		// 提交状态
+//	 		operOrder.setStatus("1");
+//	 		// 电子秤销售
+//	 		operOrder.setSource("3");
+//	 		// 总计
+//	 		operOrder.setTotalPrice(totalPrice);
+//	 		operOrder.setRealPrice(totalPrice);
+//	 		// 单据详情
+//	 		operOrder.setOperOrderDetailList(operOrderDetailList);
+//	 		// 统一插入/保存
+//	 		operOrderService.save(operOrder);
+//	 	}
 //		FinancialService financialService = SpringContextHolder.getBean(FinancialService.class);
 //		LogService logService = SpringContextHolder.getBean(LogService.class);
 //		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

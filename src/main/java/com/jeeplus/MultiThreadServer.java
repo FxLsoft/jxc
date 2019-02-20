@@ -11,11 +11,18 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import freemarker.template.SimpleDate;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
+
+import com.jeeplus.common.utils.SpringContextHolder;
+import com.jeeplus.modules.jxc.entity.BalanceSale;
+import com.jeeplus.modules.jxc.entity.BalanceSaleDetail;
+import com.jeeplus.modules.jxc.service.BalanceSaleService;
 
 public class MultiThreadServer extends Thread{
 	private int port = 33581;
@@ -26,10 +33,11 @@ public class MultiThreadServer extends Thread{
 	public MultiThreadServer() throws IOException {
 		serverSocket = new ServerSocket(port);
 		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * POOL_SIZE);
-		System.out.println("socket 服务已启动");
+		System.out.println("Balance Socket 服务正在启动...");
 	}
 
 	public void service() {
+		System.out.println("Balance Socket 服务已启动");
 		while (true) {
 			Socket socket = null;
 			try {
@@ -45,7 +53,7 @@ public class MultiThreadServer extends Thread{
 	public void run () {
 		while (!this.isInterrupted()) {
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(10000);
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -61,7 +69,13 @@ public class MultiThreadServer extends Thread{
 }
 
 class Handler implements Runnable {
-
+	
+	public Log log = LogFactory.getLog(this.getClass());
+	
+	BalanceSaleService balanceSaleService = SpringContextHolder.getBean(BalanceSaleService.class);
+	
+	BalanceSale balanceSale = new BalanceSale();
+	
 	public static final String CHARCODE = "utf-8";
 	
 	private String regEx = "[\r\t\n]";
@@ -90,9 +104,11 @@ class Handler implements Runnable {
 			out = getWriter(socket);
 			String msg = null;
 			while ((msg = br.readLine()) != null) {
-				System.out.println("接收：" + msg);
 				out.println(this.dealMsg(msg));
 				out.flush();
+				if (log.isDebugEnabled()) {
+					log.debug("接收：" + msg);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,6 +148,10 @@ class Handler implements Runnable {
 					String balanceNo = values[3];
 					// 唯一码
 					String saleId = values[4];
+					
+					balanceSale.setBalanceNo(balanceNo);
+					balanceSale.setSaleTime(saleDate);
+					balanceSale.setSaleId(saleId);
 				}
 			}
 			// 电子秤请求PC数据
@@ -144,6 +164,7 @@ class Handler implements Runnable {
 			}
 			// 销售记录统计 ORP
 			else if ("REP".equals(operCode)) {
+				
 				// 销售编号
 				String saleNo = values[1];
 				// 销售时间
@@ -168,9 +189,22 @@ class Handler implements Runnable {
 				String sellerCardNo = values[17] + values[18];
 				// 支付方式
 				String payType = values[21];
+				balanceSale.setSaleTime(saleTime);
+				balanceSale.setSaleNo(saleNo);
+				balanceSale.setWholeNo(wholeNo);
+				balanceSale.setCurrentNo(currentNo);
+				balanceSale.setSellerCardNo(sellerCardNo);
+				balanceSale.setSellerNo(sellerNo);
+				balanceSale.setBuyerCardNo(buyerCardNo);
+				balanceSale.setRealPay(realPay);
+				balanceSale.setMoneyPay(moneyPay);
+				balanceSale.setCardPay(cardPay);
+				balanceSale.setIsRegularSale(isRegularSale);
+				balanceSale.setPayType(payType);
 			}
 			// 销售记录详情 ORS
 			else if ("RES".equals(operCode)) {
+				BalanceSaleDetail balanceSaleDetail = new BalanceSaleDetail();
 				// 销售编号
 				String saleNo = values[1];
 				// 序号
@@ -199,6 +233,25 @@ class Handler implements Runnable {
 				Double realPrice = this.dealNumber(values[13]);
 				// 商品名称
 				String productName = values[14];
+				balanceSaleDetail.setSaleNo(saleNo);
+				balanceSaleDetail.setOrderNo(orderNo);
+				balanceSaleDetail.setSalePrice(salePrice);
+				balanceSaleDetail.setProductNo(productNo);
+				balanceSaleDetail.setGroupNo(groupNo);
+				balanceSaleDetail.setOfficeNo(officeNo);
+				balanceSaleDetail.setCostPrice(costPrice);
+				balanceSaleDetail.setAmount(amount);
+				balanceSaleDetail.setUnit(unit);
+				balanceSaleDetail.setIsReturn(isReturn);
+				balanceSaleDetail.setTax(tax);
+				balanceSaleDetail.setOriginPrice(orginPrice);
+				balanceSaleDetail.setRealPrice(realPrice);
+				balanceSaleDetail.setProductName(productName);
+				balanceSaleDetail.setDelFlag(BalanceSaleDetail.DEL_FLAG_NORMAL);
+				if (balanceSale.getBalanceSaleDetailList() == null) {
+					balanceSale.setBalanceSaleDetailList(new ArrayList<BalanceSaleDetail>());
+				}
+				balanceSale.getBalanceSaleDetailList().add(balanceSaleDetail);
 			}
 			// 销售记录统计 ORE
 			else if ("REE".equals(operCode)) {
@@ -206,7 +259,15 @@ class Handler implements Runnable {
 			}
 			// 请求、数据传输结束
 			else if ("END".equals(operCode)) {
-				
+				if ("REP".equals(values[1])) {
+					if (balanceSaleService.get(balanceSale) == null) {
+						balanceSaleService.save(balanceSale);
+					} else {
+						log.debug("已上传" + balanceSale.toString());
+					}
+					balanceSale = new BalanceSale();
+					replyMsg.append("DWL\tREP\t" + values[2] + '\t' + values[3] + '\t' + values[4] + "\t" + "1\t" + "\r\n");
+				}
 			}
 		}
 		return replyMsg.toString();
@@ -216,7 +277,6 @@ class Handler implements Runnable {
 		Date now = new Date();
 		DateFormat format = new SimpleDateFormat("yy\tMM\tdd\thh\tmm\tss");
 		String dateStr = format.format(now);
-		System.out.println(dateStr);
 		return dateStr;
 	}
 	

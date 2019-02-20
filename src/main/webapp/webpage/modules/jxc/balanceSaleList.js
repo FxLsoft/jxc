@@ -1,5 +1,26 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <script>
+
+function confirmSale(ids) {
+	if (!ids) {
+		ids = $.map(getSelectedList(), function (row) {
+            return row.id
+        }).join(',');
+	}
+	jp.confirm("是否确认？", function(){
+		var loading = jp.loading('load...')
+		jp.get("${ctx}/api/confirmBalanceSale?ids="+ids, function(data){
+		  	if(data.success){
+		  		jp.success(data.msg);
+		  	}else{
+		  		jp.error(data.msg);
+		  	}
+		  	$('#balanceSaleTable').bootstrapTable('refresh');
+		  	jp.close(loading);
+		  	
+		})
+	})
+}
 $(document).ready(function() {
 	$('#balanceSaleTable').bootstrapTable({
 		 
@@ -9,7 +30,7 @@ $(document).ready(function() {
                dataType: "json",
                contentType: "application/x-www-form-urlencoded",
                //显示检索按钮
-	           showSearch: true,
+	       showSearch: true,
                //显示刷新按钮
                showRefresh: true,
                //显示切换手机试图按钮
@@ -20,6 +41,10 @@ $(document).ready(function() {
     	       showExport: true,
     	       //显示切换分页按钮
     	       showPaginationSwitch: true,
+    	       //显示详情按钮
+    	       detailView: true,
+    	       	//显示详细内容函数
+	           detailFormatter: "detailFormatter",
     	       //最低显示2行
     	       minimumCountColumns: 2,
                //是否显示行间隔色
@@ -55,7 +80,7 @@ $(document).ready(function() {
                contextMenu: '#context-menu',
                onContextMenuItem: function(row, $el){
                    if($el.data("item") == "edit"){
-                   		edit(row.id);
+                	   view(row.id);
                    }else if($el.data("item") == "view"){
                        view(row.id);
                    } else if($el.data("item") == "delete"){
@@ -85,15 +110,15 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'balanceNo',
-		        title: '电子秤编号',
+		        field: 'saleId',
+		        title: '称号',
 		        sortable: true,
-		        sortName: 'balanceNo'
+		        sortName: 'saleId'
 		        ,formatter:function(value, row , index){
 		        	value = jp.unescapeHTML(value);
 				   <c:choose>
 					   <c:when test="${fns:hasPermission('jxc:balanceSale:edit')}">
-					      return "<a href='javascript:edit(\""+row.id+"\")'>"+value+"</a>";
+					      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
 				      </c:when>
 					  <c:when test="${fns:hasPermission('jxc:balanceSale:view')}">
 					      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
@@ -106,25 +131,59 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'weightNo',
-		        title: '商品计重编号',
+		        field: 'saleNo',
+		        title: '销售编号',
 		        sortable: true,
-		        sortName: 'weightNo'
+		        sortName: 'saleNo'
 		       
 		    }
 			,{
-		        field: 'amount',
-		        title: '数量',
+		        field: 'balanceNo',
+		        title: '称编号',
 		        sortable: true,
-		        sortName: 'amount'
+		        sortName: 'balanceNo'
 		       
 		    }
 			,{
-		        field: 'remarks',
-		        title: '备注信息',
+		        field: 'saleTime',
+		        title: '销售时间',
 		        sortable: true,
-		        sortName: 'remarks'
+		        sortName: 'saleTime'
 		       
+		    }
+			,{
+		        field: 'wholeNo',
+		        title: '全局累计记录',
+		        sortable: true,
+		        sortName: 'wholeNo'
+		       
+		    }
+			,{
+		        field: 'currentNo',
+		        title: '当前累计记录',
+		        sortable: true,
+		        sortName: 'currentNo'
+		       
+		    }
+			,{
+		        field: 'realPay',
+		        title: '实收现金',
+		        sortable: true,
+		        sortName: 'realPay'
+		       
+		    }
+			,{
+		        title: '操作',
+		        sortable: false,
+		        formatter:function(value, row, index){
+		        	var btn = [];
+		        	if (row.status !== 1) {
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="confirmSale(\'' +row.id+ '\')">确认</button>');
+		        	} else {
+		        		return '-';
+		        	}
+		        	return btn.join();
+		        }
 		    }
 		     ]
 		
@@ -141,7 +200,8 @@ $(document).ready(function() {
                 'check-all.bs.table uncheck-all.bs.table', function () {
             $('#remove').prop('disabled', ! $('#balanceSaleTable').bootstrapTable('getSelections').length);
             $('#view,#edit').prop('disabled', $('#balanceSaleTable').bootstrapTable('getSelections').length!=1);
-        });
+            $('#confirmSale').prop('disabled', ! getSelectedList().length);
+	  });
 		  
 		$("#btnImport").click(function(){
 			jp.open({
@@ -152,7 +212,7 @@ $(document).ready(function() {
 			    content: "${ctx}/tag/importExcel" ,
 			    btn: ['下载模板','确定', '关闭'],
 				    btn1: function(index, layero){
-					 jp.downloadFile('${ctx}/jxc/balanceSale/import/template');
+					  jp.downloadFile('${ctx}/jxc/balanceSale/import/template');
 				  },
 			    btn2: function(index, layero){
 				        var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
@@ -173,9 +233,7 @@ $(document).ready(function() {
 	    	       }
 			}); 
 		});
-		    
-		
-	 $("#export").click(function(){//导出Excel文件
+	  $("#export").click(function(){//导出Excel文件
 	        var searchParam = $("#searchForm").serializeJSON();
 	        searchParam.pageNo = 1;
 	        searchParam.pageSize = -1;
@@ -191,7 +249,6 @@ $(document).ready(function() {
 
 			jp.downloadFile('${ctx}/jxc/balanceSale/export?'+values);
 	  })
-
 		    
 	  $("#search").click("click", function() {// 绑定查询按扭
 		  $('#balanceSaleTable').bootstrapTable('refresh');
@@ -200,10 +257,16 @@ $(document).ready(function() {
 	 $("#reset").click("click", function() {// 绑定查询按扭
 		  $("#searchForm  input").val("");
 		  $("#searchForm  select").val("");
-		  $("#searchForm  .select-item").html("");
+		   $("#searchForm  .select-item").html("");
 		  $('#balanceSaleTable').bootstrapTable('refresh');
 		});
 		
+				$('#beginSaleTime').datetimepicker({
+					 format: "YYYY-MM-DD HH:mm:ss"
+				});
+				$('#endSaleTime').datetimepicker({
+					 format: "YYYY-MM-DD HH:mm:ss"
+				});
 		
 	});
 		
@@ -212,6 +275,17 @@ $(document).ready(function() {
             return row.id
         });
     }
+  function getSelectedList() {
+	  
+	  var selected = $("#balanceSaleTable").bootstrapTable('getSelections');
+	  var out = [];
+	  for (var i = 0; i < selected.length; i++) {
+		  if (selected[i].status !== 1) {
+			  out.push(selected[i]);
+		  }
+	  }
+	  return out;
+  }
   
   function deleteAll(){
 
@@ -228,6 +302,8 @@ $(document).ready(function() {
           	   
 		})
   }
+
+     //刷新列表
   function refresh(){
   	$('#balanceSaleTable').bootstrapTable('refresh');
   }
@@ -241,12 +317,106 @@ $(document).ready(function() {
 	  }
 	  jp.go("${ctx}/jxc/balanceSale/form/edit?id=" + id);
   }
-
-  function view(id) {
-      if(id == undefined){
-          id = getIdSelections();
-      }
-      jp.go("${ctx}/jxc/balanceSale/form/view?id=" + id);
-  }
   
+ function view(id){//没有权限时，不显示确定按钮
+      if(id == undefined){
+             id = getIdSelections();
+      }
+         jp.go("${ctx}/jxc/balanceSale/form/view?id=" + id);
+ }
+
+  
+  
+  
+		   
+  function detailFormatter(index, row) {
+	  var htmltpl =  $("#balanceSaleChildrenTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+	  var html = Mustache.render(htmltpl, {
+			idx:row.id
+		});
+	  $.get("${ctx}/jxc/balanceSale/detail?id="+row.id, function(balanceSale){
+    	var balanceSaleChild1RowIdx = 0, balanceSaleChild1Tpl = $("#balanceSaleChild1Tpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+		var data1 =  balanceSale.balanceSaleDetailList;
+		for (var i=0; i<data1.length; i++){
+			data1[i].dict = {};
+			data1[i].dict.isReturn = jp.getDictLabel(${fns:toJson(fns:getDictList('yes_no'))}, data1[i].isReturn, "-");
+			addRow('#balanceSaleChild-'+row.id+'-1-List', balanceSaleChild1RowIdx, balanceSaleChild1Tpl, data1[i]);
+			balanceSaleChild1RowIdx = balanceSaleChild1RowIdx + 1;
+		}
+				
+      	  			
+      })
+     
+        return html;
+    }
+  
+	function addRow(list, idx, tpl, row){
+		$(list).append(Mustache.render(tpl, {
+			idx: idx, delBtn: true, row: row
+		}));
+	}
+			
 </script>
+<script type="text/template" id="balanceSaleChildrenTpl">//<!--
+	<div class="tabs-container">
+		<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#tab-{{idx}}-1" aria-expanded="true">电子秤销售记录详情</a></li>
+		</ul>
+		<div class="tab-content">
+				 <div id="tab-{{idx}}-1" class="tab-pane fade in active">
+						<table class="ani table">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>销售编号</th>
+								<th>销售价</th>
+								<th>商品编号</th>
+								<th>重量</th>
+								<th>单位</th>
+								<th>是否退货</th>
+								<th>实际单价</th>
+								<th>商品名称</th>
+								<th>备注信息</th>
+							</tr>
+						</thead>
+						<tbody id="balanceSaleChild-{{idx}}-1-List">
+						</tbody>
+					</table>
+				</div>
+		</div>//-->
+	</script>
+	<script type="text/template" id="balanceSaleChild1Tpl">//<!--
+				<tr>
+					<td>
+						{{row.orderNo}}
+					</td>
+					<td>
+						{{row.saleNo}}
+					</td>
+					
+					<td>
+						{{row.salePrice}}
+					</td>
+					<td>
+						{{row.productNo}}
+					</td>
+					<td>
+						{{row.amount}}
+					</td>
+					<td>
+						{{row.unit}}
+					</td>
+					<td>
+						{{row.dict.isReturn}}
+					</td>
+					<td>
+						{{row.realPrice}}
+					</td>
+					<td>
+						{{row.productName}}
+					</td>
+					<td>
+						{{row.remarks}}
+					</td>
+				</tr>//-->
+	</script>
