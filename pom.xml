@@ -142,6 +142,9 @@
 					<port>${webserver.port}</port>
 					<path>/${project.artifactId}</path>
 					<uriEncoding>${project.build.sourceEncoding}</uriEncoding>
+					<url>http://119.23.52.205/manager/text</url>
+					<server>tomcat7</server>
+					<path>/jxc</path>
 				</configuration>
 				<executions>
 					<execution>
@@ -182,6 +185,25 @@
 						<port>${webserver.port}</port>
 					</httpConnector>
 				</configuration>
+				<executions>
+			    <execution>
+			      <id>start-jetty</id>
+			      <phase>pre-integration-test</phase>
+			      <goals>
+			        <goal>start</goal>
+			      </goals>
+			      <configuration>
+			        <scanIntervalSeconds>0</scanIntervalSeconds>
+			      </configuration>
+			    </execution>
+			    <execution>
+			      <id>stop-jetty</id>
+			      <phase>post-integration-test</phase>
+			       <goals>
+			         <goal>stop</goal>
+			       </goals>
+			     </execution>
+			  </executions>
 			</plugin>
 		</plugins>
 	</build>
