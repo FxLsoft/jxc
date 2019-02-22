@@ -12,7 +12,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -132,46 +131,53 @@ public class OperOrderController extends BaseController {
 			j.setMsg(errMsg);
 			return j;
 		}
-		List<OperOrder> operOrderList = Lists.newArrayList();
-		List<OperOrderDetail> detailList = operOrder.getOperOrderDetailList();
-		for (OperOrderDetail detail: detailList) {
-			Product product = productService.get(detail.getProduct().getId());
-			int hasOperOrder = -1;
-			for (int i = 0, size = operOrderList.size(); i < size; i++) {
-				OperOrder order = operOrderList.get(i);
-				if (product.getAgency().getId().equals(order.getAgency().getId())) {
-					order.getOperOrderDetailList().add(detail);
-					// 重新计算总金额
-					order.setRealPrice(order.getRealPrice() + detail.getAmount() * detail.getOperPrice());
-					order.setTotalPrice(order.getTotalPrice() + detail.getAmount() * detail.getOperPrice());
-					hasOperOrder = i;
-					break;
+		// 入库
+		if ("0".equals(operOrder.getSource())) {
+			List<OperOrder> operOrderList = Lists.newArrayList();
+			List<OperOrderDetail> detailList = operOrder.getOperOrderDetailList();
+			for (OperOrderDetail detail: detailList) {
+				Product product = productService.get(detail.getProduct().getId());
+				int hasOperOrder = -1;
+				for (int i = 0, size = operOrderList.size(); i < size; i++) {
+					OperOrder order = operOrderList.get(i);
+					if (product.getAgency().getId().equals(order.getAgency().getId())) {
+						order.getOperOrderDetailList().add(detail);
+						// 重新计算总金额
+						order.setRealPrice(order.getRealPrice() + detail.getAmount() * detail.getOperPrice());
+						order.setTotalPrice(order.getTotalPrice() + detail.getAmount() * detail.getOperPrice());
+						hasOperOrder = i;
+						break;
+					}
+				}
+				if (hasOperOrder == -1) {
+					OperOrder order = new OperOrder();
+					List<OperOrderDetail> list = Lists.newArrayList();
+					list.add(detail);
+					order.setNo(operOrder.getNo());
+					order.setStore(operOrder.getStore());
+					order.setAgency(product.getAgency());
+					order.setType(operOrder.getType());
+					order.setStatus(operOrder.getStatus());
+					order.setSource(operOrder.getSource());
+					order.setRealPrice(detail.getAmount() * detail.getOperPrice());
+					order.setTotalPrice(detail.getAmount() * detail.getOperPrice());
+					order.setRealPay(0d);
+					order.setRemarks(operOrder.getRemarks());
+					order.setOperOrderDetailList(list);
+					operOrderList.add(order);
 				}
 			}
-			if (hasOperOrder == -1) {
-				OperOrder order = new OperOrder();
-				List<OperOrderDetail> list = Lists.newArrayList();
-				list.add(detail);
-				order.setNo(operOrder.getNo());
-				order.setStore(operOrder.getStore());
-				order.setAgency(product.getAgency());
-				order.setType(operOrder.getType());
-				order.setStatus(operOrder.getStatus());
-				order.setSource(operOrder.getSource());
-				order.setRealPrice(detail.getAmount() * detail.getOperPrice());
-				order.setTotalPrice(detail.getAmount() * detail.getOperPrice());
-				order.setRealPay(0d);
-				order.setRemarks(operOrder.getRemarks());
-				order.setOperOrderDetailList(list);
-				operOrderList.add(order);
+			//新增或编辑表单保存
+			for (OperOrder order: operOrderList) {
+				operOrderService.save(order);
 			}
+			operOrder.setDelFlag("1");
+			if (operOrder.getId() != null) {
+				operOrderService.delete(operOrder);
+			}
+		} else {
+			operOrderService.save(operOrder);
 		}
-		//新增或编辑表单保存
-		for (OperOrder order: operOrderList) {
-			operOrderService.save(order);
-		}
-		operOrder.setDelFlag("1");
-		operOrderService.save(operOrder);
 		model.addAttribute("from", from);
 		j.setSuccess(true);
 		j.setMsg("保存单据信息成功");

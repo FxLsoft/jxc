@@ -28,7 +28,9 @@ public class Price extends DataEntity<Price> {
 	private Double endCostPrice;		// 结束 进价
 	private Double beginAdvancePrice;		// 开始 预售价
 	private Double endAdvancePrice;		// 结束 预售价
-	private Storage storage;
+	private Double amount;
+	private Double storageAmount;
+	private Double remindAmount;
 	
 	public Price() {
 		super();
@@ -146,12 +148,28 @@ public class Price extends DataEntity<Price> {
 		this.endAdvancePrice = endAdvancePrice;
 	}
 
-	public Storage getStorage() {
-		return storage;
+	public Double getAmount() {
+		return amount;
 	}
 
-	public void setStorage(Storage storage) {
-		this.storage = storage;
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getStorageAmount() {
+		return storageAmount;
+	}
+
+	public void setStorageAmount(Double storageAmount) {
+		this.storageAmount = storageAmount;
+	}
+
+	public Double getRemindAmount() {
+		return remindAmount;
+	}
+
+	public void setRemindAmount(Double remindAmount) {
+		this.remindAmount = remindAmount;
 	}
 		
 }

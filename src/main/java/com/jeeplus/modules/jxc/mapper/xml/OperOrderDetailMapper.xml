@@ -23,7 +23,8 @@
 		product.name AS "product.name",
 				
 		price.cost_price AS "price.costPrice",
-		price.unit AS "price.unit"
+		price.unit AS "price.unit",
+		price.ratio AS "price.ratio"
 	</sql>
 	
 	<sql id="operOrderDetailJoins">

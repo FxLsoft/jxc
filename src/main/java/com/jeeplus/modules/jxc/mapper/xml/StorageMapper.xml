@@ -137,6 +137,12 @@
 		WHERE id = #{id}
 	</update>
 	
+	<!--物理删除-->
+	<update id="deleteByProductId">
+		DELETE FROM c_storage
+		WHERE product_id = #{productId}
+	</update>
+	
 	<!--逻辑删除-->
 	<update id="deleteByLogic">
 		UPDATE c_storage SET 

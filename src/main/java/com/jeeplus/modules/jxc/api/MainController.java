@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +43,7 @@ import com.jeeplus.modules.sys.utils.DictUtils;
 @Controller
 @RequestMapping(value = "${adminPath}/api")
 public class MainController extends BaseController{
+	public Log logger = LogFactory.getLog(this.getClass());
 	
 	@Autowired
 	private PriceService priceService;
@@ -132,13 +135,13 @@ public class MainController extends BaseController{
 		}
 		// 由保存状态改成提交状态，那么就需要进行入库操作
 		if ("0".equals(operOrder.getStatus()) && "1".equals(status)) {
-			List<OperOrderDetail> errDetails = dealStorage(operOrder, true);
+			List<Product> errDetails = dealStorage(operOrder, true);
 			if (errDetails.size() == 0) {
 				dealStorage(operOrder, false);
 			} else {
 				StringBuffer errMsg = new StringBuffer();
-				for (OperOrderDetail operOrderDetail: errDetails) {
-					errMsg.append(operOrderDetail.getRemarks() + "\r\n");
+				for (Product product: errDetails) {
+					errMsg.append(product.getRemarks() + "\r\n");
 				}
 				result.setSuccess(false);
 				result.setMsg(errMsg.toString());
@@ -181,112 +184,190 @@ public class MainController extends BaseController{
 		return result;
 	}
 	
-	public List<OperOrderDetail> dealStorage(OperOrder operOrder, Boolean isCheck) {
-		List<OperOrderDetail> errDetail = Lists.newArrayList();
+	public List<Product> dealStorage(OperOrder operOrder, Boolean isCheck) {
+		// 错误具体信息
+		List<Product> errDetail = Lists.newArrayList();
+		// 如果是检查或者是入库的话直接返回
+		if (isCheck && "0".equals(operOrder.getType())) {
+			return errDetail;
+		}
+		// 详情
 		List<OperOrderDetail> detailList = operOrder.getOperOrderDetailList();
-		for (OperOrderDetail operOrderDetail: detailList) {
-			Price sPrice = new Price();
-			sPrice.setProduct(operOrderDetail.getProduct());
-			// 获取产品价格属性表 按照换算比例升序
-			List<Price> priceList = priceService.findList(sPrice);
-			Storage sStorage = new Storage();
-			sStorage.setProduct(operOrderDetail.getProduct());
-			sStorage.setStore(operOrder.getStore());
-			// 获取产品库存情况
-			List<Storage> storageList = storageService.findList(sStorage);
-			// 标识基本价格
-			int base = -1;
-			// 入库产品价格信息
-			int orderIndex = -1;
-			for (int i = 0; i< priceList.size(); i++) {
-				for (int j = 0; j < storageList.size(); j++) {
-					if (priceList.get(i).getId().equals(storageList.get(j).getPrice().getId())) {
-						priceList.get(i).setStorage(storageList.get(j));
-						storageList.remove(j);
+		// 同一个产品聚合
+		List<Product> operProductList = Lists.newArrayList();
+		// 
+		for (int i = 0, size = detailList.size(); i < size; i++) {
+			OperOrderDetail operOrderDetail = detailList.get(i);
+			Double operType = Double.parseDouble(operOrderDetail.getOperType());
+			Product product = null;
+			for (int j = 0, jSize = operProductList.size(); j <= jSize; j++) {
+				// 如果没有Product
+				if (j == jSize) {
+					// 获取库存详情
+					Storage sStorage = new Storage();
+					sStorage.setProduct(product);
+					sStorage.setStore(operOrder.getStore());
+					product = productService.get(operOrderDetail.getProduct().getId());
+					// 获取产品库存情况
+					List<Storage> storageList = storageService.findList(sStorage);
+					// 默认为 0
+					product.setAmount(0d);
+					product.setStorageAmount(0d);
+					product.setStorageList(storageList);
+					operProductList.add(product);
+				} else if (product.getId().equals(operOrderDetail.getProduct().getId())) {
+					product = operProductList.get(j);
+					break;
+				}
+			}
+			for (int j = product.getPriceList().size() - 1; j >= 0; j--) {
+				Price price = product.getPriceList().get(j);
+				if (price.getId().equals(operOrderDetail.getPrice().getId())) {
+					if (price.getAmount() == null) {
+						price.setAmount(0d);
+					}
+					price.setAmount(price.getAmount() + operOrderDetail.getAmount() * operType * price.getRatio());
+					product.setAmount(price.getAmount() + product.getAmount());
+					// 结算
+					price.setRemindAmount(price.getAmount() + price.getStorageAmount());
+					break;
+				}
+				for (Storage storage: product.getStorageList()) {
+					if (storage.getPrice().getId().equals(price.getId())) {
+						price.setStorageAmount(storage.getAmount() * price.getRatio());
+						product.setStorageAmount(product.getStorageAmount() + price.getStorageAmount());
+						// 结算
+						price.setRemindAmount(price.getAmount() + price.getStorageAmount());
 						break;
 					}
 				}
-				if ("0".equals(priceList.get(i).getIsBasic())) {
-					base = i;
-				} else if (i == priceList.size() - 1) {
-					base = 0;
+				// 如果是基本单位
+				if (product.getBaseUnit() == null && ("1".equals(price.getIsBasic()) || j == 0)) {
+					product.setBaseUnit(j);
 				}
-				if (priceList.get(i).getId().equals(operOrderDetail.getPrice().getId())) {
-					orderIndex = i;
-				}
-			}
-			if (base == -1 || orderIndex == -1) {
-				// 库存操作失败 原因：产品价格信息错误
-				operOrderDetail.setRemarks("库存操作失败 原因： " + operOrderDetail.getProduct().getName() + " 产品价格信息错误");
-				errDetail.add(operOrderDetail);
-				continue;
-			}
-			// 减库
-			if ("-1".equals(operOrderDetail.getOperType())) {
-				// 减
-				Double storageAmount = 0d;
-				Double needAmount = priceList.get(orderIndex).getRatio() / priceList.get(base).getRatio() * operOrderDetail.getAmount();
-				for (int i = 0; i< priceList.size(); i++) {
-					if (priceList.get(i).getStorage() != null) {
-						storageAmount += priceList.get(i).getRatio() / priceList.get(base).getRatio() * priceList.get(i).getStorage().getAmount();
-					}
-				}
-				// 剩余库存
-				Double remainder = storageAmount - needAmount;
-				// 库存不足
-				if (remainder < 0) {
-					// 库存操作失败 原因：产品价格信息错误
-					operOrderDetail.setRemarks("库存操作失败 原因： " + operOrderDetail.getProduct().getName() + " 产品价格信息错误");
-					errDetail.add(operOrderDetail);
-					continue;
-				} else {
-					if (isCheck) continue;
-					for (int i = priceList.size() - 1; i >= 0; i--) {
-						if (base == i) {
-							Storage storage = priceList.get(orderIndex).getStorage();
-							if (storage == null) {
-								storage = new Storage();
-								storage.setAmount(remainder);
-								storage.setPrice(operOrderDetail.getPrice());
-								storage.setProduct(operOrderDetail.getProduct());
-								storage.setStore(operOrder.getStore());
-							} else {
-								storage.setAmount(remainder);
-							}
-							remainder = 0d;
-							storageService.save(storage);
-						}
-						if (priceList.get(i).getStorage() != null && priceList.get(i).getStorage().getAmount() > 0) {
-							Double amount = Math.floor(priceList.get(base).getRatio() / priceList.get(i).getRatio() * remainder);
-							if (amount >= priceList.get(i).getStorage().getAmount() ) {
-								remainder = remainder - priceList.get(i).getStorage().getAmount() * priceList.get(i).getRatio() / priceList.get(base).getRatio();
-							} else {
-								remainder = remainder - amount * priceList.get(i).getRatio() / priceList.get(base).getRatio();
-								priceList.get(i).getStorage().setAmount(amount);
-								storageService.save(priceList.get(i).getStorage());
-							}
-						}
-					}
-				}
-			}
-			// 加库
-			else {
-				if (isCheck) continue;
-				// 如果没有相应的产品库存，那么就创建一条记录
-				Storage storage = priceList.get(orderIndex).getStorage();
-				if (storage == null) {
-					storage = new Storage();
-					storage.setAmount(operOrderDetail.getAmount());
-					storage.setPrice(operOrderDetail.getPrice());
-					storage.setProduct(operOrderDetail.getProduct());
-					storage.setStore(operOrder.getStore());
-				} else {
-					storage.setAmount(operOrderDetail.getAmount() + storage.getAmount());
-				}
-				// 保存 库存
-				storageService.save(storage);
 			}
 		}
+		logger.debug("库存情况：" + operProductList.toString());
+		
+		for (Product operProduct: operProductList) {
+			Double remaindermount = operProduct.getAmount() + operProduct.getStorageAmount();
+			if (isCheck) {
+				if (operProduct.getAmount() + operProduct.getStorageAmount() < 0) {
+					operProduct.setRemarks(operProduct.getName() + " 产品库存不足！");
+					errDetail.add(operProduct);
+				}
+			} else {
+				for (int i = operProduct.getPriceList().size() -1; i >= 0; i--) {
+					Price price = operProduct.getPriceList().get(i);
+					Double amount = remaindermount / price.getRatio();
+				}
+			}
+		}
+		
+//		for (Product operProduct: operProductList) {
+//			Price sPrice = new Price();
+//			sPrice.setProduct(operProduct);
+//			// 获取产品价格属性表 按照换算比例升序
+//			List<Price> priceList = priceService.findList(sPrice);
+//			Storage sStorage = new Storage();
+//			sStorage.setProduct(operProduct);
+//			sStorage.setStore(operOrder.getStore());
+//			// 获取产品库存情况
+//			List<Storage> storageList = storageService.findList(sStorage);
+//			// 标识基本价格
+//			int base = -1;
+//			// 入库产品价格信息
+//			int orderIndex = -1;
+//			for (int i = 0; i< priceList.size(); i++) {
+//				for (int j = 0; j < storageList.size(); j++) {
+//					if (priceList.get(i).getId().equals(storageList.get(j).getPrice().getId())) {
+//						priceList.get(i).setStorage(storageList.get(j));
+//						storageList.remove(j);
+//						break;
+//					}
+//				}
+//				if ("0".equals(priceList.get(i).getIsBasic())) {
+//					base = i;
+//				} else if (i == priceList.size() - 1) {
+//					base = 0;
+//				}
+//				if (priceList.get(i).getId().equals(operOrderDetail.getPrice().getId())) {
+//					orderIndex = i;
+//				}
+//			}
+//			if (base == -1 || orderIndex == -1) {
+//				// 库存操作失败 原因：产品价格信息错误
+//				operOrderDetail.setRemarks("库存操作失败 原因： " + operOrderDetail.getProduct().getName() + " 产品价格信息错误");
+//				errDetail.add(operOrderDetail);
+//				continue;
+//			}
+//			// 减库
+//			if ("-1".equals(operOrderDetail.getOperType())) {
+//				// 减
+//				Double storageAmount = 0d;
+//				Double needAmount = priceList.get(orderIndex).getRatio() / priceList.get(base).getRatio() * operOrderDetail.getAmount();
+//				for (int i = 0; i< priceList.size(); i++) {
+//					if (priceList.get(i).getStorage() != null) {
+//						storageAmount += priceList.get(i).getRatio() / priceList.get(base).getRatio() * priceList.get(i).getStorage().getAmount();
+//					}
+//				}
+//				// 剩余库存
+//				Double remainder = storageAmount - needAmount;
+//				// 库存不足
+//				if (remainder < 0) {
+//					// 库存操作失败 原因：产品价格信息错误
+//					operOrderDetail.setRemarks("库存操作失败 原因： " + operOrderDetail.getProduct().getName() + " 产品价格信息错误");
+//					errDetail.add(operOrderDetail);
+//					continue;
+//				} else {
+//					if (isCheck) continue;
+//					for (int i = priceList.size() - 1; i >= 0; i--) {
+//						if (base == i) {
+//							Storage storage = priceList.get(orderIndex).getStorage();
+//							if (storage == null) {
+//								storage = new Storage();
+//								storage.setAmount(remainder);
+//								storage.setPrice(operOrderDetail.getPrice());
+//								storage.setProduct(operOrderDetail.getProduct());
+//								storage.setStore(operOrder.getStore());
+//							} else {
+//								storage.setAmount(remainder);
+//							}
+//							remainder = 0d;
+//							storageService.save(storage);
+//						}
+//						if (priceList.get(i).getStorage() != null && priceList.get(i).getStorage().getAmount() > 0) {
+//							Double amount = Math.floor(priceList.get(base).getRatio() / priceList.get(i).getRatio() * remainder);
+//							if (amount >= priceList.get(i).getStorage().getAmount() ) {
+//								remainder = remainder - priceList.get(i).getStorage().getAmount() * priceList.get(i).getRatio() / priceList.get(base).getRatio();
+//							} else {
+//								remainder = remainder - amount * priceList.get(i).getRatio() / priceList.get(base).getRatio();
+//								priceList.get(i).getStorage().setAmount(amount);
+//								storageService.save(priceList.get(i).getStorage());
+//							}
+//						}
+//					}
+//				}
+//			}
+//			// 加库
+//			else {
+//				if (isCheck) continue;
+//				// 如果没有相应的产品库存，那么就创建一条记录
+//				Storage storage = priceList.get(orderIndex).getStorage();
+//				if (storage == null) {
+//					storage = new Storage();
+//					storage.setAmount(operOrderDetail.getAmount());
+//					storage.setPrice(operOrderDetail.getPrice());
+//					storage.setProduct(operOrderDetail.getProduct());
+//					storage.setStore(operOrder.getStore());
+//				} else {
+//					storage.setAmount(operOrderDetail.getAmount() + storage.getAmount());
+//				}
+//				// 保存 库存
+//				storageService.save(storage);
+//				logger.debug("加库：" + storage.toString());
+//			}
+//		}
 		return errDetail;
 	}
 	
@@ -340,13 +421,13 @@ public class MainController extends BaseController{
 		if (errMsg.size() == 0) {
 			operOrderService.save(operOrder);
 			// 操作库存 先检查再入库
-			List<OperOrderDetail> errDetails = dealStorage(operOrder, true);
+			List<Product> errDetails = dealStorage(operOrder, true);
 			if (errDetails.size() == 0) {
 				dealStorage(operOrder, false);
 			} else {
 				StringBuffer msg = new StringBuffer();
-				for (OperOrderDetail operOrderDetail: errDetails) {
-					msg.append(operOrderDetail.getRemarks() + "\r\n");
+				for (Product product: errDetails) {
+					msg.append(product.getRemarks() + "\r\n");
 				}
 				errMsg.add(msg.toString());
 			}

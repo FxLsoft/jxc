@@ -20,13 +20,17 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 public class Product extends DataEntity<Product> {
 	
 	private static final long serialVersionUID = 1L;
-	private String name;		// 名称
+	private String name;			// 名称
 	private String brevityCode;		// 简码
 	private String isWeight;		// 是否计重（0：否；1：是）
 	private String weightNo;		// 计重编号
-	private Agency agency;		// 经销商
+	private Agency agency;			// 经销商
 	private Category category;		// 所属类型
 	private List<Price> priceList = Lists.newArrayList();		// 子表列表
+	private Double amount;
+	private Double storageAmount;
+	private Integer baseUnit;
+	private List<Storage> storageList = Lists.newArrayList();
 	
 	public Product() {
 		super();
@@ -98,5 +102,37 @@ public class Product extends DataEntity<Product> {
 
 	public void setPriceList(List<Price> priceList) {
 		this.priceList = priceList;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getStorageAmount() {
+		return storageAmount;
+	}
+
+	public void setStorageAmount(Double storageAmount) {
+		this.storageAmount = storageAmount;
+	}
+
+	public List<Storage> getStorageList() {
+		return storageList;
+	}
+
+	public void setStorageList(List<Storage> storageList) {
+		this.storageList = storageList;
+	}
+
+	public Integer getBaseUnit() {
+		return baseUnit;
+	}
+
+	public void setBaseUnit(Integer baseUnit) {
+		this.baseUnit = baseUnit;
 	}
 }
