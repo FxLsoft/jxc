@@ -3,6 +3,8 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
+import java.util.List;
+
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
 import com.jeeplus.modules.jxc.entity.Store;
@@ -14,5 +16,5 @@ import com.jeeplus.modules.jxc.entity.Store;
  */
 @MyBatisMapper
 public interface StoreMapper extends BaseMapper<Store> {
-	
+	List<Store> getAllStore();
 }

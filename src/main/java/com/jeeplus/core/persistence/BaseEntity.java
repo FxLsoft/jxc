@@ -4,15 +4,12 @@
 package com.jeeplus.core.persistence;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.jeeplus.common.utils.excel.annotation.ExcelField;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Maps;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.modules.sys.entity.User;

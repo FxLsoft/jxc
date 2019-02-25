@@ -3,18 +3,16 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
-import java.util.List;
-
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
-import com.jeeplus.modules.jxc.entity.BalanceSale;
+import com.jeeplus.modules.jxc.entity.Report;
 
 /**
- * 电子秤销售MAPPER接口
+ * 财务报表MAPPER接口
  * @author FxLsoft
- * @version 2019-02-19
+ * @version 2019-02-23
  */
 @MyBatisMapper
-public interface BalanceSaleMapper extends BaseMapper<BalanceSale> {
-	List<BalanceSale> getSaleBalanceList();
+public interface ReportMapper extends BaseMapper<Report> {
+	
 }

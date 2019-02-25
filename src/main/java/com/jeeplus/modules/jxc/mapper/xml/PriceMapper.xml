@@ -140,7 +140,8 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_price
+		UPDATE c_price SET 
+			del_flag = #{DEL_FLAG_DELETE}
 		<choose>
 			<when test="id !=null and id != ''">
 				WHERE id = #{id}
@@ -168,7 +169,7 @@
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="Price" statementType="STATEMENT">
-		select * FROM c_price  where ${propertyName} = '${value}'
+		select * FROM c_price  where ${propertyName} = '${value}' AND del_flag = '0'
 	</select>
 	
 </mapper>

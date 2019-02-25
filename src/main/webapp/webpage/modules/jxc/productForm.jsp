@@ -128,8 +128,8 @@
 						<th class="hide"></th>
 						<th><font color="red">*</font>单位</th>
 						<th><font color="red">*</font>换算比例</th>
-						<th><font color="red">*</font>进价</th>
-						<th><font color="red">*</font>预售价</th>
+						<th>进价</th>
+						<th>预售价</th>
 						<th><font color="red">*</font>是否基本单位</th>
 						<th width="10">&nbsp;</th>
 					</tr>
@@ -155,12 +155,12 @@
 					
 					
 					<td>
-						<input id="priceList{{idx}}_costPrice" name="priceList[{{idx}}].costPrice" type="text" value="{{row.costPrice}}"    class="form-control required isFloatGtZero"/>
+						<input id="priceList{{idx}}_costPrice" name="priceList[{{idx}}].costPrice" type="text" value="{{row.costPrice}}"    class="form-control isFloatGtZero"/>
 					</td>
 					
 					
 					<td>
-						<input id="priceList{{idx}}_advancePrice" name="priceList[{{idx}}].advancePrice" type="text" value="{{row.advancePrice}}"    class="form-control required isFloatGtZero"/>
+						<input id="priceList{{idx}}_advancePrice" name="priceList[{{idx}}].advancePrice" type="text" value="{{row.advancePrice}}"    class="form-control isFloatGtZero"/>
 					</td>
 					
 					

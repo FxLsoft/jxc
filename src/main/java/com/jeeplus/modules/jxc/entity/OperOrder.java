@@ -20,6 +20,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 	private static final long serialVersionUID = 1L;
 	private String no;		// 编号
 	private Agency agency;		// 商家
+	private Customer customer; // 客户
 	private Store store;
 	private String type;		// 单据类型（0：入库，1：出库，2：盘点）
 	private String status;		// 单据状态（0：保存，1：提交，2：作废，3：完成）
@@ -152,5 +153,13 @@ public class OperOrder extends DataEntity<OperOrder> {
 
 	public void setStore(Store store) {
 		this.store = store;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 }

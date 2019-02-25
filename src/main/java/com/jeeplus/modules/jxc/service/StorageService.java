@@ -38,6 +38,10 @@ public class StorageService extends CrudService<StorageMapper, Storage> {
 		return super.findPage(page, storage);
 	}
 	
+	public List<Storage> getStorageList(Storage storage) {
+		return storageMapper.getStorageList(storage);
+	}
+	
 	@Transactional(readOnly = false)
 	public void save(Storage storage) {
 		super.save(storage);

@@ -148,8 +148,11 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_agency
+		UPDATE c_agency SET 
+			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+		<!-- DELETE FROM c_agency
+		WHERE id = #{id} -->
 	</update>
 	
 	<!--逻辑删除-->

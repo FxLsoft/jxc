@@ -1,51 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jeeplus.modules.jxc.mapper.StoreMapper">
+<mapper namespace="com.jeeplus.modules.jxc.mapper.CustomerMapper">
     
-	<sql id="storeColumns">
+	<sql id="customerColumns">
 		a.id AS "id",
 		a.name AS "name",
+		a.phone AS "phone",
 		a.area AS "area",
 		a.address AS "address",
-		a.office AS "office.id",
-		a.admin AS "admin.id",
-		a.lon AS "lon",
-		a.lat AS "lat",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag",
-				
-				
-				
-				
-		office.name AS "office.name",
-				
-		admin.name AS "admin.name"
+		a.del_flag AS "delFlag"
 	</sql>
 	
-	<sql id="storeJoins">
+	<sql id="customerJoins">
 		
-		LEFT JOIN sys_office office ON office.id = a.office
-		LEFT JOIN sys_user admin ON admin.id = a.admin
 	</sql>
 	
     
-	<select id="get" resultType="Store" >
+	<select id="get" resultType="Customer" >
 		SELECT 
-			<include refid="storeColumns"/>
-		FROM c_store a
-		<include refid="storeJoins"/>
+			<include refid="customerColumns"/>
+		FROM c_customer a
+		<include refid="customerJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="Store" >
+	<select id="findList" resultType="Customer" >
 		SELECT 
-			<include refid="storeColumns"/>
-		FROM c_store a
-		<include refid="storeJoins"/>
+			<include refid="customerColumns"/>
+		FROM c_customer a
+		<include refid="customerJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
@@ -55,11 +43,11 @@
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
-			<if test="area != null and area != ''">
-				AND a.area LIKE 
-					<if test="dbName == 'oracle'">'%'||#{area}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{area}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{area},'%')</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{phone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{phone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{phone},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -72,11 +60,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="Store" >
+	<select id="findAllList" resultType="Customer" >
 		SELECT 
-			<include refid="storeColumns"/>
-		FROM c_store a
-		<include refid="storeJoins"/>
+			<include refid="customerColumns"/>
+		FROM c_customer a
+		<include refid="customerJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
@@ -91,26 +79,13 @@
 		</choose>
 	</select>
 	
-	<select id="getAllStore" resultType="Store" >
-		SELECT 
-			<include refid="storeColumns"/>
-		FROM c_store a
-		<include refid="storeJoins"/>
-		<where>
-			a.del_flag = '0'
-		</where>
-	</select>
-	
 	<insert id="insert">
-		INSERT INTO c_store(
+		INSERT INTO c_customer(
 			id,
 			name,
+			phone,
 			area,
 			address,
-			office,
-			admin,
-			lon,
-			lat,
 			create_by,
 			create_date,
 			update_by,
@@ -120,12 +95,9 @@
 		) VALUES (
 			#{id},
 			#{name},
+			#{phone},
 			#{area},
 			#{address},
-			#{office.id},
-			#{admin.id},
-			#{lon},
-			#{lat},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -136,14 +108,11 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE c_store SET 	
+		UPDATE c_customer SET 	
 			name = #{name},
+			phone = #{phone},
 			area = #{area},
 			address = #{address},
-			office = #{office.id},
-			admin = #{admin.id},
-			lon = #{lon},
-			lat = #{lat},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -153,21 +122,21 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_store
+		DELETE FROM c_customer
 		WHERE id = #{id}
 	</update>
 	
 	<!--逻辑删除-->
 	<update id="deleteByLogic">
-		UPDATE c_store SET 
+		UPDATE c_customer SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 	
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
-	<select id="findUniqueByProperty" resultType="Store" statementType="STATEMENT">
-		select * FROM c_store  where ${propertyName} = '${value}'
+	<select id="findUniqueByProperty" resultType="Customer" statementType="STATEMENT">
+		select * FROM c_customer  where ${propertyName} = '${value}'
 	</select>
 	
 </mapper>

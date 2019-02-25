@@ -3,6 +3,9 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
@@ -19,4 +22,6 @@ import com.jeeplus.modules.jxc.entity.OperOrder;
 public interface OperOrderMapper extends BaseMapper<OperOrder> {
 	@Update("UPDATE c_oper_order SET status = '${status}' WHERE id = '${id}'")
 	int updateOrderStatus(@Param("id") String id, @Param("status") String status);
+	
+	List<OperOrder> findListByWhere(@Param("storeId") String storeId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

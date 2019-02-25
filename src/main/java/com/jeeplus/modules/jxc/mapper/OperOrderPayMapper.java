@@ -3,6 +3,11 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
 import com.jeeplus.modules.jxc.entity.OperOrderPay;
@@ -15,5 +20,5 @@ import com.jeeplus.modules.jxc.entity.OperOrderPay;
 @MyBatisMapper
 public interface OperOrderPayMapper extends BaseMapper<OperOrderPay> {
 	
-	
+	List<OperOrderPay> findListByWhere(@Param("storeId") String storeId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

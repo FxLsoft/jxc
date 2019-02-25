@@ -89,6 +89,24 @@
 			</otherwise>
 		</choose>
 	</select>
+	<select id="getStorageList" resultType="Storage" >
+		SELECT 
+			<include refid="storageColumns"/>
+		FROM c_storage a
+		<include refid="storageJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
 	
 	<insert id="insert">
 		INSERT INTO c_storage(
@@ -139,7 +157,8 @@
 	
 	<!--物理删除-->
 	<update id="deleteByProductId">
-		DELETE FROM c_storage
+		UPDATE c_storage SET 
+			del_flag = '1'
 		WHERE product_id = #{productId}
 	</update>
 	

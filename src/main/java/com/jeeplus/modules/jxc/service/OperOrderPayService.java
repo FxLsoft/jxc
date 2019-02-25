@@ -1,7 +1,9 @@
 package com.jeeplus.modules.jxc.service;
 
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,9 @@ import com.jeeplus.modules.jxc.mapper.OperOrderPayMapper;
 @Service
 @Transactional(readOnly = true)
 public class OperOrderPayService extends CrudService<OperOrderPayMapper, OperOrderPay>{
+	
+	@Autowired
+	private OperOrderPayMapper operOrderPayMapper;
 
 	public OperOrderPay get(String id) {
 		return super.get(id);
@@ -34,5 +39,9 @@ public class OperOrderPayService extends CrudService<OperOrderPayMapper, OperOrd
 	@Transactional(readOnly = false)
 	public void delete(OperOrderPay operOrderPay) {
 		super.delete(operOrderPay);
+	}
+	
+	public List<OperOrderPay> findListByWhere(String storeId, Date startDate, Date endDate) {
+		return operOrderPayMapper.findListByWhere(storeId, startDate, endDate);
 	}
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -88,7 +89,7 @@ class Handler implements Runnable {
 
 	private PrintWriter getWriter(Socket socket) throws IOException {
 		OutputStream socketOut = socket.getOutputStream();
-		return new PrintWriter(socketOut, true);
+		return new PrintWriter(new OutputStreamWriter(socketOut, CHARCODE), true);
 	}
 
 	private BufferedReader getReader(Socket socket) throws IOException {
@@ -104,11 +105,11 @@ class Handler implements Runnable {
 			out = getWriter(socket);
 			String msg = null;
 			while ((msg = br.readLine()) != null) {
-				out.println(this.dealMsg(msg));
+				log.debug("接收:" + msg);
+				String replyMsg = this.dealMsg(msg, out);
+				out.println(replyMsg);
 				out.flush();
-				if (log.isDebugEnabled()) {
-					log.debug("接收：" + msg);
-				}
+				log.debug("回复:" + replyMsg);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,7 +133,7 @@ class Handler implements Runnable {
 		}
 	}
 	
-	public String dealMsg(String msg) {
+	public String dealMsg(String msg, PrintWriter out) {
 		String[] values = msg.split(regEx);
 		StringBuffer replyMsg = new StringBuffer();
 		if (values.length > 0) {
@@ -152,6 +153,7 @@ class Handler implements Runnable {
 					balanceSale.setBalanceNo(balanceNo);
 					balanceSale.setSaleTime(saleDate);
 					balanceSale.setSaleId(saleId);
+					balanceSale.setStatus("0");
 				}
 			}
 			// 电子秤请求PC数据
@@ -160,6 +162,7 @@ class Handler implements Runnable {
 					replyMsg.append("DWL\tTIM\r\n");
 					replyMsg.append("TIM\t" + getTime() + "\r\n");
 					replyMsg.append("END\tTIM\r\n");
+					out.print(replyMsg.toString());
 				}
 			}
 			// 销售记录统计 ORP
@@ -205,6 +208,7 @@ class Handler implements Runnable {
 			// 销售记录详情 ORS
 			else if ("RES".equals(operCode)) {
 				BalanceSaleDetail balanceSaleDetail = new BalanceSaleDetail();
+				balanceSaleDetail.setId("");
 				// 销售编号
 				String saleNo = values[1];
 				// 序号
@@ -260,13 +264,14 @@ class Handler implements Runnable {
 			// 请求、数据传输结束
 			else if ("END".equals(operCode)) {
 				if ("REP".equals(values[1])) {
+					replyMsg.append("DWL\tREP\t" + new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()) + '\t' + values[3] + '\t' + values[4] + "\t" + "1\t" + "\r\n");
+					out.print(replyMsg.toString());
 					if (balanceSaleService.get(balanceSale) == null) {
 						balanceSaleService.save(balanceSale);
 					} else {
 						log.debug("已上传" + balanceSale.toString());
 					}
 					balanceSale = new BalanceSale();
-					replyMsg.append("DWL\tREP\t" + values[2] + '\t' + values[3] + '\t' + values[4] + "\t" + "1\t" + "\r\n");
 				}
 			}
 		}

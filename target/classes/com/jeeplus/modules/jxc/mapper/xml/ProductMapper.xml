@@ -143,8 +143,11 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_product
+		UPDATE c_product SET 
+			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+		<!-- DELETE FROM c_product
+		WHERE id = #{id} -->
 	</update>
 	
 	<!--逻辑删除-->
@@ -157,7 +160,7 @@
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
-		select * FROM c_product  where ${propertyName} = '${value}'
+		select * FROM c_product  where ${propertyName} = '${value}' AND del_flag = '0'
 	</select>
 	
 </mapper>

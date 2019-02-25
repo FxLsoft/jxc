@@ -79,7 +79,16 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+	<select id="getSaleBalanceList" resultType="BalanceSale" >
+		SELECT 
+			<include refid="balanceSaleColumns"/>
+		FROM c_balance_sale a
+		<include refid="balanceSaleJoins"/>
+		<where>
+			a.del_flag = '0'
+			AND a.status = '0'
+		</where>
+	</select>
 	<select id="findAllList" resultType="BalanceSale" >
 		SELECT 
 			<include refid="balanceSaleColumns"/>

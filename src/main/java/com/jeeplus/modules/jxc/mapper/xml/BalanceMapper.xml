@@ -124,8 +124,11 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_balance
+		UPDATE c_balance SET 
+			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+		<!-- DELETE FROM c_balance
+		WHERE id = #{id} -->
 	</update>
 	
 	<!--逻辑删除-->
@@ -138,7 +141,13 @@
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="Balance" statementType="STATEMENT">
-		select * FROM c_balance  where ${propertyName} = '${value}'
+		SELECT 
+			<include refid="balanceColumns"/>
+		FROM c_balance a
+		<include refid="balanceJoins"/>
+		<where>
+			${propertyName} = '${value}'
+		</where>
 	</select>
 	
 </mapper>

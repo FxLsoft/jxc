@@ -49,6 +49,13 @@
 			if (from != 1) {
 				$(".operType").addClass('hide');
 			}
+			
+			if (from == 4 || from == 5 || from == 2) {
+				$("#customer-select").removeClass('hide');
+			}
+			if (from == 0) {
+				$("#agency-select").removeClass('hide');
+			}
 		});
 		
 		function addRow(list, idx, tpl, row){
@@ -62,9 +69,9 @@
 				var ss = $(this).attr("data-value").split(',');
 				if (ss == '' && this.name.indexOf('operType') > -1) {
 					if (from <= 2) {
-						ss = '1';
+						ss = ['1'];
 					} else {
-						ss = '-1';
+						ss = ['-1'];
 					}
 				}
 				for (var i=0; i<ss.length; i++){
@@ -149,11 +156,18 @@
 							 title="选择门店" cssClass="form-control required" fieldLabels="名称|区域|地址" fieldKeys="name|area|address" searchLabels="名称|" searchKeys="name" ></sys:gridselect>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group hide" id="agency-select">
 					<label class="col-sm-2 control-label">供销商：</label>
 					<div class="col-sm-10">
 						<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="${operOrder.agency.id}" labelName="agency.name" labelValue="${operOrder.agency.name}"
 							 title="选择商家" cssClass="form-control" fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
+					</div>
+				</div>
+				<div class="form-group hide" id="customer-select">
+					<label class="col-sm-2 control-label">客户：</label>
+					<div class="col-sm-10">
+						<sys:gridselect url="${ctx}/jxc/customer/data" id="customer" name="customer.id" value="${operOrder.customer.id}" labelName="customer.name" labelValue="${operOrder.customer.name}"
+							 title="选择客户" cssClass="form-control" fieldLabels="名称|联系方式|地址" fieldKeys="name|phone|address" searchLabels="名称|联系方式" searchKeys="name|phone" ></sys:gridselect>
 					</div>
 				</div>
 				<div class="form-group" style="display:none">
@@ -226,7 +240,7 @@
 						<th class="hide"></th>
 						<th class="operType">类型</th>
 						<th><font color="red">*</font>商品</th>
-						<th><font color="red">*</font>单位/价格</th>
+						<th><font color="red">*</font>单位/参考价格</th>
 						<th><font color="red">*</font>数量</th>
 						<th><font color="red">*</font>价格</th>
 						<th width="10">&nbsp;</th>

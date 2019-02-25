@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jeeplus.modules.jxc.mapper.OperOrderPayMapper">
-    
+    <sql id="operOrderPayBaseColumns">
+    	a.id AS "id",
+		a.no AS "no",
+		a.oper_order_id AS "operOrder.id",
+		a.pay_type AS "payType",
+		a.price AS "price",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.no AS 'operOrder.no',
+		b.create_date AS 'operOrder.createDate'
+    </sql>
 	<sql id="operOrderPayColumns">
 		a.id AS "id",
 		a.no AS "no",
@@ -19,7 +33,6 @@
 	</sql>
 	
 	<sql id="operOrderPayJoins">
-		
 			LEFT JOIN c_oper_order b ON b.id = a.oper_order_id
 	</sql>
 	
@@ -54,6 +67,9 @@
 					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
 					)
 			</if>
+			<if test="startDate != null and endDate != null">
+				AND a.create_date BETWEEN #{startDate} AND #{endDate}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -64,7 +80,18 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+	<select id="findListByWhere" resultType="OperOrderPay" >
+		SELECT 
+			<include refid="operOrderPayBaseColumns"/>
+		FROM c_oper_order_pay a
+		LEFT JOIN c_oper_order b on a.oper_order_id = b.id 
+		LEFT JOIN c_store c on c.id = b.store_id
+		<where>
+			a.del_flag = '0'
+			AND b.store_id = #{storeId}
+			AND a.create_date BETWEEN #{startDate} AND #{endDate}
+		</where>
+	</select>
 	<select id="findAllList" resultType="OperOrderPay" >
 		SELECT 
 			<include refid="operOrderPayColumns"/>

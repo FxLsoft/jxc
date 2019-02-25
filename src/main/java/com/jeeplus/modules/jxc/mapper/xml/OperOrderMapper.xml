@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jeeplus.modules.jxc.mapper.OperOrderMapper">
+
+	<sql id="operOrderBaseColums">
+		a.id AS "id",
+		a.no AS "no",
+		a.agency_id AS "agency.id",
+		a.store_id AS "store.id",
+		a.customer_id AS "customer.id",
+		a.type AS "type",
+		a.status AS "status",
+		a.source AS "source",
+		a.total_price AS "totalPrice",
+		a.real_price AS "realPrice",
+		a.real_pay AS "realPay",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
     
 	<sql id="operOrderColumns">
 		a.id AS "id",
 		a.no AS "no",
 		a.agency_id AS "agency.id",
 		a.store_id AS "store.id",
+		a.customer_id AS "customer.id",
 		a.type AS "type",
 		a.status AS "status",
 		a.source AS "source",
@@ -27,13 +48,20 @@
 		agency.linkman AS "agency.linkman",
 		agency.phone AS "agency.phone",
 		agency.plate_number AS "agency.plateNumber",
-		store.name AS "store.name"
+		customer.name AS "customer.name",
+		customer.phone AS "customer.phone",
+		customer.area AS "customer.area",
+		customer.address AS "customer.address",
+		store.name AS "store.name",
+		updateBy.name AS "updateBy.name"
 	</sql>
 	
 	<sql id="operOrderJoins">
 		
 		LEFT JOIN c_agency agency ON agency.id = a.agency_id
 		LEFT JOIN c_store store ON store.id = a.store_id
+		LEFT JOIN c_customer customer ON customer.id = a.customer_id
+		LEFT JOIN sys_user updateBy ON updateBy.id = a.create_by
 	</sql>
 	
     
@@ -44,7 +72,17 @@
 		<include refid="operOrderJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+	<select id="findListByWhere" resultType="OperOrder" >
+		SELECT 
+			<include refid="operOrderBaseColums"/>
+		FROM c_oper_order a
+		<where>
+			a.del_flag = '0'
+			AND a.store_id = #{storeId}
+			AND a.create_date BETWEEN #{startDate} AND #{endDate}
+			AND (a.status = '1' OR a.status = '3')
+		</where>
+	</select>
 	<select id="findList" resultType="OperOrder" >
 		SELECT 
 			<include refid="operOrderColumns"/>
@@ -61,6 +99,9 @@
 			</if>
 			<if test="agency != null and agency.id != null and agency.id != ''">
 				AND a.agency_id = #{agency.id}
+			</if>
+			<if test="customer != null and customer.id != null and customer.id != ''">
+				AND a.customer_id = #{customer.id}
 			</if>
 			<if test="store != null and store.id != null and store.id != ''">
 				AND a.store_id = #{store.id}
@@ -118,6 +159,7 @@
 			id,
 			no,
 			agency_id,
+			customer_id,
 			store_id,
 			type,
 			status,
@@ -135,6 +177,7 @@
 			#{id},
 			#{no},
 			#{agency.id},
+			#{customer.id},
 			#{store.id},
 			#{type},
 			#{status},
@@ -155,6 +198,7 @@
 		UPDATE c_oper_order SET 	
 			no = #{no},
 			agency_id = #{agency.id},
+			customer_id = #{customer.id},
 			store_id = #{store.id},
 			type = #{type},
 			status = #{status},
@@ -171,8 +215,11 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM c_oper_order
+		UPDATE c_oper_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+		<!-- DELETE FROM c_oper_order
+		WHERE id = #{id} -->
 	</update>
 	
 	<!--逻辑删除-->
@@ -185,7 +232,7 @@
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="OperOrder" statementType="STATEMENT">
-		select * FROM c_oper_order  where ${propertyName} = '${value}'
+		select * FROM c_oper_order  where ${propertyName} = '${value}' AND del_flag = '0'
 	</select>
 	
 </mapper>

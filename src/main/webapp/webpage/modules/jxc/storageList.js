@@ -120,7 +120,16 @@ $(document).ready(function() {
 		        field: 'amount',
 		        title: '数量',
 		        sortable: true,
-		        sortName: 'amount'
+		        sortName: 'amount',
+		        align: 'right',
+//		        halign: 'left',
+		        formatter:function(value, row , index){
+		        	if (new String(value).indexOf('.') > -1) {
+		        		return value.toFixed(3);
+		        	} else {
+		        		return value;
+		        	}
+		        }
 		       
 		    }
 			,{
@@ -132,10 +141,10 @@ $(document).ready(function() {
 		    }
 			
 			,{
-		        field: 'remarks',
-		        title: '备注信息',
+		        field: 'updateDate',
+		        title: '更新时间',
 		        sortable: true,
-		        sortName: 'remarks'
+		        sortName: 'updateDate'
 		       
 		    }
 		     ]

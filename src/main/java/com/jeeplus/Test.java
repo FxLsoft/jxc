@@ -33,6 +33,7 @@ public class Test {
 		System.out.println("" + sb.toString().toUpperCase());
 		System.out.println("Serial -> " + getSerial(license));
 		System.out.println(a.b1(license));
+		System.out.println(Math.floor(5.999009));
 	}
 
 	public static String getSerial(String license) {

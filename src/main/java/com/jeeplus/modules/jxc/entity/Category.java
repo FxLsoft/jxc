@@ -3,9 +3,6 @@
  */
 package com.jeeplus.modules.jxc.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import javax.validation.constraints.NotNull;
-
 import com.jeeplus.core.persistence.TreeEntity;
 
 /**

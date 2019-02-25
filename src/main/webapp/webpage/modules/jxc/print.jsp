@@ -15,21 +15,30 @@
 			padding: 0;
 		}
 	</style>
-	<div id="app" style="width: 210px;">
-		<p style="text-align: center;">{{vm.agency.name}}</p>
-		<p>单号：{{vm.no}}</p>
-		<p>联系方式：{{vm.agency.phone}}</p>
-		<p>客户：{{vm.agency.linkman}}</p>
-		<p>车号：{{vm.agency.plateNumber}}</p>
-		<p>时间：{{date}}</p>
+	<div id="app" style="width: 100%;padding: 20px 30px;">
+		<div v-if="vm.isShowAgency">
+			<p style="text-align: center;">{{vm.agency.name}}</p>
+			<p>单号：{{vm.no}}</p>
+			<p>联系方式：{{vm.agency.phone}}</p>
+			<p>客户：{{vm.agency.linkman}}</p>
+			<p>车号：{{vm.agency.plateNumber}}</p>
+			<p>时间：{{date}}</p>
+		</div>
+		<div v-els>
+			<p style="text-align: center;">{{vm.customer.name}}</p>
+			<p>单号：{{vm.no}}</p>
+			<p>联系方式：{{vm.customer.phone}}</p>
+			<p>地址：{{vm.customer.address}}</p>
+			<p>时间：{{date}}</p>
+		</div>
 		<table style="font-size: 9px;font-weight: normal;width: 100%;">
 			<tr>
 				<th>名称</th><th>单位</th><th>数量</th><th style="text-align: center;">单价</th><th style="text-align: center;">金额</th>
             </tr>
             <tr v-for="(el, index) in vm.operOrderDetailList" :key="el.id">
 	            <td>{{el.product.name}}</td>
+	            <td style="text-align: right;">{{el.amount}}</td>
 	            <td>{{el.price.unit}}</td>
-	            <td>{{el.amount}}</td>
 	            <td style="text-align: right;">{{(el.operPrice || 0).toFixed(2)}}</td>
 	            <td style="text-align: right;">{{(el.amount * el.operPrice).toFixed(2)}}</td>
             </tr>
@@ -37,7 +46,7 @@
             	<td colspan="5" style="padding-top:10px">总计(<span>人民币</span>)：{{(vm.realPrice || 0).toFixed(2)}}</td>
             </tr>
 		</table>
-		<p style="margin-top: 10px; transform: scale(0.8); white-space: nowrap; margin-bottom: 20px;">请顾客当面点清货物，出市场外概不负责。</p>
+		<!-- <p style="margin-top: 10px; transform: scale(0.8); white-space: nowrap; margin-bottom: 20px;">请顾客当面点清货物，出市场外概不负责。</p> -->
 	</div>
 	
 </body>

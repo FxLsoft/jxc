@@ -13,7 +13,7 @@ function confirmSale(ids) {
 		  	if(data.success){
 		  		jp.success(data.msg);
 		  	}else{
-		  		jp.error(data.msg);
+		  		jp.alert(data.msg);
 		  	}
 		  	$('#balanceSaleTable').bootstrapTable('refresh');
 		  	jp.close(loading);
@@ -177,7 +177,7 @@ $(document).ready(function() {
 		        sortable: false,
 		        formatter:function(value, row, index){
 		        	var btn = [];
-		        	if (row.status !== 1) {
+		        	if (row.status != 1) {
 		        		btn.push('<button class="btn btn-success btn-sm" onclick="confirmSale(\'' +row.id+ '\')">确认</button>');
 		        	} else {
 		        		return '-';

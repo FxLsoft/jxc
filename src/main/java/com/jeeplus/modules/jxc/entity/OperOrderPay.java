@@ -5,6 +5,9 @@ package com.jeeplus.modules.jxc.entity;
 
 
 import com.jeeplus.core.persistence.DataEntity;
+
+import java.util.Date;
+
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
 
 /**
@@ -19,6 +22,8 @@ public class OperOrderPay extends DataEntity<OperOrderPay> {
 	private OperOrder operOrder;		// 单据 父类
 	private String payType;		// 付款类型（-1：付款，1：收款）
 	private Double price;		// 金额
+	private Date startDate;
+	private Date endDate;
 	
 	public OperOrderPay() {
 		super();
@@ -64,6 +69,22 @@ public class OperOrderPay extends DataEntity<OperOrderPay> {
 
 	public void setNo(String no) {
 		this.no = no;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	
 }

@@ -3,6 +3,8 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.jeeplus.core.persistence.BaseMapper;
@@ -17,4 +19,6 @@ import com.jeeplus.modules.jxc.entity.Storage;
 @MyBatisMapper
 public interface StorageMapper extends BaseMapper<Storage> {
 	public int deleteByProductId(@Param(value="productId")String productId);
+	
+	List<Storage> getStorageList(Storage storage);
 }

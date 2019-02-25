@@ -57,7 +57,7 @@ function payOrder(ids, maxPay, type) {
 }
 
 function printDialog(id, type) {
-	jp.openPrintDialog('打印', "${ctx}/api/print?id=" + id + "&type=ys",'250px', '500px');
+	jp.openPrintDialog('打印', "${ctx}/api/print?id=" + id + "&type=ys",'500px', '90%');
 }
 
 
@@ -244,6 +244,11 @@ $(document).ready(function() {
 		        sortable: true,
 		        sortName: 'updateDate'
 		       
+		    }
+			,{
+		        field: 'updateBy.name',
+		        title: '创建人',
+		        sortable: false,
 		    }
 			,{
 		        field: 'store.name',

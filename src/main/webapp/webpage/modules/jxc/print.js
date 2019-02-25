@@ -11,7 +11,8 @@ $(document).ready(function() {
 		data() {
 			return {
 				vm: {
-					agency: {}
+					agency: {},
+					customer: {}
 				},
 				date: ''
 			}
@@ -22,8 +23,12 @@ $(document).ready(function() {
 			var loading = jp.loading('load...');
 			jp.get("${ctx}/api/getOperOrderById?id="+getUrlParam("id"), function(data){
 			  	if(data.success){
-			  		console.log(data);
 			  		var operOrder = data.body.operOrder;
+			  		if (operOrder.agency.id) {
+			  			operOrder.isShowAgency = true;
+			  		} else {
+			  			operOrder.isShowAgency = false;
+			  		}
 			  		_self.vm = operOrder;
 			  		jp.success(data.msg);
 			  	}else{

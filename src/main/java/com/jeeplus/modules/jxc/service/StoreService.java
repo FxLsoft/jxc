@@ -5,6 +5,7 @@ package com.jeeplus.modules.jxc.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,9 @@ import com.jeeplus.modules.jxc.mapper.StoreMapper;
 @Service
 @Transactional(readOnly = true)
 public class StoreService extends CrudService<StoreMapper, Store> {
+	
+	@Autowired
+	private StoreMapper storeMapper;
 
 	public Store get(String id) {
 		return super.get(id);
@@ -44,4 +48,7 @@ public class StoreService extends CrudService<StoreMapper, Store> {
 		super.delete(store);
 	}
 	
+	public List<Store> getAllStore() {
+		return storeMapper.getAllStore();
+	}
 }
