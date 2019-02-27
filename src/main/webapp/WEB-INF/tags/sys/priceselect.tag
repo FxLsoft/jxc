@@ -57,13 +57,13 @@ $(document).ready(function(){
 		    	 for(var i=0; i<items.length; i++){
 		    		 var item = items[i];
 		    		 ids.push(item.id);
-		    		 names.push(item.unit + '/' + (from == 0 ? item.costPrice : item.advancePrice))
+		    		 names.push(item.unit + '/' + (from == 0 ? (item.costPrice || 0) : (item.advancePrice || 0)))
 		    	 }
 		    	 $("#${id}Id").val(ids.join(","));
 		    	 $("#${id}Name").val(names.join(","));
 		    	 $("#${id}Id").change();
 		    	 if (items.length == 1) {
-		    		 $('#${id}'.replace('price', 'operPrice')).val(from == 0 ? items[0].costPrice : items[0].advancePrice);
+		    		 $('#${id}'.replace('price', 'operPrice')).val(from == 0 ? (items[0].costPrice || 0) : (items[0].advancePrice || 0));
 		    	 }
 				 top.layer.close(index);//关闭对话框。
 			  },

@@ -28,6 +28,9 @@
 			});
 			$(list+idx).find("input[type='checkbox'], input[type='radio']").each(function(){
 				var ss = $(this).attr("data-value").split(',');
+				if (ss == '' && this.name.indexOf('isBasic') > -1) {
+					ss = ['0'];
+				}
 				for (var i=0; i<ss.length; i++){
 					if($(this).val() == ss[i]){
 						$(this).attr("checked","checked");

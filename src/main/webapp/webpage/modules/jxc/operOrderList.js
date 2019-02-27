@@ -186,16 +186,6 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'type',
-		        title: '单据类型',
-		        sortable: true,
-		        sortName: 'type',
-		        formatter:function(value, row , index){
-		        	return jp.getDictLabel(${fns:toJson(fns:getDictList('order_type'))}, value, "-");
-		        }
-		       
-		    }
-			,{
 		        field: 'status',
 		        title: '单据状态',
 		        sortable: true,
@@ -205,17 +195,6 @@ $(document).ready(function() {
 		        }
 		       
 		    }
-			,{
-		        field: 'source',
-		        title: '单据来源',
-		        sortable: true,
-		        sortName: 'source',
-		        formatter:function(value, row , index){
-		        	return jp.getDictLabel(${fns:toJson(fns:getDictList('order_from'))}, value, "-");
-		        }
-		       
-		    }
-			
 			,{
 		        field: 'realPrice',
 		        title: '总计',
@@ -239,6 +218,24 @@ $(document).ready(function() {
 		       
 		    }
 			,{
+		        field: 'store.name',
+		        title: '门店',
+		        sortable: false,
+		        sortName: 'store.name'
+		       
+		    }
+			,{
+		        field: 'createDate',
+		        title: '创建时间',
+		        sortable: true,
+		        sortName: 'createDate'
+		    }
+			,{
+		        field: 'createBy.name',
+		        title: '创建人',
+		        sortable: false,
+		    }
+			,{
 		        field: 'updateDate',
 		        title: '更新时间',
 		        sortable: true,
@@ -247,16 +244,10 @@ $(document).ready(function() {
 		    }
 			,{
 		        field: 'updateBy.name',
-		        title: '创建人',
+		        title: '更新人',
 		        sortable: false,
 		    }
-			,{
-		        field: 'store.name',
-		        title: '门店',
-		        sortable: false,
-		        sortName: 'store.name'
-		       
-		    }
+			
 			,{
 		        title: '操作',
 		        sortable: false,

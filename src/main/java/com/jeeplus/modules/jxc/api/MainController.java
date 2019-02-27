@@ -166,7 +166,7 @@ public class MainController extends BaseController{
 			orderPay.setOperOrder(operOrder);
 			operOrderPayService.save(orderPay);
 			logger.debug("付款误差：" + DictUtils.getDictValue("small", "order_complete_deviation", "0"));
-			if ((operOrder.getRealPrice() - operOrder.getRealPay()) <= Double.parseDouble(DictUtils.getDictValue("order_complete_deviation", "small", "0"))) {
+			if ((operOrder.getRealPrice() - operOrder.getRealPay()) <= Double.parseDouble(DictUtils.getDictValue("small", "order_complete_deviation", "0"))) {
 				operOrder.setStatus("3");
 			}
 			operOrderService.save(operOrder);

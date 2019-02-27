@@ -53,7 +53,8 @@
 		customer.area AS "customer.area",
 		customer.address AS "customer.address",
 		store.name AS "store.name",
-		updateBy.name AS "updateBy.name"
+		updateBy.name AS "updateBy.name",
+		createBy.name AS "createBy.name"
 	</sql>
 	
 	<sql id="operOrderJoins">
@@ -61,7 +62,8 @@
 		LEFT JOIN c_agency agency ON agency.id = a.agency_id
 		LEFT JOIN c_store store ON store.id = a.store_id
 		LEFT JOIN c_customer customer ON customer.id = a.customer_id
-		LEFT JOIN sys_user updateBy ON updateBy.id = a.create_by
+		LEFT JOIN sys_user updateBy ON updateBy.id = a.update_by
+		LEFT JOIN sys_user createBy ON createBy.id = a.create_by
 	</sql>
 	
     

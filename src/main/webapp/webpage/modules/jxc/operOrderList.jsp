@@ -62,6 +62,7 @@
 	
 	<!-- 工具栏 -->
 	<div id="toolbar">
+			<c:if test="${from != 3 }">
 			<shiro:hasPermission name="jxc:operOrder:add">
 				<button id="add" class="btn btn-primary" onclick="add()">
 					<i class="glyphicon glyphicon-plus"></i> 新建
@@ -80,6 +81,7 @@
 			<shiro:hasPermission name="jxc:operOrder:import">
 				<button id="btnImport" class="btn btn-info"><i class="fa fa-folder-open-o"></i> 导入</button>
 			</shiro:hasPermission>
+			</c:if>
 			<shiro:hasPermission name="jxc:operOrder:export">
 	        		<button id="export" class="btn btn-warning">
 					<i class="fa fa-file-excel-o"></i> 导出

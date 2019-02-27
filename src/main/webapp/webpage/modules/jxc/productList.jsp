@@ -25,6 +25,15 @@
 				<label class="label-item single-overflow pull-left" title="名称/简码">名称/简码</label>
 				<form:input path="name" htmlEscape="false" maxlength="64"  class=" form-control"/>
 			</div>
+			<div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="计重编号">计重编号</label>
+				<form:input path="weightNo" htmlEscape="false" maxlength="64"  class=" form-control"/>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="经销商">经销商：</label>
+										<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="" labelName="agency.name" labelValue=""
+							 title="选择商家" cssClass="form-control" fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
+			</div>
 		 <div class="col-xs-12 col-sm-6 col-md-4">
 			<div style="margin-top:26px">
 			  <a  id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a>
