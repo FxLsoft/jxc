@@ -18,7 +18,7 @@ import com.jeeplus.modules.jxc.entity.Storage;
  */
 @MyBatisMapper
 public interface StorageMapper extends BaseMapper<Storage> {
-	public int deleteByProductId(@Param(value="productId")String productId);
+	public int deleteByProductId(@Param(value="productId")String productId, @Param(value="storeId") String storeId);
 	
 	List<Storage> getStorageList(Storage storage);
 }

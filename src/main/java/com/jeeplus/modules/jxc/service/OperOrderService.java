@@ -220,7 +220,7 @@ public class OperOrderService extends CrudService<OperOrderMapper, OperOrder> {
 					errDetail.add(operProduct);
 				}
 			} else {
-				storageService.deleteByProductId(operProduct.getId());
+				storageService.deleteByProductId(operProduct.getId(), operOrder.getStore().getId());
 				logger.debug("删除 " + operProduct.getName() + " 库存");
 				for (int i = operProduct.getPriceList().size() -1; i >= 0; i--) {
 					Price price = operProduct.getPriceList().get(i);

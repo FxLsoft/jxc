@@ -97,6 +97,15 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			${dataScope}
+			<if test="store != null and store.id != null and store.id != ''">
+				AND a.store_id = #{store.id}
+			</if>
+			<if test="product != null and product.id != null and product.id != ''">
+				AND a.product_id = #{product.id}
+			</if>
+			<if test="price != null and price.id != null and price.id != ''">
+				AND a.price_id = #{price.id}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -159,7 +168,7 @@
 	<update id="deleteByProductId">
 		UPDATE c_storage SET 
 			del_flag = '1'
-		WHERE product_id = #{productId}
+		WHERE product_id = #{productId} AND store_id = #{storeId}
 	</update>
 	
 	<!--逻辑删除-->

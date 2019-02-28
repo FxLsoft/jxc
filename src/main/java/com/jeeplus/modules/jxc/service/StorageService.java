@@ -53,7 +53,7 @@ public class StorageService extends CrudService<StorageMapper, Storage> {
 	}
 	
 	@Transactional(readOnly = false)
-	public int deleteByProductId(String productId) {
-		return storageMapper.deleteByProductId(productId);
+	public int deleteByProductId(String productId,String storeId) {
+		return storageMapper.deleteByProductId(productId, storeId);
 	}
 }
