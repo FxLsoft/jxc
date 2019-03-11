@@ -112,10 +112,12 @@
 			var ip = $('.input-price');
 			var iq = $('.input-quantity');
 			var id = $('.del_flag');
+			var itp = $('.input-totalPrice');
 			var sum = 0;
 			for (var i = 0; i < ip.length; i++) {
 				if (regex.test(ip[i].value) && regex.test(iq[i].value) && id[i].value == 0) {
 					sum += ip[i].value * iq[i].value;
+					itp[i].value = (ip[i].value * iq[i].value).toFixed(2);
 				}
 			}
 			if (from != 1) {
@@ -243,6 +245,7 @@
 						<th><font color="red">*</font>单位/参考价格</th>
 						<th><font color="red">*</font>数量</th>
 						<th><font color="red">*</font>价格</th>
+						<th>合计</th>
 						<th width="10">&nbsp;</th>
 					</tr>
 				</thead>
@@ -273,15 +276,14 @@
 						<sys:priceselect url="${ctx}/api/getPrice" id="operOrderDetailList{{idx}}_price" name="operOrderDetailList[{{idx}}].price.id" value="{{row.price.id}}" labelName="operOrderDetailList{{idx}}.price.costPrice" labelValue='{{row.id ? row.price.unit + "/" + row.price.costPrice : ""}}'
 							 title="选择价格属性" cssClass="form-control  required" fieldLabels="单位|换算比例|进价|预售价"  fieldKeys="unit|ratio|costPrice|advancePrice" searchLabels="关键字" searchKeys="searchKey" ></sys:priceselect>
 					</td>
-					
-					
 					<td>
 						<input id="operOrderDetailList{{idx}}_amount" name="operOrderDetailList[{{idx}}].amount" type="text" value="{{row.amount}}"    class="form-control  isFloatGtZero input-quantity required"/>
 					</td>
-					
-					
 					<td>
 						<input id="operOrderDetailList{{idx}}_operPrice" name="operOrderDetailList[{{idx}}].operPrice" type="text" value="{{row.operPrice}}"    class="form-control  isFloatGtZero input-price required"/>
+					</td>
+					<td>
+						<input id="operOrderDetailList{{idx}}_totalPrice" name="operOrderDetailList[{{idx}}].totalPrice" type="text" value="{{row.totalPrice}}"  readonly   class="form-control  isFloatGtZero input-totalPrice"/>
 					</td>
 					
 					<td class="text-center" width="10">

@@ -157,45 +157,41 @@ $(document).ready(function() {
 		        checkbox: true
 		       
 		    }
-			,{
-		        field: 'no',
-		        title: '单号',
-		        sortable: true,
-		        sortName: 'no'
-		        ,formatter:function(value, row , index){
-		        	value = jp.unescapeHTML(value);
-				   <c:choose>
-					   <c:when test="${fns:hasPermission('jxc:operOrder:edit')}">
-					      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
-				      </c:when>
-					  <c:when test="${fns:hasPermission('jxc:operOrder:view')}">
-					      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
-				      </c:when>
-					  <c:otherwise>
-					      return value;
-				      </c:otherwise>
-				   </c:choose>
-		         }
-		       
-		    }
-			,{
-		        field: 'agency.name',
-		        title: '商家',
-		        sortable: true,
-		        sortName: 'agency.name'
-		       
-		    }
-			,{
-		        field: 'status',
-		        title: '单据状态',
-		        sortable: true,
-		        sortName: 'status',
-		        formatter:function(value, row , index){
-		        	return jp.getDictLabel(${fns:toJson(fns:getDictList('order_status'))}, value, "-");
-		        }
-		       
-		    }
-			,{
+               ,{
+   		        field: 'createDate',
+   		        title: '创建时间',
+   		        sortable: true,
+   		        sortName: 'createDate'
+   		        	,formatter:function(value, row , index){
+   			        	value = jp.unescapeHTML(value);
+   					   <c:choose>
+   						   <c:when test="${fns:hasPermission('jxc:operOrder:edit')}">
+   						      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
+   					      </c:when>
+   						  <c:when test="${fns:hasPermission('jxc:operOrder:view')}">
+   						      return "<a href='javascript:view(\""+row.id+"\")'>"+value+"</a>";
+   					      </c:when>
+   						  <c:otherwise>
+   						      return value;
+   					      </c:otherwise>
+   					   </c:choose>
+   			         }
+   		    }
+               ,{
+   		        field: 'agency.name',
+   		        title: '商家',
+   		        sortable: true,
+   		        visible: from == 0,
+   		        sortName: 'agency.name'
+   		    }
+   			,{
+   		        field: 'customer.name',
+   		        title: '客户',
+   		        sortable: true,
+   		        visible: from == 2 || from == 4 || from == 5,
+   		        sortName: 'customer.name'
+   		    }
+   			,{
 		        field: 'realPrice',
 		        title: '总计',
 		        sortable: true,
@@ -203,9 +199,8 @@ $(document).ready(function() {
 		        formatter: function (value, row, index) {
 		        	return (value || 0).toFixed(2);
 		        }
-		       
 		    }
-			,{
+   			,{
 		        field: 'realPay',
 		        // 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
 		        title: from == 0 ? '实付' : from == 2 ? '实退' : from == 3 || from == 4 || from == 5 ? '实收' : '',
@@ -215,39 +210,54 @@ $(document).ready(function() {
 		        formatter: function (value, row, index) {
 		        	return (value || 0).toFixed(2);
 		        }
-		       
 		    }
-			,{
-		        field: 'store.name',
-		        title: '门店',
+   			,{
+		        field: 'realPay',
+		        // 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+		        title: '欠款',
 		        sortable: false,
-		        sortName: 'store.name'
-		       
+		        visible: from == 5,
+		        formatter: function (value, row, index) {
+		        	if (row.status == 1) {
+		        		return (row.realPrice - row.realPay).toFixed(2);
+		        	} else {
+		        		return '-';
+		        	}
+		        }
 		    }
 			,{
-		        field: 'createDate',
-		        title: '创建时间',
+		        field: 'realPay',
+		        // 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+		        title: '优惠',
+		        sortable: false,
+		        visible: from == 5,
+		        formatter: function (value, row, index) {
+		        	if (row.status == 3) {
+		        		return (row.realPrice - row.realPay).toFixed(2);
+		        	} else {
+		        		return '-';
+		        	}
+		        }
+		    }
+			,{
+		        field: 'status',
+		        title: '单据状态',
 		        sortable: true,
-		        sortName: 'createDate'
+		        sortName: 'status',
+		        formatter:function(value, row , index){
+		        	var color = "";
+		        	if (row.status == 0) {
+		        		color = '#3ca2e0';
+		        	} else if (row.status == 1) {
+		        		color = '#3ca2e0';
+		        	} else if (row.status == 2) {
+		        		color = '#f0ad4e';
+		        	} else if (row.status == 3) {
+		        		color = '#5cb85c';
+		        	}
+		        	return '<span style="color:' + color + '">' + jp.getDictLabel(${fns:toJson(fns:getDictList('order_status'))}, value, "-") + '</span>';
+		        }
 		    }
-			,{
-		        field: 'createBy.name',
-		        title: '创建人',
-		        sortable: false,
-		    }
-			,{
-		        field: 'updateDate',
-		        title: '更新时间',
-		        sortable: true,
-		        sortName: 'updateDate'
-		       
-		    }
-			,{
-		        field: 'updateBy.name',
-		        title: '更新人',
-		        sortable: false,
-		    }
-			
 			,{
 		        title: '操作',
 		        sortable: false,
@@ -272,8 +282,36 @@ $(document).ready(function() {
 		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', 1)">收款</button>');
 		        	}
 		        	
-		        	return btn.join();
+		        	return '<div style="white-space: nowrap;">' + btn.join() + '</div>';
 		        }
+		    }
+			,{
+		        field: 'createBy.name',
+		        title: '创建人',
+		        sortable: false,
+		    }
+			,{
+		        field: 'store.name',
+		        title: '门店',
+		        sortable: false,
+		        sortName: 'store.name'
+		    }
+			,{
+		        field: 'updateDate',
+		        title: '更新时间',
+		        sortable: true,
+		        sortName: 'updateDate'
+		    }
+			,{
+		        field: 'updateBy.name',
+		        title: '更新人',
+		        sortable: false,
+		    }
+			,{
+		        field: 'no',
+		        title: '单号',
+		        sortable: true,
+		        sortName: 'no'
 		    }
 		     ]
 		
