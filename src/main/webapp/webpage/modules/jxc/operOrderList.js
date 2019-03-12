@@ -32,28 +32,84 @@ function updateStatus(id, status) {
 var order_url = "${ctx}/api/payOrder";
 //1 付款 // 2 收帐 // 3 退款
 function payOrder(ids, maxPay, type) {
-	jp.prompt("确认" + (type == '1' ? '应收' : '应付') + "金额", maxPay.toFixed(2), function(text) {
-		if (/^\d+(\.\d+)?$/.test(text)) {
-			var pay = parseFloat(text);
-			var loading = jp.loading('正在付款。。。')
-			jp.post(order_url, {
-				payMoney: pay,
-				ids: ids,
-				type: type
-			}, function (res) {
-				console.log(res);
-				if (res.success) {
-					jp.close(loading);
-					jp.success("付款成功");
-					$('#operOrderTable').bootstrapTable('refresh');
-				} else {
-					jp.warning(res.msg);
-				}
-			});
-		} else {
-			jp.warning("输入数字非法");
-		}
-	});
+	if (from == 5 || from == 4) {
+		jp.open({
+			title: '收款信息',
+			content: '<div style="text-align: right;"><span>实收：<input type="number" id="operOrderRealPay" class="f-input"/></span><br/><span>已优惠：<input id="operOrderBenefit" type="number" style="margin-top: 10px" class="f-input"/></span></div>',
+			btn: ['确认', '取消'], 
+			maxHeight: '300px',
+			success: function(layer) {
+				var pay = layer.find('#operOrderRealPay');
+				var benefit = layer.find('#operOrderBenefit');
+				pay.val(maxPay.toFixed(2));
+				benefit.val(0.00);
+				pay.on('input', function() {
+					if (this.value > maxPay) {
+						pay.val(maxPay.toFixed(2));
+						benefit.val(0.00);
+					} else {
+						benefit.val((maxPay - this.value).toFixed(2));
+					}
+					
+				});
+				benefit.on('input', function() {
+					if (this.value > maxPay) {
+						benefit.val(maxPay.toFixed(2));
+						pay.val(0.00);
+					} else {
+						pay.val((maxPay - this.value).toFixed(2));
+					}
+				})
+			},
+			yes: function (index, layer) {
+				var payInput = layer.find('#operOrderRealPay');
+				var benefitInput = layer.find('#operOrderBenefit');
+				var pay = parseFloat(payInput.val());
+				var benefit = parseFloat(benefitInput.val());
+				var loading = jp.loading('正在提交。。。');
+				jp.post(order_url, {
+					payMoney: pay,
+					ids: ids,
+					type: type,
+					benefitMoney: benefit
+				}, function (res) {
+					if (res.success) {
+						jp.close(loading);
+						jp.success("提交成功");
+						$('#operOrderTable').bootstrapTable('refresh');
+					} else {
+						jp.warning(res.msg);
+					}
+				});
+			},
+			btn2: function (index, layer) {
+				console.log('btn2');
+			}
+		})
+	} else {
+		jp.prompt("确认" + (type == '1' ? '应收' : '应付') + "金额", maxPay.toFixed(2), function(text) {
+			if (/^\d+(\.\d+)?$/.test(text)) {
+				var pay = parseFloat(text);
+				var loading = jp.loading('正在提交。。。');
+				jp.post(order_url, {
+					payMoney: pay,
+					ids: ids,
+					type: type
+				}, function (res) {
+					console.log(res);
+					if (res.success) {
+						jp.close(loading);
+						jp.success("提交成功");
+						$('#operOrderTable').bootstrapTable('refresh');
+					} else {
+						jp.warning(res.msg);
+					}
+				});
+			} else {
+				jp.warning("输入数字非法");
+			}
+		});
+	}
 }
 
 function printDialog(id, type) {

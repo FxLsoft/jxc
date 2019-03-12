@@ -25,6 +25,8 @@ public class Storage extends DataEntity<Storage> {
 	private Double amount;		// 数量
 	private Double beginAmount;		// 开始 数量
 	private Double endAmount;		// 结束 数量
+	private String agencyName;
+	private String productName;
 	
 	public Storage() {
 		super();
@@ -91,6 +93,22 @@ public class Storage extends DataEntity<Storage> {
 
 	public void setEndAmount(Double endAmount) {
 		this.endAmount = endAmount;
+	}
+
+	public String getAgencyName() {
+		return agencyName;
+	}
+
+	public void setAgencyName(String agencyName) {
+		this.agencyName = agencyName;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
 	}
 		
 }

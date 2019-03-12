@@ -98,6 +98,13 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="col-sm-2 control-label"><font color="red">*</font>门店：</label>
+					<div class="col-sm-10">
+						<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${product.store.id}" labelName="product.name" labelValue="${product.store.name}"
+							 title="选择门店" cssClass="form-control required" fieldLabels="名称|区域|地址" fieldKeys="name|area|address" searchLabels="名称|" searchKeys="name" ></sys:gridselect>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="col-sm-2 control-label"><font color="red">*</font>经销商：</label>
 					<div class="col-sm-10">
 						<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="${product.agency.id}" labelName="agency.name" labelValue="${product.agency.name}"

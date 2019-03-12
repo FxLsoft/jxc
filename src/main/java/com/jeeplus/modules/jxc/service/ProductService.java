@@ -29,6 +29,9 @@ public class ProductService extends CrudService<ProductMapper, Product> {
 	@Autowired
 	private PriceMapper priceMapper;
 	
+	@Autowired
+	private ProductMapper productMapper;
+	
 	public Product get(String id) {
 		Product product = super.get(id);
 		product.setPriceList(priceMapper.findList(new Price(product)));
@@ -71,4 +74,7 @@ public class ProductService extends CrudService<ProductMapper, Product> {
 		priceMapper.delete(new Price(product));
 	}
 	
+	public Product getProductByWeightNo(String weightNo, String storeId) {
+		return productMapper.getProductByWeightNo(weightNo, storeId);
+	}
 }

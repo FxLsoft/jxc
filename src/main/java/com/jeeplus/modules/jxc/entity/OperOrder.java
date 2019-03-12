@@ -27,6 +27,7 @@ public class OperOrder extends DataEntity<OperOrder> {
 	private String source;		// 单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
 	private Double totalPrice;		// 总计
 	private Double realPrice;		// 实际总额
+	private Double benefitPrice;
 	private Double realPay;		// 实付
 	private Double beginTotalPrice;		// 开始 总计
 	private Double endTotalPrice;		// 结束 总计
@@ -161,5 +162,13 @@ public class OperOrder extends DataEntity<OperOrder> {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+
+	public Double getBenefitPrice() {
+		return benefitPrice;
+	}
+
+	public void setBenefitPrice(Double benefitPrice) {
+		this.benefitPrice = benefitPrice;
 	}
 }

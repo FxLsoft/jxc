@@ -14,7 +14,7 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-				
+		agency.name AS "agencyName",
 		store.name AS "store.name",
 				
 		product.name AS "product.name",
@@ -29,6 +29,7 @@
 		LEFT JOIN c_store store ON store.id = a.store_id
 		LEFT JOIN c_product product ON product.id = a.product_id
 		LEFT JOIN c_price price ON price.id = a.price_id
+		LEFT JOIN c_agency agency ON agency.id = product.agency_id
 	</sql>
 	
     
@@ -59,6 +60,18 @@
 			</if>
 			<if test="beginAmount != null and endAmount != null ">
 				AND a.amount BETWEEN #{beginAmount} AND #{endAmount}
+			</if>
+			<if test="agencyName != null and agencyName != ''">
+				AND agency.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{agencyName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{agencyName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{agencyName},'%')</if>
+			</if>
+			<if test="productName != null and productName != ''">
+				AND product.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{productName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{productName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{productName},'%')</if>
 			</if>
 		</where>
 		<choose>

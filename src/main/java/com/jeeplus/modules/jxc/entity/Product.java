@@ -21,6 +21,7 @@ public class Product extends DataEntity<Product> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;			// 名称
+	private Store store;		// 门店
 	private String brevityCode;		// 简码
 	private String isWeight;		// 是否计重（0：否；1：是）
 	private String weightNo;		// 计重编号
@@ -134,5 +135,13 @@ public class Product extends DataEntity<Product> {
 
 	public void setBaseUnit(Integer baseUnit) {
 		this.baseUnit = baseUnit;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
 	}
 }

@@ -14,6 +14,7 @@ import org.apache.ibatis.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -147,16 +148,25 @@ public class MainController extends BaseController{
 	
 	@RequestMapping("/payOrder")
 	@ResponseBody
-	public AjaxJson payOrder(String ids, String type, String payMoney) {
+	public AjaxJson payOrder(String ids, String type, String payMoney, String benefitMoney) {
 		AjaxJson result = new AjaxJson();
 		String[] idArr = ids.split(",");
 		String[] payMoneyArr = payMoney.split(",");
+		if (StringUtils.isEmpty(benefitMoney)) {
+			benefitMoney = "";
+		}
+		String[] benefitMoneyArr = benefitMoney.split(",");
 		String payNo = "P" + IdWorker.getId();
 		for (int i = 0; i < Math.min(payMoneyArr.length, idArr.length); i++) {
 			String id = idArr[i];
 			OperOrder operOrder = operOrderService.get(id);
 			if (operOrder == null) continue;
 			Double pay = Double.parseDouble(payMoneyArr[i]);
+			Double benefit = Double.parseDouble(DictUtils.getDictValue("small", "order_complete_deviation", "0"));
+			if (benefitMoneyArr.length - 1 >= i  && !StringUtils.isEmpty(benefitMoneyArr[i])) {
+				benefit = Double.parseDouble(benefitMoneyArr[i]);
+				operOrder.setBenefitPrice(operOrder.getBenefitPrice() + benefit);
+			}
 			if (pay < 0) continue;
 			operOrder.setRealPay(operOrder.getRealPay() + pay);
 			OperOrderPay orderPay = new OperOrderPay();
@@ -165,8 +175,7 @@ public class MainController extends BaseController{
 			orderPay.setPrice(pay);
 			orderPay.setOperOrder(operOrder);
 			operOrderPayService.save(orderPay);
-			logger.debug("付款误差：" + DictUtils.getDictValue("small", "order_complete_deviation", "0"));
-			if ((operOrder.getRealPrice() - operOrder.getRealPay()) <= Double.parseDouble(DictUtils.getDictValue("small", "order_complete_deviation", "0"))) {
+			if ((operOrder.getRealPrice() - operOrder.getRealPay()) <= benefit) {
 				operOrder.setStatus("3");
 			}
 			operOrderService.save(operOrder);

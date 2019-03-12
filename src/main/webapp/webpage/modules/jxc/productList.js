@@ -134,6 +134,13 @@ $(document).ready(function() {
 		       
 		    }
 			,{
+		        field: 'store.name',
+		        title: '门店',
+		        sortable: true,
+		        sortName: 'store.name'
+		       
+		    }
+			,{
 		        field: 'agency.name',
 		        title: '经销商',
 		        sortable: true,

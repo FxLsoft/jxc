@@ -13,6 +13,7 @@
 		a.source AS "source",
 		a.total_price AS "totalPrice",
 		a.real_price AS "realPrice",
+		a.benefit_price AS "benefitPrice",
 		a.real_pay AS "realPay",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -33,6 +34,7 @@
 		a.source AS "source",
 		a.total_price AS "totalPrice",
 		a.real_price AS "realPrice",
+		a.benefit_price AS "benefitPrice",
 		a.real_pay AS "realPay",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -132,7 +134,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -168,6 +170,7 @@
 			source,
 			total_price,
 			real_price,
+			benefit_price,
 			real_pay,
 			create_by,
 			create_date,
@@ -186,6 +189,7 @@
 			#{source},
 			#{totalPrice},
 			#{realPrice},
+			#{benefitPrice},
 			#{realPay},
 			#{createBy.id},
 			#{createDate},
@@ -207,6 +211,7 @@
 			source = #{source},
 			total_price = #{totalPrice},
 			real_price = #{realPrice},
+			benefit_price = #{benefitPrice},
 			real_pay = #{realPay},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},

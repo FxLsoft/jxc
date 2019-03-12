@@ -21,12 +21,20 @@
 	<div id="search-collapse" class="collapse">
 		<div class="accordion-inner">
 			<form:form id="searchForm" modelAttribute="storage" class="form form-horizontal well clearfix">
-			 <div class="col-xs-12 col-sm-6 col-md-4">
+			 <div class="col-xs-12 col-sm-6 col-md-3">
 				<label class="label-item single-overflow pull-left" title="门店：">门店：</label>
 				<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${storage.store.id}" labelName="store.name" labelValue="${storage.store.name}"
 					title="选择门店" cssClass="form-control required" fieldLabels="名称|省市区" fieldKeys="name|area" searchLabels="名称" searchKeys="name" ></sys:gridselect>
 			</div>
-		 <div class="col-xs-12 col-sm-6 col-md-4">
+			<div class="col-xs-12 col-sm-6 col-md-3">
+				<label class="label-item single-overflow pull-left" title="商品">商品</label>
+				<form:input path="productName" htmlEscape="false" maxlength="64"  class=" form-control"/>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-3">
+				<label class="label-item single-overflow pull-left" title="经销商">经销商</label>
+				<form:input path="agencyName" htmlEscape="false" maxlength="64"  class=" form-control"/>
+			</div>
+		 <div class="col-xs-12 col-sm-6 col-md-3">
 			<div style="margin-top:26px">
 			  <a  id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a>
 			  <a  id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm" ><i class="fa fa-refresh"></i> 重置</a>

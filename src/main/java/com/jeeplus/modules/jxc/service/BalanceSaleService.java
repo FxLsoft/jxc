@@ -129,7 +129,7 @@ public class BalanceSaleService extends CrudService<BalanceSaleMapper, BalanceSa
 		}
 		for (BalanceSaleDetail balanceSaleDetail: balanceSale.getBalanceSaleDetailList()) {
 			// 通过产品计重编号获取产品详情
-			Product product = productService.findUniqueByProperty("weight_no", balanceSaleDetail.getProductNo());
+			Product product = productService.getProductByWeightNo(balanceSaleDetail.getProductNo(), balance.getStore().getId());
 			if (product == null) {
 				errMsg.add("计重编号为：" + balanceSaleDetail.getProductNo() + " 的产品未被管理；\r\n");
 				logger.debug("计重编号为：" + balanceSaleDetail.getProductNo() + " 的产品未被管理；\r\n");

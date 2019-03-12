@@ -117,6 +117,12 @@ $(document).ready(function() {
 		       
 		    }
 			,{
+		        field: 'agencyName',
+		        title: '经销商',
+		        sortable: true,
+		        sortName: 'agency.name'
+		    }
+			,{
 		        field: 'amount',
 		        title: '数量',
 		        sortable: true,

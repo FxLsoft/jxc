@@ -10,26 +10,23 @@
 		a.weight_no AS "weightNo",
 		a.agency_id AS "agency.id",
 		a.category_id AS "category.id",
+		a.store_id AS "store.id",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-				
-				
-				
-				
-				
 		agency.name AS "agency.name",
-				
-		category.name AS "category.name"
+		category.name AS "category.name",
+		store.name AS "store.name"
 	</sql>
 	
 	<sql id="productJoins">
 		
 		LEFT JOIN c_agency agency ON agency.id = a.agency_id
 		LEFT JOIN c_category category ON category.id = a.category_id
+		LEFT JOIN c_store store ON store.id = a.store_id
 	</sql>
 	
     
@@ -109,6 +106,7 @@
 			weight_no,
 			agency_id,
 			category_id,
+			store_id,
 			create_by,
 			create_date,
 			update_by,
@@ -123,6 +121,7 @@
 			#{weightNo},
 			#{agency.id},
 			#{category.id},
+			#{store.id},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -140,6 +139,7 @@
 			weight_no = #{weightNo},
 			agency_id = #{agency.id},
 			category_id = #{category.id},
+			store_id = #{store.id},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -167,6 +167,10 @@
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
 		select * FROM c_product  where ${propertyName} = '${value}' AND del_flag = '0'
+	</select>
+	
+	<select id="getProductByWeightNo" resultType="Product" statementType="STATEMENT">
+		select * FROM c_product  where weight_no = '${weightNo}' AND store_id = '${storeId}' AND del_flag = '0'
 	</select>
 	
 </mapper>

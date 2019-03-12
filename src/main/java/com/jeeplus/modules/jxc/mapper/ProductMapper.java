@@ -3,6 +3,8 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
 import com.jeeplus.modules.jxc.entity.Product;
@@ -14,5 +16,5 @@ import com.jeeplus.modules.jxc.entity.Product;
  */
 @MyBatisMapper
 public interface ProductMapper extends BaseMapper<Product> {
-	
+	Product getProductByWeightNo(@Param("weightNo") String weightNo, @Param("storeId") String storeId);
 }
