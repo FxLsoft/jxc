@@ -40,7 +40,7 @@ import com.jeeplus.modules.jxc.service.ReportService;
 /**
  * 财务报表Controller
  * @author FxLsoft
- * @version 2019-02-23
+ * @version 2019-03-13
  */
 @Controller
 @RequestMapping(value = "${adminPath}/jxc/report")

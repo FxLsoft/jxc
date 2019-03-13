@@ -55,6 +55,8 @@
 		customer.area AS "customer.area",
 		customer.address AS "customer.address",
 		store.name AS "store.name",
+		store.address AS "store.address",
+		office.name AS "store.officeName",
 		updateBy.name AS "updateBy.name",
 		createBy.name AS "createBy.name"
 	</sql>
@@ -66,6 +68,7 @@
 		LEFT JOIN c_customer customer ON customer.id = a.customer_id
 		LEFT JOIN sys_user updateBy ON updateBy.id = a.update_by
 		LEFT JOIN sys_user createBy ON createBy.id = a.create_by
+		LEFT JOIN sys_office office ON office.id = store.office
 	</sql>
 	
     
@@ -100,6 +103,9 @@
 					<if test="dbName == 'oracle'">'%'||#{no}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{no}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{no},'%')</if>
+			</if>
+			<if test="beginCreateDate != null and endCreateDate != null ">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
 			</if>
 			<if test="agency != null and agency.id != null and agency.id != ''">
 				AND a.agency_id = #{agency.id}

@@ -25,6 +25,7 @@ public class Store extends DataEntity<Store> {
 	private User admin;		// 管理者
 	private Double lon;		// 经度
 	private Double lat;		// 纬度
+	private String officeName;
 	
 	public Store() {
 		super();
@@ -97,6 +98,14 @@ public class Store extends DataEntity<Store> {
 
 	public void setLat(Double lat) {
 		this.lat = lat;
+	}
+
+	public String getOfficeName() {
+		return officeName;
+	}
+
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
 	}
 	
 }

@@ -4,6 +4,8 @@
 package com.jeeplus.modules.jxc.entity;
 
 import com.jeeplus.modules.jxc.entity.Agency;
+
+import java.util.Date;
 import java.util.List;
 import com.google.common.collect.Lists;
 
@@ -31,6 +33,8 @@ public class OperOrder extends DataEntity<OperOrder> {
 	private Double realPay;		// 实付
 	private Double beginTotalPrice;		// 开始 总计
 	private Double endTotalPrice;		// 结束 总计
+	private Date beginCreateDate;
+	private Date endCreateDate;
 	private List<OperOrderDetail> operOrderDetailList = Lists.newArrayList();		// 子表列表
 	private List<OperOrderPay> operOrderPayList = Lists.newArrayList();		// 子表列表
 	
@@ -170,5 +174,21 @@ public class OperOrder extends DataEntity<OperOrder> {
 
 	public void setBenefitPrice(Double benefitPrice) {
 		this.benefitPrice = benefitPrice;
+	}
+
+	public Date getEndCreateDate() {
+		return endCreateDate;
+	}
+
+	public void setEndCreateDate(Date endCreateDate) {
+		this.endCreateDate = endCreateDate;
+	}
+
+	public Date getBeginCreateDate() {
+		return beginCreateDate;
+	}
+
+	public void setBeginCreateDate(Date beginCreateDate) {
+		this.beginCreateDate = beginCreateDate;
 	}
 }

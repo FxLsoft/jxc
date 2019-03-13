@@ -3,6 +3,10 @@
  */
 package com.jeeplus.modules.jxc.mapper;
 
+import java.util.Date;
+
+import org.apache.ibatis.annotations.Select;
+
 import com.jeeplus.core.persistence.BaseMapper;
 import com.jeeplus.core.persistence.annotation.MyBatisMapper;
 import com.jeeplus.modules.jxc.entity.Report;
@@ -10,9 +14,10 @@ import com.jeeplus.modules.jxc.entity.Report;
 /**
  * 财务报表MAPPER接口
  * @author FxLsoft
- * @version 2019-02-23
+ * @version 2019-03-13
  */
 @MyBatisMapper
 public interface ReportMapper extends BaseMapper<Report> {
-	
+	@Select("SELECT max(r.create_date) FROM c_report r;")
+	Date getLastCreateDate();
 }

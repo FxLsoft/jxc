@@ -42,15 +42,33 @@
 					<form:options items="${fns:getDictList('order_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
-			 <%-- <div class="col-xs-12 col-sm-6 col-md-4">
-				<label class="label-item single-overflow pull-left" title="单据来源（0：直接入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）：">单据来源：</label>
-				<form:select path="source"  class="form-control m-b">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('order_from')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div> --%>
-			 
-		 <div class="col-xs-12 col-sm-6 col-md-4">
+			 <div class="col-xs-12 col-sm-6 col-md-6">
+				 <div class="form-group">
+					<label class="label-item single-overflow pull-left" title="创建时间：">&nbsp;创建时间：</label>
+					<div class="col-xs-12">
+						   <div class="col-xs-12 col-sm-5">
+					        	  <div class='input-group date' id='beginCreateDate' style="left: -10px;" >
+					                   <input type='text'  name="beginCreateDate" class="form-control"  />
+					                   <span class="input-group-addon">
+					                       <span class="glyphicon glyphicon-calendar"></span>
+					                   </span>
+					             </div>	
+					        </div>
+					        <div class="col-xs-12 col-sm-1">
+					        		~
+					       	</div>
+					        <div class="col-xs-12 col-sm-5">
+					          	<div class='input-group date' id='endCreateDate' style="left: -10px;" >
+					                   <input type='text'  name="endCreateDate" class="form-control" />
+					                   <span class="input-group-addon">
+					                       <span class="glyphicon glyphicon-calendar"></span>
+					                   </span>
+					           	</div>	
+					        </div>
+					</div>
+				</div>
+			</div>
+		 <div class="col-xs-12 col-sm-6 col-md-2">
 			<div style="margin-top:26px">
 			  <a  id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a>
 			  <a  id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm" ><i class="fa fa-refresh"></i> 重置</a>

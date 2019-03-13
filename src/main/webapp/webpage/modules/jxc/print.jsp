@@ -24,8 +24,9 @@
 			<p>车号：{{vm.agency.plateNumber}}</p>
 			<p>时间：{{date}}</p>
 		</div>
-		<div v-els>
-			<p style="text-align: center;">{{vm.customer.name}}</p>
+		<div v-else>
+			<p style="text-align: center;">{{vm.store.officeName}}</p>
+			<p>客户：{{vm.customer.name}}</p>
 			<p>单号：{{vm.no}}</p>
 			<p>联系方式：{{vm.customer.phone}}</p>
 			<p>地址：{{vm.customer.address}}</p>
@@ -46,7 +47,7 @@
             	<td colspan="5" style="padding-top:10px">总计(<span>人民币</span>)：{{(vm.realPrice || 0).toFixed(2)}}</td>
             </tr>
 		</table>
-		<!-- <p style="margin-top: 10px; transform: scale(0.8); white-space: nowrap; margin-bottom: 20px;">请顾客当面点清货物，出市场外概不负责。</p> -->
+		<p v-if="!vm.isShowAgency" style="margin-top: 10px; white-space: nowrap; margin-bottom: 20px;text-align: center;">{{vm.store.address}}</p>
 	</div>
 	
 </body>

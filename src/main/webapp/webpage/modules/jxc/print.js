@@ -12,7 +12,8 @@ $(document).ready(function() {
 			return {
 				vm: {
 					agency: {},
-					customer: {}
+					customer: {},
+					store: {}
 				},
 				date: ''
 			}

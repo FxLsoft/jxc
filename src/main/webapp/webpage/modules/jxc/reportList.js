@@ -85,10 +85,10 @@ $(document).ready(function() {
 		       
 		    }
 			,{
-		        field: 'date',
-		        title: '日期',
+		        field: 'title',
+		        title: '报表头',
 		        sortable: true,
-		        sortName: 'date'
+		        sortName: 'title'
 		        ,formatter:function(value, row , index){
 		        	value = jp.unescapeHTML(value);
 				   <c:choose>
@@ -103,6 +103,13 @@ $(document).ready(function() {
 				      </c:otherwise>
 				   </c:choose>
 		         }
+		       
+		    }
+			,{
+		        field: 'date',
+		        title: '日期',
+		        sortable: true,
+		        sortName: 'date'
 		       
 		    }
 			,{
@@ -127,6 +134,27 @@ $(document).ready(function() {
 		       
 		    }
 			,{
+		        field: 'saleBenefit',
+		        title: '销售优惠',
+		        sortable: true,
+		        sortName: 'saleBenefit'
+		       
+		    }
+			,{
+		        field: 'purchaseOut',
+		        title: '采购应付',
+		        sortable: true,
+		        sortName: 'purchaseOut'
+		       
+		    }
+			,{
+		        field: 'purchaseRealOut',
+		        title: '采购实付',
+		        sortable: true,
+		        sortName: 'purchaseRealOut'
+		       
+		    }
+			,{
 		        field: 'returnPay',
 		        title: '退货应付',
 		        sortable: true,
@@ -148,6 +176,13 @@ $(document).ready(function() {
 		       
 		    }
 			,{
+		        field: 'oldDebtOut',
+		        title: '欠款已付',
+		        sortable: true,
+		        sortName: 'oldDebtOut'
+		       
+		    }
+			,{
 		        field: 'balanceIn',
 		        title: '电子秤销售',
 		        sortable: true,
@@ -155,10 +190,45 @@ $(document).ready(function() {
 		       
 		    }
 			,{
+		        field: 'wxPay',
+		        title: '微信收款',
+		        sortable: true,
+		        sortName: 'wxPay'
+		       
+		    }
+			,{
+		        field: 'aliPay',
+		        title: '支付宝收款',
+		        sortable: true,
+		        sortName: 'aliPay'
+		       
+		    }
+			,{
+		        field: 'bankPay',
+		        title: '银行卡收款',
+		        sortable: true,
+		        sortName: 'bankPay'
+		       
+		    }
+			,{
+		        field: 'moenyPay',
+		        title: '现付',
+		        sortable: true,
+		        sortName: 'moenyPay'
+		       
+		    }
+			,{
 		        field: 'totalIn',
 		        title: '实收总金额',
 		        sortable: true,
 		        sortName: 'totalIn'
+		       
+		    }
+			,{
+		        field: 'totalRealIn',
+		        title: '实收总计',
+		        sortable: true,
+		        sortName: 'totalRealIn'
 		       
 		    }
 			,{

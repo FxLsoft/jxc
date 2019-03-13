@@ -55,43 +55,97 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label">销售应收：</label>
 					<div class="col-sm-10">
-						<form:input path="saleIn" htmlEscape="false"    class="form-control "/>
+						<form:input path="saleIn" htmlEscape="false"    class="form-control  number"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">销售实收：</label>
 					<div class="col-sm-10">
-						<form:input path="saleRealIn" htmlEscape="false"    class="form-control "/>
+						<form:input path="saleRealIn" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">销售优惠：</label>
+					<div class="col-sm-10">
+						<form:input path="saleBenefit" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">采购应付：</label>
+					<div class="col-sm-10">
+						<form:input path="purchaseOut" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">采购实付：</label>
+					<div class="col-sm-10">
+						<form:input path="purchaseRealOut" htmlEscape="false"    class="form-control  number"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">退货应付：</label>
 					<div class="col-sm-10">
-						<form:input path="returnPay" htmlEscape="false"    class="form-control "/>
+						<form:input path="returnPay" htmlEscape="false"    class="form-control  number"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">退货实付：</label>
 					<div class="col-sm-10">
-						<form:input path="returnRealPay" htmlEscape="false"    class="form-control "/>
+						<form:input path="returnRealPay" htmlEscape="false"    class="form-control  number"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">欠款已收：</label>
 					<div class="col-sm-10">
-						<form:input path="oldDebtIn" htmlEscape="false"    class="form-control "/>
+						<form:input path="oldDebtIn" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">欠款已付：</label>
+					<div class="col-sm-10">
+						<form:input path="oldDebtOut" htmlEscape="false"    class="form-control  number"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">电子秤销售：</label>
 					<div class="col-sm-10">
-						<form:input path="balanceIn" htmlEscape="false"    class="form-control "/>
+						<form:input path="balanceIn" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">微信收款：</label>
+					<div class="col-sm-10">
+						<form:input path="wxPay" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">支付宝收款：</label>
+					<div class="col-sm-10">
+						<form:input path="aliPay" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">银行卡收款：</label>
+					<div class="col-sm-10">
+						<form:input path="bankPay" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">现付：</label>
+					<div class="col-sm-10">
+						<form:input path="moenyPay" htmlEscape="false"    class="form-control  number"/>
 					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-sm-2 control-label">实收总金额：</label>
 					<div class="col-sm-10">
-						<form:input path="totalIn" htmlEscape="false"    class="form-control "/>
+						<form:input path="totalIn" htmlEscape="false"    class="form-control  number"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">实收总计：</label>
+					<div class="col-sm-10">
+						<form:input path="totalRealIn" htmlEscape="false"    class="form-control  number"/>
 					</div>
 				</div>
 				<div class="form-group">

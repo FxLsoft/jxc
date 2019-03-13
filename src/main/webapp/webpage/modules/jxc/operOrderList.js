@@ -445,7 +445,12 @@ $(document).ready(function() {
 		  $('#operOrderTable').bootstrapTable('refresh');
 		});
 		
-		
+	 	$('#beginCreateDate').datetimepicker({
+	 		format: "YYYY-MM-DD 00:00:00"
+		});
+		$('#endCreateDate').datetimepicker({
+			 format: "YYYY-MM-DD 23:59:59"
+		});
 	});
 		
   function getIdSelections() {
