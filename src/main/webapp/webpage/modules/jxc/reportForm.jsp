@@ -16,7 +16,7 @@
 			jp.ajaxForm("#inputForm",function(data){
 				if(data.success){
 				    jp.success(data.msg);
-					jp.go("${ctx}/jxc/report");
+					jp.go("${ctx}/jxc/report?from=" + from);
 				}else{
 				    jp.error(data.msg);
 				    $("#inputForm").find("button:submit").button("reset");
