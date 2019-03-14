@@ -3,8 +3,6 @@
  */
 package com.jeeplus.modules.jxc.web;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -18,29 +16,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.collect.Lists;
-import com.jeeplus.common.utils.DateUtils;
-import com.jeeplus.common.config.Global;
 import com.jeeplus.common.json.AjaxJson;
-import com.jeeplus.core.persistence.Page;
-import com.jeeplus.core.web.BaseController;
+import com.jeeplus.common.utils.DateUtils;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
+import com.jeeplus.core.persistence.Page;
+import com.jeeplus.core.web.BaseController;
 import com.jeeplus.modules.jxc.entity.Report;
 import com.jeeplus.modules.jxc.service.ReportService;
 
 /**
  * 财务报表Controller
  * @author FxLsoft
- * @version 2019-03-13
+ * @version 2019-03-14
  */
 @Controller
 @RequestMapping(value = "${adminPath}/jxc/report")
@@ -66,8 +62,9 @@ public class ReportController extends BaseController {
 	 */
 	@RequiresPermissions("jxc:report:list")
 	@RequestMapping(value = {"list", ""})
-	public String list(Report report, Model model) {
+	public String list(Report report, Model model, String from) {
 		model.addAttribute("report", report);
+		model.addAttribute("from", from);
 		return "modules/jxc/reportList";
 	}
 	
@@ -87,9 +84,10 @@ public class ReportController extends BaseController {
 	 */
 	@RequiresPermissions(value={"jxc:report:view","jxc:report:add","jxc:report:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form/{mode}")
-	public String form(@PathVariable String mode, Report report, Model model) {
+	public String form(@PathVariable String mode, Report report, Model model, String from) {
 		model.addAttribute("report", report);
 		model.addAttribute("mode", mode);
+		model.addAttribute("from", from);
 		return "modules/jxc/reportForm";
 	}
 
@@ -99,7 +97,7 @@ public class ReportController extends BaseController {
 	@ResponseBody
 	@RequiresPermissions(value={"jxc:report:add","jxc:report:edit"},logical=Logical.OR)
 	@RequestMapping(value = "save")
-	public AjaxJson save(Report report, Model model) throws Exception{
+	public AjaxJson save(Report report, Model model, String from) throws Exception{
 		AjaxJson j = new AjaxJson();
 		/**
 		 * 后台hibernate-validation插件校验
@@ -114,6 +112,7 @@ public class ReportController extends BaseController {
 		reportService.save(report);//保存
 		j.setSuccess(true);
 		j.setMsg("保存报表信息成功");
+		model.addAttribute("from", from);
 		return j;
 	}
 	

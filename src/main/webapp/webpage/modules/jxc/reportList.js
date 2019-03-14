@@ -1,5 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <script>
+function getUrlParam (name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]); return null;
+}
+//单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
+var from = getUrlParam('from') || 'in';
+console.log('from', from);
 $(document).ready(function() {
 	$('#reportTable').bootstrapTable({
 		 
@@ -123,113 +131,295 @@ $(document).ready(function() {
 		        field: 'saleIn',
 		        title: '销售应收',
 		        sortable: true,
+		        visible: from == 'in',
 		        sortName: 'saleIn'
-		       
+		        ,formatter: function (value, row, index) {
+			        if (value != undefined) {
+			        	return (value || 0).toFixed(2);
+			        } else {
+			        	return '-';
+			        }
+			    }
 		    }
 			,{
 		        field: 'saleRealIn',
 		        title: '销售实收',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'saleRealIn'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'saleBenefit',
 		        title: '销售优惠',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'saleBenefit'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'purchaseOut',
 		        title: '采购应付',
+		        visible: from == 'out',
 		        sortable: true,
 		        sortName: 'purchaseOut'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'purchaseRealOut',
 		        title: '采购实付',
+		        visible: from == 'out',
 		        sortable: true,
 		        sortName: 'purchaseRealOut'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'returnPay',
 		        title: '退货应付',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'returnPay'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'returnRealPay',
 		        title: '退货实付',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'returnRealPay'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'oldDebtIn',
 		        title: '欠款已收',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'oldDebtIn'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'oldDebtOut',
 		        title: '欠款已付',
+		        visible: from == 'out',
 		        sortable: true,
 		        sortName: 'oldDebtOut'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'balanceIn',
 		        title: '电子秤销售',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'balanceIn'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'totalIn',
+		        title: '总金额',
+		        visible: from == 'in',
+		        sortable: true,
+		        sortName: 'totalIn'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'wxPay',
 		        title: '微信收款',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'wxPay'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'aliPay',
 		        title: '支付宝收款',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'aliPay'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'bankPay',
 		        title: '银行卡收款',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'bankPay'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'moenyPay',
-		        title: '现付',
+		        title: '现金收款',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'moenyPay'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
-		        field: 'totalIn',
-		        title: '实收总金额',
+		        field: 'wxPayOut',
+		        title: '微信付款',
+		        visible: from == 'out',
 		        sortable: true,
-		        sortName: 'totalIn'
-		       
+		        sortName: 'wxPayOut'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'aliPayOut',
+		        title: '支付宝付款',
+		        visible: from == 'out',
+		        sortable: true,
+		        sortName: 'aliPayOut'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'bankPayOut',
+		        title: '银行卡付款',
+		        visible: from == 'out',
+		        sortable: true,
+		        sortName: 'bankPayOut'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'moenyPayOut',
+		        title: '现金付款',
+		        visible: from == 'out',
+		        sortable: true,
+		        sortName: 'moenyPayOut'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'totalRealIn',
 		        title: '实收总计',
+		        visible: from == 'in',
 		        sortable: true,
 		        sortName: 'totalRealIn'
-		       
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'totalRealOut',
+		        title: '实付总计',
+		        visible: from == 'out',
+		        sortable: true,
+		        sortName: 'totalRealOut'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
 		    }
 			,{
 		        field: 'createDate',
@@ -329,7 +519,21 @@ $(document).ready(function() {
 		$('#endCreateDate').datetimepicker({
 			 format: "YYYY-MM-DD HH:mm:ss"
 		});
-		
+		$("#createReport").click("click", function() {
+			jp.confirm("确认生成报表?", function(){
+				  var loading = jp.loading('正在生成。。。')
+					jp.post("${ctx}/api/createReport", {}, function (res) {
+						console.log(res);
+						if (res.success) {
+							jp.close(loading);
+							jp.success("生成成功");
+							$('#reportTable').bootstrapTable('refresh');
+						} else {
+							jp.warning(res.msg);
+						}
+					});
+			  })
+		});
 	});
 		
   function getIdSelections() {
@@ -357,21 +561,21 @@ $(document).ready(function() {
   	$('#reportTable').bootstrapTable('refresh');
   }
   function add(){
-		jp.go("${ctx}/jxc/report/form/add");
+		jp.go("${ctx}/jxc/report/form/add" + "?from=" + from);
 	}
 
   function edit(id){
 	  if(id == undefined){
 		  id = getIdSelections();
 	  }
-	  jp.go("${ctx}/jxc/report/form/edit?id=" + id);
+	  jp.go("${ctx}/jxc/report/form/edit?id=" + id + "&from=" + from);
   }
 
   function view(id) {
       if(id == undefined){
           id = getIdSelections();
       }
-      jp.go("${ctx}/jxc/report/form/view?id=" + id);
+      jp.go("${ctx}/jxc/report/form/view?id=" + id + "&from=" + from);
   }
   
 </script>

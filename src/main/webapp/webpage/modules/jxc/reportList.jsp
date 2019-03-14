@@ -100,6 +100,9 @@
 					<i class="fa fa-search-plus"></i> 查看
 				</button>
 			</shiro:hasPermission>
+			<button id="createReport" class="btn btn-success">
+		            <i class="glyphicon glyphicon-edit"></i> 今日报表生成
+		        </button>
 		    </div>
 		
 	<!-- 表格 -->

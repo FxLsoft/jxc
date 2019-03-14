@@ -14,7 +14,8 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		b.no AS 'operOrder.no',
-		b.create_date AS 'operOrder.createDate'
+		b.create_date AS 'operOrder.createDate',
+		b.source AS 'operOrder.source'
     </sql>
 	<sql id="operOrderPayColumns">
 		a.id AS "id",

@@ -64,6 +64,7 @@ public class ReportService extends CrudService<ReportMapper, Report> {
 	}
 
 	// 生成报表
+	@Transactional(readOnly = false)
 	public boolean createReport() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		List<Store> storeList = storeService.getAllStore();
@@ -74,35 +75,53 @@ public class ReportService extends CrudService<ReportMapper, Report> {
 		}
 		for (Store store : storeList) {
 			Report report = new Report();
-			Double saleIn = 0d, saleRealIn = 0d, returnPay = 0d, returnRealPay = 0d, oldDebtIn = 0d, totalIn = 0d,
-					balanceIn = 0d, balanceRealIn = 0d;
+			Double saleIn = 0d, 
+					saleRealIn = 0d, 
+					purchaseOut = 0d,
+					saleBenefit = 0d,
+					purchaseRealOut = 0d,
+					oldDebtOut = 0d,
+					returnPay = 0d, 
+					returnRealPay = 0d, 
+					oldDebtIn = 0d, 
+					totalIn = 0d,
+					balanceIn = 0d, 
+					balanceRealIn = 0d;
 			List<OperOrder> operOrderList = operOrderService.findListByWhere(store.getId(), beginDate, endDate);
-			List<OperOrderPay> operOrderPayList = operOrderPayService.findListByWhere(store.getId(), beginDate,
-					endDate);
+			List<OperOrderPay> operOrderPayList = operOrderPayService.findListByWhere(store.getId(), beginDate, endDate);
 			// 单据来源 （0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
 			for (OperOrder operOrder : operOrderList) {
 				if ("4".equals(operOrder.getSource()) || "5".equals(operOrder.getSource())) {
-					saleIn += operOrder.getRealPrice();
-					saleRealIn += operOrder.getRealPay();
+					saleIn += (operOrder.getRealPrice() == null ? 0d : operOrder.getRealPrice());
+					saleRealIn += (operOrder.getRealPay() == null ? 0d : operOrder.getRealPay());
+					saleBenefit += (operOrder.getBenefitPrice() == null ? 0d : operOrder.getBenefitPrice());
 				}
 				if ("2".equals(operOrder.getSource())) {
-					returnPay += operOrder.getRealPrice();
-					returnRealPay += operOrder.getRealPay();
+					returnPay += (operOrder.getRealPrice() == null ? 0d : operOrder.getRealPrice());
+					returnRealPay += (operOrder.getRealPay() == null ? 0d : operOrder.getRealPay());
 				}
 				if ("3".equals(operOrder.getSource())) {
-					balanceIn += operOrder.getRealPrice();
-					balanceRealIn += operOrder.getRealPay();
+					balanceIn += (operOrder.getRealPrice() == null ? 0d : operOrder.getRealPrice());
+					balanceRealIn += (operOrder.getRealPay() == null ? 0d : operOrder.getRealPay());
+				}
+				if ("0".equals(operOrder.getSource())) {
+					purchaseOut += (operOrder.getRealPrice() == null ? 0d : operOrder.getRealPrice());
+					purchaseRealOut += (operOrder.getRealPay() == null ? 0d : operOrder.getRealPay());
 				}
 			}
 
 			for (OperOrderPay operOrderPay : operOrderPayList) {
 				if ("-1".equals(operOrderPay.getPayType())) {
-					totalIn -= operOrderPay.getPrice();
+					totalIn -= (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
 				} else {
-					totalIn += operOrderPay.getPrice();
+					totalIn += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
 				}
 				if (operOrderPay.getCreateDate().getTime() < beginDate.getTime()) {
-					oldDebtIn += operOrderPay.getPrice();
+					if ("0".equals(operOrderPay.getOperOrder().getSource())) {
+						oldDebtOut += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+					} else {
+						oldDebtIn += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+					}
 				}
 			}
 			report.setTitle("每日财务报表");
@@ -110,13 +129,18 @@ public class ReportService extends CrudService<ReportMapper, Report> {
 			report.setStore(store);
 			report.setSaleIn(saleIn);
 			report.setSaleRealIn(saleRealIn);
+			report.setSaleBenefit(saleBenefit);
+			report.setPurchaseOut(purchaseOut);
+			report.setPurchaseRealOut(purchaseRealOut);
 			report.setReturnPay(returnPay);
 			report.setReturnRealPay(returnRealPay);
 			report.setOldDebtIn(oldDebtIn);
+			report.setOldDebtOut(oldDebtOut);
 			report.setTotalIn(totalIn);
 			report.setBalanceIn(balanceIn);
 			report.setRemarks("报表" + dateFormat.format(beginDate) + " - " + dateFormat.format(endDate));
 			this.save(report);
+			logger.debug(report.toString());
 		}
 		logger.debug(dateFormat.format(beginDate) + " - " + dateFormat.format(endDate) + " 已经生成");
 		return true;

@@ -14,7 +14,7 @@ import com.jeeplus.modules.jxc.entity.Report;
 /**
  * 财务报表MAPPER接口
  * @author FxLsoft
- * @version 2019-03-13
+ * @version 2019-03-14
  */
 @MyBatisMapper
 public interface ReportMapper extends BaseMapper<Report> {

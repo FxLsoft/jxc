@@ -12,7 +12,7 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 /**
  * 财务报表Entity
  * @author FxLsoft
- * @version 2019-03-13
+ * @version 2019-03-14
  */
 public class Report extends DataEntity<Report> {
 	
@@ -30,12 +30,17 @@ public class Report extends DataEntity<Report> {
 	private Double oldDebtIn;		// 欠款已收
 	private Double oldDebtOut;		// 欠款已付
 	private Double balanceIn;		// 电子秤销售
+	private Double totalIn;		// 总金额
 	private Double wxPay;		// 微信收款
 	private Double aliPay;		// 支付宝收款
 	private Double bankPay;		// 银行卡收款
-	private Double moenyPay;		// 现付
-	private Double totalIn;		// 实收总金额
+	private Double moenyPay;		// 现金收款
+	private Double wxPayOut;		// 微信付款
+	private Double aliPayOut;		// 支付宝付款
+	private Double bankPayOut;		// 银行卡付款
+	private Double moenyPayOut;		// 现金付款
 	private Double totalRealIn;		// 实收总计
+	private Double totalRealOut;		// 实付总计
 	private Date beginCreateDate;		// 开始 创建时间
 	private Date endCreateDate;		// 结束 创建时间
 	
@@ -164,43 +169,7 @@ public class Report extends DataEntity<Report> {
 		this.balanceIn = balanceIn;
 	}
 	
-	@ExcelField(title="微信收款", align=2, sort=14)
-	public Double getWxPay() {
-		return wxPay;
-	}
-
-	public void setWxPay(Double wxPay) {
-		this.wxPay = wxPay;
-	}
-	
-	@ExcelField(title="支付宝收款", align=2, sort=15)
-	public Double getAliPay() {
-		return aliPay;
-	}
-
-	public void setAliPay(Double aliPay) {
-		this.aliPay = aliPay;
-	}
-	
-	@ExcelField(title="银行卡收款", align=2, sort=16)
-	public Double getBankPay() {
-		return bankPay;
-	}
-
-	public void setBankPay(Double bankPay) {
-		this.bankPay = bankPay;
-	}
-	
-	@ExcelField(title="现付", align=2, sort=17)
-	public Double getMoenyPay() {
-		return moenyPay;
-	}
-
-	public void setMoenyPay(Double moenyPay) {
-		this.moenyPay = moenyPay;
-	}
-	
-	@ExcelField(title="实收总金额", align=2, sort=18)
+	@ExcelField(title="总金额", align=2, sort=14)
 	public Double getTotalIn() {
 		return totalIn;
 	}
@@ -209,13 +178,94 @@ public class Report extends DataEntity<Report> {
 		this.totalIn = totalIn;
 	}
 	
-	@ExcelField(title="实收总计", align=2, sort=19)
+	@ExcelField(title="微信收款", align=2, sort=15)
+	public Double getWxPay() {
+		return wxPay;
+	}
+
+	public void setWxPay(Double wxPay) {
+		this.wxPay = wxPay;
+	}
+	
+	@ExcelField(title="支付宝收款", align=2, sort=16)
+	public Double getAliPay() {
+		return aliPay;
+	}
+
+	public void setAliPay(Double aliPay) {
+		this.aliPay = aliPay;
+	}
+	
+	@ExcelField(title="银行卡收款", align=2, sort=17)
+	public Double getBankPay() {
+		return bankPay;
+	}
+
+	public void setBankPay(Double bankPay) {
+		this.bankPay = bankPay;
+	}
+	
+	@ExcelField(title="现金收款", align=2, sort=18)
+	public Double getMoenyPay() {
+		return moenyPay;
+	}
+
+	public void setMoenyPay(Double moenyPay) {
+		this.moenyPay = moenyPay;
+	}
+	
+	@ExcelField(title="微信付款", align=2, sort=19)
+	public Double getWxPayOut() {
+		return wxPayOut;
+	}
+
+	public void setWxPayOut(Double wxPayOut) {
+		this.wxPayOut = wxPayOut;
+	}
+	
+	@ExcelField(title="支付宝付款", align=2, sort=20)
+	public Double getAliPayOut() {
+		return aliPayOut;
+	}
+
+	public void setAliPayOut(Double aliPayOut) {
+		this.aliPayOut = aliPayOut;
+	}
+	
+	@ExcelField(title="银行卡付款", align=2, sort=21)
+	public Double getBankPayOut() {
+		return bankPayOut;
+	}
+
+	public void setBankPayOut(Double bankPayOut) {
+		this.bankPayOut = bankPayOut;
+	}
+	
+	@ExcelField(title="现金付款", align=2, sort=22)
+	public Double getMoenyPayOut() {
+		return moenyPayOut;
+	}
+
+	public void setMoenyPayOut(Double moenyPayOut) {
+		this.moenyPayOut = moenyPayOut;
+	}
+	
+	@ExcelField(title="实收总计", align=2, sort=23)
 	public Double getTotalRealIn() {
 		return totalRealIn;
 	}
 
 	public void setTotalRealIn(Double totalRealIn) {
 		this.totalRealIn = totalRealIn;
+	}
+	
+	@ExcelField(title="实付总计", align=2, sort=24)
+	public Double getTotalRealOut() {
+		return totalRealOut;
+	}
+
+	public void setTotalRealOut(Double totalRealOut) {
+		this.totalRealOut = totalRealOut;
 	}
 	
 	public Date getBeginCreateDate() {

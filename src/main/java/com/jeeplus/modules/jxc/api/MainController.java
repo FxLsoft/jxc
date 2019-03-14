@@ -33,6 +33,7 @@ import com.jeeplus.modules.jxc.service.BalanceSaleService;
 import com.jeeplus.modules.jxc.service.OperOrderPayService;
 import com.jeeplus.modules.jxc.service.OperOrderService;
 import com.jeeplus.modules.jxc.service.PriceService;
+import com.jeeplus.modules.jxc.service.ReportService;
 import com.jeeplus.modules.sys.utils.DictUtils;
 
 @Controller
@@ -51,6 +52,9 @@ public class MainController extends BaseController{
 	
 	@Autowired
 	private BalanceSaleService balanceSaleService;
+	
+	@Autowired
+	private ReportService reportService;
 	
 	@RequestMapping(value = "print")
 	public String print(Model model) {
@@ -183,5 +187,11 @@ public class MainController extends BaseController{
 		return result;
 	}
 	
-	
+	@RequestMapping("/createReport")
+	@ResponseBody
+	public AjaxJson createReport() {
+		AjaxJson result = new AjaxJson();
+		result.setSuccess(reportService.createReport());
+		return result;
+	}
 }
