@@ -59,6 +59,9 @@
 		});
 		
 		function addRow(list, idx, tpl, row){
+			if (list == '#operOrderDetailList' && row && row.price) {
+				row.labelValue = row.price.id ? row.price.unit + '/' + row.price.costPrice : '';
+			}
 			$(list).append(Mustache.render(tpl, {
 				idx: idx, delBtn: true, row: row
 			}));
@@ -273,7 +276,7 @@
 					
 					
 					<td>
-						<sys:priceselect url="${ctx}/api/getPrice" id="operOrderDetailList{{idx}}_price" name="operOrderDetailList[{{idx}}].price.id" value="{{row.price.id}}" labelName="operOrderDetailList{{idx}}.price.costPrice" labelValue='{{row.id ? row.price.unit + "/" + row.price.costPrice : ""}}'
+						<sys:priceselect url="${ctx}/api/getPrice" id="operOrderDetailList{{idx}}_price" name="operOrderDetailList[{{idx}}].price.id" value="{{row.price.id}}" labelName="operOrderDetailList{{idx}}.price.costPrice" labelValue="{{row.labelValue}}"
 							 title="选择价格属性" cssClass="form-control  required" fieldLabels="单位|换算比例|进价|预售价"  fieldKeys="unit|ratio|costPrice|advancePrice" searchLabels="关键字" searchKeys="searchKey" ></sys:priceselect>
 					</td>
 					<td>

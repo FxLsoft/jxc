@@ -30,6 +30,11 @@
 				<form:input path="weightNo" htmlEscape="false" maxlength="64"  class=" form-control"/>
 			</div>
 			<div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="门店">门店：</label>
+										<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${product.store.id}" labelName="store.name" labelValue="${product.store.name}"
+							 title="选择门店" cssClass="form-control " fieldLabels="名称|区域|地址" fieldKeys="name|area|address" searchLabels="名称" searchKeys="name" ></sys:gridselect>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="经销商">经销商：</label>
 										<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="" labelName="agency.name" labelValue=""
 							 title="选择商家" cssClass="form-control" fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>

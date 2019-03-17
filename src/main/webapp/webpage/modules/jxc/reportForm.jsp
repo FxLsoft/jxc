@@ -145,7 +145,13 @@
 				<div class="form-group saleInput">
 					<label class="col-sm-2 control-label">总金额：</label>
 					<div class="col-sm-10">
-						<form:input readonly="true" path="totalIn" htmlEscape="false"    class="form-control  number "/>
+						<form:input readonly="true" path="saleTotal" htmlEscape="false"    class="form-control  number "/>
+					</div>
+				</div>
+				<div class="form-group purchaseInput">
+					<label class="col-sm-2 control-label">总金额：</label>
+					<div class="col-sm-10">
+						<form:input readonly="true" path="purchaseTotal" htmlEscape="false"    class="form-control  number "/>
 					</div>
 				</div>
 				<div class="form-group saleInput">

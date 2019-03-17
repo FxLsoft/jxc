@@ -31,7 +31,12 @@ import com.jeeplus.common.utils.excel.ImportExcel;
 import com.jeeplus.core.persistence.Page;
 import com.jeeplus.core.web.BaseController;
 import com.jeeplus.modules.jxc.entity.Product;
+import com.jeeplus.modules.jxc.entity.Store;
 import com.jeeplus.modules.jxc.service.ProductService;
+import com.jeeplus.modules.jxc.service.StoreService;
+import com.jeeplus.modules.sys.entity.User;
+import com.jeeplus.modules.sys.service.SystemService;
+import com.jeeplus.modules.sys.utils.UserUtils;
 
 /**
  * 商品Controller
@@ -44,6 +49,12 @@ public class ProductController extends BaseController {
 
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private SystemService systemService;
+	
+	@Autowired
+	private StoreService storeService;
 	
 	@ModelAttribute
 	public Product get(@RequestParam(required=false) String id) {
@@ -63,6 +74,18 @@ public class ProductController extends BaseController {
 	@RequiresPermissions("jxc:product:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(Product product, Model model) {
+		User user = UserUtils.getUser();
+		if (user != null) {
+			user = systemService.getUser(user.getId());
+			Store store = new Store();
+			List<String> officeIds = Lists.newArrayList();
+			officeIds.add(user.getOffice().getId());
+			store.setOfficeList(officeIds);
+			List<Store> storeList = storeService.findList(store);
+			if (storeList != null && !storeList.isEmpty()) {
+				product.setStore(storeList.get(0));
+			}
+		}
 		model.addAttribute("product", product);
 		return "modules/jxc/productList";
 	}
@@ -74,7 +97,7 @@ public class ProductController extends BaseController {
 	@RequiresPermissions("jxc:product:list")
 	@RequestMapping(value = "data")
 	public Map<String, Object> data(Product product, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Product> page = productService.findPage(new Page<Product>(request, response), product); 
+		Page<Product> page = productService.findPage(new Page<Product>(request, response), product);
 		return getBootstrapData(page);
 	}
 
@@ -86,6 +109,18 @@ public class ProductController extends BaseController {
 	public String form(@PathVariable String mode, Product product, Model model) {
 		if ("add".equals(mode)) {
 			product.setIsWeight("0");
+			User user = UserUtils.getUser();
+			if (user != null) {
+				user = systemService.getUser(user.getId());
+				Store store = new Store();
+				List<String> officeIds = Lists.newArrayList();
+				officeIds.add(user.getOffice().getId());
+				store.setOfficeList(officeIds);
+				List<Store> storeList = storeService.findList(store);
+				if (storeList != null && !storeList.isEmpty()) {
+					product.setStore(storeList.get(0));
+				}
+			}
 		}
 		model.addAttribute("product", product);
 		model.addAttribute("mode", mode);

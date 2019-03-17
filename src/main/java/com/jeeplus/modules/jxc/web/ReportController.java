@@ -31,7 +31,12 @@ import com.jeeplus.common.utils.excel.ImportExcel;
 import com.jeeplus.core.persistence.Page;
 import com.jeeplus.core.web.BaseController;
 import com.jeeplus.modules.jxc.entity.Report;
+import com.jeeplus.modules.jxc.entity.Store;
 import com.jeeplus.modules.jxc.service.ReportService;
+import com.jeeplus.modules.jxc.service.StoreService;
+import com.jeeplus.modules.sys.entity.User;
+import com.jeeplus.modules.sys.service.SystemService;
+import com.jeeplus.modules.sys.utils.UserUtils;
 
 /**
  * 财务报表Controller
@@ -44,6 +49,12 @@ public class ReportController extends BaseController {
 
 	@Autowired
 	private ReportService reportService;
+	
+	@Autowired
+	private SystemService systemService;
+	
+	@Autowired
+	private StoreService storeService;
 	
 	@ModelAttribute
 	public Report get(@RequestParam(required=false) String id) {
@@ -63,6 +74,18 @@ public class ReportController extends BaseController {
 	@RequiresPermissions("jxc:report:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(Report report, Model model, String from) {
+		User user = UserUtils.getUser();
+		if (user != null) {
+			user = systemService.getUser(user.getId());
+			Store store = new Store();
+			List<String> officeIds = Lists.newArrayList();
+			officeIds.add(user.getOffice().getId());
+			store.setOfficeList(officeIds);
+			List<Store> storeList = storeService.findList(store);
+			if (storeList != null && !storeList.isEmpty()) {
+				report.setStore(storeList.get(0));
+			}
+		}
 		model.addAttribute("report", report);
 		model.addAttribute("from", from);
 		return "modules/jxc/reportList";

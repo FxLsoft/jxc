@@ -169,7 +169,7 @@ public class MainController extends BaseController{
 			Double benefit = Double.parseDouble(DictUtils.getDictValue("small", "order_complete_deviation", "0"));
 			if (benefitMoneyArr.length - 1 >= i  && !StringUtils.isEmpty(benefitMoneyArr[i])) {
 				benefit = Double.parseDouble(benefitMoneyArr[i]);
-				operOrder.setBenefitPrice(operOrder.getBenefitPrice() + benefit);
+				operOrder.setBenefitPrice((operOrder.getBenefitPrice() == null ? 0d : operOrder.getBenefitPrice()) + benefit);
 			}
 			if (pay < 0) continue;
 			operOrder.setRealPay(operOrder.getRealPay() + pay);
@@ -181,6 +181,7 @@ public class MainController extends BaseController{
 			operOrderPayService.save(orderPay);
 			if ((operOrder.getRealPrice() - operOrder.getRealPay()) <= benefit) {
 				operOrder.setStatus("3");
+				operOrder.setBenefitPrice(operOrder.getRealPrice() - operOrder.getRealPay());
 			}
 			operOrderService.save(operOrder);
 		}

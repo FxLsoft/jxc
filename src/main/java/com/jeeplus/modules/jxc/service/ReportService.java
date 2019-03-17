@@ -79,12 +79,15 @@ public class ReportService extends CrudService<ReportMapper, Report> {
 					saleRealIn = 0d, 
 					purchaseOut = 0d,
 					saleBenefit = 0d,
+					purchaseBenefit = 0d,
 					purchaseRealOut = 0d,
 					oldDebtOut = 0d,
 					returnPay = 0d, 
 					returnRealPay = 0d, 
 					oldDebtIn = 0d, 
 					totalIn = 0d,
+					saleTotal = 0d,
+					purchaseTotal = 0d,
 					balanceIn = 0d, 
 					balanceRealIn = 0d;
 			List<OperOrder> operOrderList = operOrderService.findListByWhere(store.getId(), beginDate, endDate);
@@ -107,20 +110,36 @@ public class ReportService extends CrudService<ReportMapper, Report> {
 				if ("0".equals(operOrder.getSource())) {
 					purchaseOut += (operOrder.getRealPrice() == null ? 0d : operOrder.getRealPrice());
 					purchaseRealOut += (operOrder.getRealPay() == null ? 0d : operOrder.getRealPay());
+					purchaseBenefit += (operOrder.getBenefitPrice() == null ? 0d : operOrder.getBenefitPrice());
 				}
 			}
 
 			for (OperOrderPay operOrderPay : operOrderPayList) {
+				if ("0".equals(operOrderPay.getOperOrder().getSource())) {
+					purchaseTotal += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+				} else {
+					if ("-1".equals(operOrderPay.getPayType())) {
+						saleTotal -= (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+					} else {
+						saleTotal += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+					}
+				}
 				if ("-1".equals(operOrderPay.getPayType())) {
 					totalIn -= (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
 				} else {
 					totalIn += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
 				}
-				if (operOrderPay.getCreateDate().getTime() < beginDate.getTime()) {
+				if (operOrderPay.getOperOrder().getCreateDate().getTime() < beginDate.getTime()) {
 					if ("0".equals(operOrderPay.getOperOrder().getSource())) {
 						oldDebtOut += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
-					} else {
-						oldDebtIn += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+					} else if ("2".equals(operOrderPay.getOperOrder().getSource())) {
+						returnRealPay += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+					} else{
+						if ("-1".equals(operOrderPay.getPayType())) {
+							oldDebtIn -= (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+						} else {
+							oldDebtIn += (operOrderPay.getPrice() == null ? 0d : operOrderPay.getPrice());
+						}
 					}
 				}
 			}
@@ -130,6 +149,7 @@ public class ReportService extends CrudService<ReportMapper, Report> {
 			report.setSaleIn(saleIn);
 			report.setSaleRealIn(saleRealIn);
 			report.setSaleBenefit(saleBenefit);
+			report.setPurchaseBenefit(purchaseBenefit);
 			report.setPurchaseOut(purchaseOut);
 			report.setPurchaseRealOut(purchaseRealOut);
 			report.setReturnPay(returnPay);
@@ -137,6 +157,8 @@ public class ReportService extends CrudService<ReportMapper, Report> {
 			report.setOldDebtIn(oldDebtIn);
 			report.setOldDebtOut(oldDebtOut);
 			report.setTotalIn(totalIn);
+			report.setSaleTotal(saleTotal);
+			report.setPurchaseTotal(purchaseTotal);
 			report.setBalanceIn(balanceIn);
 			report.setRemarks("报表" + dateFormat.format(beginDate) + " - " + dateFormat.format(endDate));
 			this.save(report);

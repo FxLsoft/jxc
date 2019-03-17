@@ -37,13 +37,18 @@ $(document).ready(function(){
 			jp.warning("请先选择经销商");
 			return;
 		} */
+		var storeId = document.getElementById('storeId').value || '';
+		if (!storeId) {
+			jp.warning("请先选择门店");
+			return;
+		}
 		top.layer.open({
 		    type: 2,  
 		    area: ['800px', '500px'],
 		    title:"${title}",
 		    auto:true,
 		    name:'friend',
-		    content: "${ctx}/tag/gridselect?url="+encodeURIComponent("${url}" + "?agency.id=" + agencyId)+"&fieldLabels="+encodeURIComponent("${fieldLabels}")+"&fieldKeys="+encodeURIComponent("${fieldKeys}")+"&searchLabels="+encodeURIComponent("${searchLabels}")+"&searchKeys="+encodeURIComponent("${searchKeys}")+"&isMultiSelected=${isMultiSelected? true:false}",
+		    content: "${ctx}/tag/gridselect?url="+encodeURIComponent("${url}" + "?store.id=" + storeId)+"&fieldLabels="+encodeURIComponent("${fieldLabels}")+"&fieldKeys="+encodeURIComponent("${fieldKeys}")+"&searchLabels="+encodeURIComponent("${searchLabels}")+"&searchKeys="+encodeURIComponent("${searchKeys}")+"&isMultiSelected=${isMultiSelected? true:false}",
 		    btn: ['确定', '关闭'],
 		    yes: function(index, layero){
 		    	 var iframeWin = layero.find('iframe')[0].contentWindow; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();

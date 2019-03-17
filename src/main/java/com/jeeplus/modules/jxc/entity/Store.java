@@ -3,12 +3,14 @@
  */
 package com.jeeplus.modules.jxc.entity;
 
-import com.jeeplus.modules.sys.entity.Office;
-import javax.validation.constraints.NotNull;
-import com.jeeplus.modules.sys.entity.User;
+import java.util.List;
 
-import com.jeeplus.core.persistence.DataEntity;
+import javax.validation.constraints.NotNull;
+
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
+import com.jeeplus.core.persistence.DataEntity;
+import com.jeeplus.modules.sys.entity.Office;
+import com.jeeplus.modules.sys.entity.User;
 
 /**
  * 门店Entity
@@ -26,6 +28,7 @@ public class Store extends DataEntity<Store> {
 	private Double lon;		// 经度
 	private Double lat;		// 纬度
 	private String officeName;
+	private List<String> officeList = null;
 	
 	public Store() {
 		super();
@@ -106,6 +109,14 @@ public class Store extends DataEntity<Store> {
 
 	public void setOfficeName(String officeName) {
 		this.officeName = officeName;
+	}
+
+	public List<String> getOfficeList() {
+		return officeList;
+	}
+
+	public void setOfficeList(List<String> officeList) {
+		this.officeList = officeList;
 	}
 	
 }

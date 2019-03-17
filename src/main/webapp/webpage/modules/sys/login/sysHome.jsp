@@ -18,7 +18,7 @@
 <body class="">
 <div id="body-container" class="wrapper wrapper-content">
 	<div class="conter-wrapper home-container">
-		
+		<img alt="home" style="height: 100%;width:100%" src="${ctxStatic}/common/images/home.jpeg">
 	</div>
 </div>
 

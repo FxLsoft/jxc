@@ -61,6 +61,12 @@
 					<if test="dbName == 'mssql'">'%'+#{area}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{area},'%')</if>
 			</if>
+			<if test="officeList != null">
+				AND a.office in
+				<foreach collection="officeList" index="index" item="item" open="(" separator="," close=")">
+                	#{item}       
+        		</foreach>
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

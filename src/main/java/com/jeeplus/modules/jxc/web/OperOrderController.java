@@ -34,8 +34,14 @@ import com.jeeplus.core.web.BaseController;
 import com.jeeplus.modules.jxc.entity.OperOrder;
 import com.jeeplus.modules.jxc.entity.OperOrderDetail;
 import com.jeeplus.modules.jxc.entity.Product;
+import com.jeeplus.modules.jxc.entity.Store;
 import com.jeeplus.modules.jxc.service.OperOrderService;
 import com.jeeplus.modules.jxc.service.ProductService;
+import com.jeeplus.modules.jxc.service.StoreService;
+import com.jeeplus.modules.sys.entity.User;
+import com.jeeplus.modules.sys.service.OfficeService;
+import com.jeeplus.modules.sys.service.SystemService;
+import com.jeeplus.modules.sys.utils.UserUtils;
 
 /**
  * 单据Controller
@@ -51,6 +57,15 @@ public class OperOrderController extends BaseController {
 	
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private StoreService storeService;
+	
+	@Autowired
+	private OfficeService officeService;
+	
+	@Autowired
+	private SystemService systemService;
 	
 	@ModelAttribute
 	public OperOrder get(@RequestParam(required=false) String id) {
@@ -72,6 +87,18 @@ public class OperOrderController extends BaseController {
 	public String list(OperOrder operOrder, Model model, String from) {
 		model.addAttribute("operOrder", operOrder);
 		model.addAttribute("from", from);
+		User user = UserUtils.getUser();
+		if (user != null) {
+			user = systemService.getUser(user.getId());
+			Store store = new Store();
+			List<String> officeIds = Lists.newArrayList();
+			officeIds.add(user.getOffice().getId());
+			store.setOfficeList(officeIds);
+			List<Store> storeList = storeService.findList(store);
+			if (storeList != null && !storeList.isEmpty()) {
+				operOrder.setStore(storeList.get(0));
+			}
+		}
 		return "modules/jxc/operOrderList";
 	}
 	
@@ -82,7 +109,8 @@ public class OperOrderController extends BaseController {
 	@RequiresPermissions("jxc:operOrder:list")
 	@RequestMapping(value = "data")
 	public Map<String, Object> data(OperOrder operOrder, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<OperOrder> page = operOrderService.findPage(new Page<OperOrder>(request, response), operOrder); 
+		Page<OperOrder> page = operOrderService.findPage(new Page<OperOrder>(request, response), operOrder);
+		
 		return getBootstrapData(page);
 	}
 
@@ -107,7 +135,20 @@ public class OperOrderController extends BaseController {
 				// 出库
 				operOrder.setType("1");
 			}
+			User user = UserUtils.getUser();
+			if (user != null) {
+				user = systemService.getUser(user.getId());
+				Store store = new Store();
+				List<String> officeIds = Lists.newArrayList();
+				officeIds.add(user.getOffice().getId());
+				store.setOfficeList(officeIds);
+				List<Store> storeList = storeService.findList(store);
+				if (storeList != null && !storeList.isEmpty()) {
+					operOrder.setStore(storeList.get(0));
+				}
+			}
 		}
+		logger.debug(operOrder.toString());
 		model.addAttribute("operOrder", operOrder);
 		model.addAttribute("mode", mode);
 		model.addAttribute("from", from);

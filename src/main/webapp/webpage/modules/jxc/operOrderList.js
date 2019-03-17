@@ -44,20 +44,20 @@ function payOrder(ids, maxPay, type) {
 				pay.val(maxPay.toFixed(2));
 				benefit.val(0.00);
 				pay.on('input', function() {
-					if (this.value > maxPay) {
+					if ((this.value*1 + benefit.val()*1) > maxPay) {
 						pay.val(maxPay.toFixed(2));
 						benefit.val(0.00);
 					} else {
-						benefit.val((maxPay - this.value).toFixed(2));
+//						benefit.val((maxPay - this.value).toFixed(2));
 					}
 					
 				});
 				benefit.on('input', function() {
-					if (this.value > maxPay) {
+					if ((this.value*1 + pay.val()*1) > maxPay) {
 						benefit.val(maxPay.toFixed(2));
 						pay.val(0.00);
 					} else {
-						pay.val((maxPay - this.value).toFixed(2));
+//						pay.val((maxPay - this.value).toFixed(2));
 					}
 				})
 			},
@@ -272,10 +272,10 @@ $(document).ready(function() {
 		        // 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
 		        title: '欠款',
 		        sortable: false,
-		        visible: from == 5,
+//		        visible: from == 5,
 		        formatter: function (value, row, index) {
 		        	if (row.status == 1) {
-		        		return (row.realPrice - row.realPay).toFixed(2);
+		        		return (row.realPrice - row.realPay - (row.benefitPrice || 0)).toFixed(2);
 		        	} else {
 		        		return '-';
 		        	}
@@ -286,10 +286,10 @@ $(document).ready(function() {
 		        // 单据来源（0：采购入库，1：盘点入库，2：退货入库，3、电子秤零售，4、零售出库，5、批发出库）
 		        title: '优惠',
 		        sortable: false,
-		        visible: from == 5,
+//		        visible: from == 5,
 		        formatter: function (value, row, index) {
 		        	if (row.status == 3) {
-		        		return (row.realPrice - row.realPay).toFixed(2);
+		        		return (row.benefitPrice || 0).toFixed(2);
 		        	} else {
 		        		return '-';
 		        	}
@@ -327,15 +327,15 @@ $(document).ready(function() {
 		        		btn.push('<button class="btn btn-warning btn-sm" onclick="checkOrder(\'' +row.id+ '\', 2)">作废</button>');
 		        	}
 		        	if (from == 0 && row.status == 1) {
-		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', -1)">付款</button>');
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0) - (row.benefitPrice || 0)) + ', -1)">付款</button>');
 		        	}
 		        	
 		        	if (from == 2 && row.status == 1) {
-		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', -1)">退款</button>');
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0) - (row.benefitPrice || 0)) + ', -1)">退款</button>');
 		        	}
 		        	
 		        	if ((from == 3 || from == 4 || from == 5) && row.status == 1) {
-		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0)) + ', 1)">收款</button>');
+		        		btn.push('<button class="btn btn-success btn-sm" onclick="payOrder(\'' +row.id+ '\', ' + ((row.realPrice || 0) - (row.realPay || 0) - (row.benefitPrice || 0)) + ', 1)">收款</button>');
 		        	}
 		        	
 		        	return '<div style="white-space: nowrap;">' + btn.join() + '</div>';

@@ -169,6 +169,7 @@ $(document).ready(function() {
 				        }
 				    }
 		    }
+			
 			,{
 		        field: 'purchaseOut',
 		        title: '采购应付',
@@ -270,9 +271,51 @@ $(document).ready(function() {
 			,{
 		        field: 'totalIn',
 		        title: '总金额',
-		        visible: from == 'in',
+		        visible: false,
 		        sortable: true,
 		        sortName: 'totalIn'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'saleTotal',
+		        title: '销售总额',
+		        visible: from == 'in',
+		        sortable: true,
+		        sortName: 'saleTotal'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'purchaseBenefit',
+		        title: '采购优惠',
+		        visible: from == 'out',
+		        sortable: true,
+		        sortName: 'purchaseBenefit'
+		        	,formatter: function (value, row, index) {
+				        if (value != undefined) {
+				        	return (value || 0).toFixed(2);
+				        } else {
+				        	return '-';
+				        }
+				    }
+		    }
+			,{
+		        field: 'purchaseTotal',
+		        title: '采购总额',
+		        visible: from == 'out',
+		        sortable: true,
+		        sortName: 'purchaseTotal'
 		        	,formatter: function (value, row, index) {
 				        if (value != undefined) {
 				        	return (value || 0).toFixed(2);

@@ -31,7 +31,12 @@ import com.jeeplus.common.utils.excel.ImportExcel;
 import com.jeeplus.core.persistence.Page;
 import com.jeeplus.core.web.BaseController;
 import com.jeeplus.modules.jxc.entity.Storage;
+import com.jeeplus.modules.jxc.entity.Store;
 import com.jeeplus.modules.jxc.service.StorageService;
+import com.jeeplus.modules.jxc.service.StoreService;
+import com.jeeplus.modules.sys.entity.User;
+import com.jeeplus.modules.sys.service.SystemService;
+import com.jeeplus.modules.sys.utils.UserUtils;
 
 /**
  * 库存Controller
@@ -44,6 +49,12 @@ public class StorageController extends BaseController {
 
 	@Autowired
 	private StorageService storageService;
+	
+	@Autowired
+	private SystemService systemService;
+	
+	@Autowired
+	private StoreService storeService;
 	
 	@ModelAttribute
 	public Storage get(@RequestParam(required=false) String id) {
@@ -63,6 +74,18 @@ public class StorageController extends BaseController {
 	@RequiresPermissions("jxc:storage:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(Storage storage, Model model) {
+		User user = UserUtils.getUser();
+		if (user != null) {
+			user = systemService.getUser(user.getId());
+			Store store = new Store();
+			List<String> officeIds = Lists.newArrayList();
+			officeIds.add(user.getOffice().getId());
+			store.setOfficeList(officeIds);
+			List<Store> storeList = storeService.findList(store);
+			if (storeList != null && !storeList.isEmpty()) {
+				storage.setStore(storeList.get(0));
+			}
+		}
 		model.addAttribute("storage", storage);
 		return "modules/jxc/storageList";
 	}
@@ -86,6 +109,18 @@ public class StorageController extends BaseController {
 	public String form(@PathVariable String mode, Storage storage, Model model) {
 		model.addAttribute("storage", storage);
 		model.addAttribute("mode", mode);
+		User user = UserUtils.getUser();
+		if (user != null) {
+			user = systemService.getUser(user.getId());
+			Store store = new Store();
+			List<String> officeIds = Lists.newArrayList();
+			officeIds.add(user.getOffice().getId());
+			store.setOfficeList(officeIds);
+			List<Store> storeList = storeService.findList(store);
+			if (storeList != null && !storeList.isEmpty()) {
+				storage.setStore(storeList.get(0));
+			}
+		}
 		return "modules/jxc/storageForm";
 	}
 

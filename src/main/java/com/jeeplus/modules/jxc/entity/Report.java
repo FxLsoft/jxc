@@ -23,6 +23,7 @@ public class Report extends DataEntity<Report> {
 	private Double saleIn;		// 销售应收
 	private Double saleRealIn;		// 销售实收
 	private Double saleBenefit;		// 销售优惠
+	private Double purchaseBenefit;
 	private Double purchaseOut;		// 采购应付
 	private Double purchaseRealOut;		// 采购实付
 	private Double returnPay;		// 退货应付
@@ -43,6 +44,8 @@ public class Report extends DataEntity<Report> {
 	private Double totalRealOut;		// 实付总计
 	private Date beginCreateDate;		// 开始 创建时间
 	private Date endCreateDate;		// 结束 创建时间
+	private Double purchaseTotal;
+	private Double saleTotal;
 	
 	public Report() {
 		super();
@@ -282,6 +285,30 @@ public class Report extends DataEntity<Report> {
 
 	public void setEndCreateDate(Date endCreateDate) {
 		this.endCreateDate = endCreateDate;
+	}
+
+	public Double getPurchaseTotal() {
+		return purchaseTotal;
+	}
+
+	public void setPurchaseTotal(Double purchaseTotal) {
+		this.purchaseTotal = purchaseTotal;
+	}
+
+	public Double getSaleTotal() {
+		return saleTotal;
+	}
+
+	public void setSaleTotal(Double saleTotal) {
+		this.saleTotal = saleTotal;
+	}
+
+	public Double getPurchaseBenefit() {
+		return purchaseBenefit;
+	}
+
+	public void setPurchaseBenefit(Double purchaseBenefit) {
+		this.purchaseBenefit = purchaseBenefit;
 	}
 		
 }

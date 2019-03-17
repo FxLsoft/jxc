@@ -25,11 +25,20 @@
 				<label class="label-item single-overflow pull-left" title="编号：">编号：</label>
 				<form:input path="no" htmlEscape="false" maxlength="64"  class=" form-control"/>
 			</div>
+			<c:if test="${from == 0}">
 			<div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="商家：">商家：</label>
 										<sys:gridselect url="${ctx}/jxc/agency/data" id="agency" name="agency.id" value="${operOrder.agency.id}" labelName="agency.name" labelValue="${operOrder.agency.name}"
 							 title="选择商家" cssClass="form-control " fieldLabels="名称|联系人|联系方式|车牌号|地址" fieldKeys="name|linkman|phone|plateNumber|address" searchLabels="名称|联系方式|车牌号" searchKeys="name|phone|plateNumber" ></sys:gridselect>
 			</div>
+			</c:if>
+			<c:if test="${from == 4 || from == 5 }">
+			<div class="col-xs-12 col-sm-6 col-md-4">
+				<label class="label-item single-overflow pull-left" title="客户">客户：</label>
+										<sys:gridselect url="${ctx}/jxc/customer/data" id="customer" name="customer.id" value="${operOrder.customer.id}" labelName="customer.name" labelValue="${operOrder.customer.name}"
+							 title="选择客户" cssClass="form-control" fieldLabels="名称|联系方式|地址" fieldKeys="name|phone|address" searchLabels="名称|联系方式" searchKeys="name|phone" ></sys:gridselect>
+			</div>
+			</c:if>
 			<div class="col-xs-12 col-sm-6 col-md-4">
 				<label class="label-item single-overflow pull-left" title="门店">门店：</label>
 										<sys:gridselect url="${ctx}/jxc/store/data" id="store" name="store.id" value="${operOrder.store.id}" labelName="store.name" labelValue="${operOrder.store.name}"
