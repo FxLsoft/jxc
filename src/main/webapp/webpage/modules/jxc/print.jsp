@@ -8,7 +8,7 @@
 	<%@include file="print.js" %>
 	
 </head>
-<body class="admin-print" style="font-size: 9px;font-weight: normal; margin: 0; padding: 0; display: flex; justify-content: center;">
+<body class="admin-print" style="font-size: 12px;font-weight: normal; margin: 0; padding: 0; display: flex; justify-content: center;">
 	<style type="text/css">
 		p {
 			margin: 0;
@@ -19,24 +19,25 @@
 		}
 		table,th, td {
 		    border: 1px solid black;
+		    height: 30px;
 		}
 	</style>
-	<div id="app" style="width: 100%;padding: 20px 60px;" v-show="!isLoading">
+	<div id="app" style="width: 500px;padding: 20px 50px;" v-show="!isLoading">
 		<div v-if="vm.isShowAgency">
-			<p style="text-align: center;">{{vm.agency.name}}</p>
+			<h4 style="text-align: center;">{{vm.agency.name}}</h4>
 			<p><div style="width: 49%;display: inline-block;">客户：{{vm.agency.linkman}}</div><div style="width: 49%;display: inline-block;">联系方式：{{vm.agency.phone}}</div></p>
 			<p><div style="width: 49%;display: inline-block;">车牌：{{vm.agency.plateNumber}}</div><div style="width: 49%;display: inline-block;white-space: nowrap;">时间：{{date}}</div></p>
 			<p>单号：{{vm.no}}</p>
 		</div>
 		<div v-else>
-			<p style="text-align: center;">{{vm.store.officeName}}</p>
+			<h4 style="text-align: center;">{{vm.store.officeName}}</h4>
 			<p><div style="width: 49%;display: inline-block;">客户：{{vm.customer.name}}</div> <div style="width: 49%;display: inline-block;">联系方式：{{vm.customer.phone}}</div></p>
 			<p><div style="width: 49%;display: inline-block;">地址：{{vm.customer.address}}</div> <div style="width: 49%;display: inline-block;white-space: nowrap;">时间：{{date}}</div></p>
 			<p>单号：{{vm.no}}</p>
 		</div>
-		<table style="font-size: 9px;font-weight: normal;width: 100%;margin-top:10px;">
+		<table style="font-size: 12px;font-weight: normal;width: 100%;margin-top:10px;">
 			<tr>
-				<th>名称</th><th>单位</th><th>数量</th><th style="text-align: center;">单价</th><th style="text-align: center;">金额</th>
+				<th style="text-align: center;">名称</th><th style="text-align: center;">单位</th><th style="text-align: center;">数量</th><th style="text-align: center;">单价</th><th style="text-align: center;">金额</th>
             </tr>
             <tr v-for="(el, index) in vm.operOrderDetailList" :key="el.id">
 	            <td>{{el.product.name}}</td>
@@ -51,7 +52,7 @@
             </tr>
 		</table>
 		<div v-if="!vm.isShowAgency" style="margin-top: 10px; white-space: nowrap; margin-bottom: 20px;">
-			<p >{{vm.store.address}}</p>
+			<p>地址：{{vm.store.address}}</p>
 			<p>{{vm.store.remarks}}</p>
 		</div>
 	</div>
